@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Monopoly: Ultimate Edition</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="intro-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:black; z-index:9999; display:flex; justify-content:center; align-items:center;">
+        <video id="intro-video" width="100%" height="100%" style="object-fit:contain; position:absolute; top:0; left:0;" playsinline>
+            <source src="/static/images/montage.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <button id="start-intro-btn" style="z-index:10001; padding:20px 40px; font-size:2em; background:#2196F3; color:white; border:none; border-radius:10px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+            Starts The Game
+        </button>
+
+        <button id="skip-intro-btn" style="position:absolute; bottom:30px; right:30px; padding:10px 20px; font-size:1.2em; background:rgba(255,255,255,0.8); border:none; cursor:pointer; border-radius:5px; z-index:10001; display:none;">Skip Intro ⏩</button>
+    </div>
+    <video autoplay muted loop id="video-background" style="position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:-1000;">
+        <source src="/static/images/background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div id="game-setup-modal">
+        <div class="modal-content">
+            <h2>🎮 Game Setup</h2>
+            <label for="player-count-select">Select Number of Players:</label>
+            <select id="player-count-select">
+                <option value="1">1 Player</option>
+                <option value="2">2 Players</option>
+                <option value="3">3 Players</option>
+                <option value="4" selected>4 Players</option>
+            </select>
+            <label for="round-count-input" style="display:block; margin-top:15px;">Number of Rounds:</label>
+            <input type="number" id="round-count-input" value="10" min="1" max="50" style="width: 100%; padding: 10px; font-size: 1.1em; margin-top: 5px; box-sizing: border-box;">
+
+            <div id="player-inputs-container"></div>
+
+            <button id="start-game-btn">Start Game</button>
+        </div>
+    </div>
+
+    <div id="app-wrapper">
+
+        <div id="leaderboard-container" class="hidden">
+            <h2>🏆 Leaderboard</h2>
+            <ol id="score-list">
+            </ol>
+            <div id="round-counter">Round: 1 / 20</div>
+            <div id="game-timer">Time: 00:00</div>
+        </div>
+
+        <div class="game-container hidden">
+            <div id="game-board">
+            </div>
+
+            <div class="controls">
+                <div class="current-player-info">
+                    Current Player: <span id="current-player-color"></span> <span id="current-player-name"></span>
+                </div>
+                <div class="dice-area">
+                    <img id="dice-image" src="/static/images/dice-1.png" alt="Dice">
+                </div>
+                <button id="roll-dice-btn">🎲 Roll Dice</button>
+                <div id="game-log">Select players to start.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="question-modal" class="hidden">
+        <div class="modal-content">
+            <h3 id="question-level"></h3>
+            
+            <img id="question-image" src="" alt="Question Image" class="hidden">
+            
+            <p id="question-text"></p>
+            <input type="text" id="answer-box" placeholder="Type your answer here (A, B, C)...">
+            <button id="submit-answer-btn">Submit Answer</button>
+        </div>
+    </div>
+
+    <div id="explanation-modal" class="hidden">
+        <div class="modal-content">
+            <h3 id="explanation-title"></h3>
+            <p id="explanation-correct-answer"></p>
+            <p id="explanation-text"></p>
+            <button id="continue-game-btn">Continue Game</button>
+        </div>
+    </div>
+
+    <div id="powerup-modal" class="hidden">
+        <div class="modal-content" style="text-align: center;">
+            <h2 style="color: #FF9800;">🔥 3-STREAK! POWER UP! 🔥</h2>
+            <p>You answered 3 in a row! Spin for a reward!</p>
+            <div id="wheel-display" style="font-size: 2em; font-weight: bold; margin: 20px 0; padding: 20px; border: 3px dashed #333; border-radius: 10px; background: #fff3e0;">???</div>
+            <button id="spin-btn" style="background-color: #FF9800;">🎰 SPIN THE WHEEL</button>
+            <button id="close-powerup-btn" class="hidden">Continue</button>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="hidden">
+        <div class="modal-content">
+            <h2>🏁 Game Over! 🏁</h2>
+            <h3 id="final-winner"></h3>
+            <p id="final-average"></p>
+            <p>Thanks for playing!</p>
+ 
+            <button id="export-btn" style="background-color: #2196F3; margin-top: 20px;">📂 Export Results to Excel (.xls)</button>
+            <button onclick="location.reload()" style="background-color: #666; margin-top: 10px;">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

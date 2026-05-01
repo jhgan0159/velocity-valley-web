@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimen 2.1: Pecutan Graviti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .photogate-beam {
+            transition: background-color 0.1s;
+        }
+        .beam-active {
+            background-color: rgba(239, 68, 68, 0.8) !important;
+            box-shadow: 0 0 10px red;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-6 font-sans text-gray-800">
+
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        
+        <div class="bg-blue-600 text-white p-6">
+            <h1 class="text-2xl font-bold">Eksperimen 2.1: Menentukan nilai pecutan graviti Bumi</h1>
+            <p class="text-blue-100 mt-2">Simulasi interaktif menggunakan sistem photogate</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row p-6 gap-8">
+            
+            <div class="relative w-64 h-[650px] bg-blue-50 border-2 border-gray-300 rounded-lg mx-auto flex-shrink-0">
+                <div class="absolute left-10 top-0 w-4 h-full bg-gray-400 border-r-2 border-gray-500"></div>
+                <div class="absolute left-14 top-[30px] w-12 h-6 bg-gray-700 rounded-r-md"></div>
+                
+                <div class="absolute left-12 w-20 h-6 bg-gray-800 border-2 border-gray-600 z-10 flex items-center justify-center" style="top: 150px;">
+                    <div id="beam1" class="w-full h-1 bg-red-400/30 photogate-beam"></div>
+                    <span class="absolute -right-6 text-xs font-bold text-gray-600">PG1</span>
+                </div>
+
+                <div id="pg2-container" class="absolute left-12 w-20 h-6 bg-gray-800 border-2 border-gray-600 z-10 flex items-center justify-center transition-all duration-300" style="top: 300px;">
+                    <div id="beam2" class="w-full h-1 bg-red-400/30 photogate-beam"></div>
+                    <span class="absolute -right-6 text-xs font-bold text-gray-600">PG2</span>
+                </div>
+
+                <div class="absolute left-[52px] bottom-4 w-12 h-14 bg-blue-200 border-2 border-blue-400 rounded-b-lg border-t-0 z-20"></div>
+
+                <div id="ball" class="absolute left-[62px] w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-600 rounded-full shadow-md z-15" style="top: 40px;"></div>
+                
+                <div class="absolute right-2 top-[150px] bottom-[50px] w-1 border-l-2 border-dashed border-gray-400"></div>
+            </div>
+
+            <div class="flex-1 space-y-6">
+                
+                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
+                    <h2 class="text-lg font-semibold mb-4">1. Tetapan & Kawalan</h2>
+                    <div class="flex flex-wrap items-end gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jarak pemisahan, h (cm):</label>
+                            <select id="h-select" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" onchange="updatePG2()">
+                                <option value="30.0">30.0 cm</option>
+                                <option value="40.0">40.0 cm</option>
+                                <option value="50.0">50.0 cm</option>
+                                <option value="60.0">60.0 cm</option>
+                                <option value="70.0">70.0 cm</option>
+                            </select>
+                        </div>
+                        
+                        <div class="w-40">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kelajuan: <span id="speed-label" class="text-blue-600 font-bold">1x (Normal)</span></label>
+                            <input type="range" id="speed-slider" min="0.1" max="1" step="0.1" value="1" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-600" oninput="updateSpeedLabel()">
+                        </div>
+
+                        <button id="btn-drop" onclick="dropBall()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-colors disabled:opacity-50">
+                            Lepaskan Bola
+                        </button>
+                        <button id="btn-reset" onclick="resetApparatus()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-colors">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-black text-green-400 p-4 rounded-lg border-4 border-gray-700 text-center shadow-inner">
+                        <div class="text-xs text-gray-300 mb-1">Masa Photogate 1 (t₁)</div>
+                        <div class="text-3xl font-mono" id="t1-display">0.000 s</div>
+                    </div>
+                    <div class="bg-black text-green-400 p-4 rounded-lg border-4 border-gray-700 text-center shadow-inner">
+                        <div class="text-xs text-gray-300 mb-1">Masa Photogate 2 (t₂)</div>
+                        <div class="text-3xl font-mono" id="t2-display">0.000 s</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold mb-3">2. Keputusan (Jadual 2.6)</h2>
+                    <div class="overflow-x-auto rounded-lg border border-gray-200">
+                        <table id="keputusan-table" class="w-full text-sm text-left text-gray-700">
+                            <thead class="text-xs text-gray-700 bg-gray-100 uppercase border-b border-gray-200">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-center border-r">Jarak, h (cm)</th>
+                                    <th scope="col" class="px-6 py-3 text-center border-r">Masa t1 (s)</th>
+                                    <th scope="col" class="px-6 py-3 text-center border-r">Masa t2 (s)</th>
+                                    <th scope="col" class="px-6 py-3 text-center bg-blue-50 text-blue-800">Nilai g (m s-2)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 flex flex-wrap justify-between items-center gap-4">
+                        <div class="text-sm text-gray-600 bg-gray-100 p-2 rounded">
+                            Rumus: <strong>g = 2h / (t₂² - t₁²)</strong>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="downloadExcel()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow transition-colors flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Muat Turun Excel
+                            </button>
+                            <button onclick="clearTable()" class="text-red-500 hover:text-red-700 text-sm underline px-2">Padam Jadual</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Physics Constants & Settings
+        const GRAVITY = 9.78; 
+        const PIXEL_PER_METER = 500; 
+        const Y1_METER = 0.2; 
+        const OFFSET_Y = 50; 
+        const BALL_RADIUS = 12; 
+
+        // Elements
+        const ball = document.getElementById('ball');
+        const pg2Container = document.getElementById('pg2-container');
+        const beam1 = document.getElementById('beam1');
+        const beam2 = document.getElementById('beam2');
+        const t1Disp = document.getElementById('t1-display');
+        const t2Disp = document.getElementById('t2-display');
+        const btnDrop = document.getElementById('btn-drop');
+        const speedSlider = document.getElementById('speed-slider');
+
+        // State variables
+        let isDropping = false;
+
+        // Initialize PG2 position on load
+        updatePG2();
+
+        function updateSpeedLabel() {
+            let val = speedSlider.value;
+            if(val == 1) {
+                document.getElementById('speed-label').innerText = '1x (Normal)';
+            } else {
+                document.getElementById('speed-label').innerText = val + 'x';
+            }
+        }
+
+        function updatePG2() {
+            if (isDropping) return;
+            let h_cm = parseFloat(document.getElementById('h-select').value);
+            let h_m = h_cm / 100;
+            let y2_m = Y1_METER + h_m;
+            let pg2_px = OFFSET_Y + (y2_m * PIXEL_PER_METER) - 12; 
+            pg2Container.style.top = pg2_px + 'px';
+        }
+
+        function calculateTheoreticalTime(distance) {
+            return Math.sqrt((2 * distance) / GRAVITY);
+        }
+
+        function dropBall() {
+            if (isDropping) return;
+            isDropping = true;
+            
+            // Disable controls during drop
+            btnDrop.disabled = true;
+            document.getElementById('h-select').disabled = true;
+            speedSlider.disabled = true;
+
+            t1Disp.innerText = "0.000 s";
+            t2Disp.innerText = "0.000 s";
+            beam1.classList.remove('beam-active');
+            beam2.classList.remove('beam-active');
+
+            let h_cm = parseFloat(document.getElementById('h-select').value);
+            let h_m = h_cm / 100;
+            let y2_m = Y1_METER + h_m;
+
+            let exact_t1 = calculateTheoreticalTime(Y1_METER);
+            let exact_t2 = calculateTheoreticalTime(y2_m);
+
+            let noise1 = (Math.random() - 0.5) * 0.004;
+            let noise2 = (Math.random() - 0.5) * 0.004;
+            let recorded_t1 = exact_t1 + noise1;
+            let recorded_t2 = exact_t2 + noise2;
+
+            let startTime = performance.now();
+            
+            // Get selected factor from slider
+            let slowMoFactor = parseFloat(speedSlider.value); 
+            
+            let pg1Triggered = false;
+            let pg2Triggered = false;
+
+            function animateFrame(time) {
+                let visualElapsed = (time - startTime) / 1000;
+                
+                // 1 saat visual * kelajuan = masa fizik sebenar
+                let physicsTime = visualElapsed * slowMoFactor; 
+                
+                let current_y_m = 0.5 * GRAVITY * physicsTime * physicsTime;
+                
+                let newTop = OFFSET_Y + (current_y_m * PIXEL_PER_METER) - BALL_RADIUS;
+                ball.style.top = newTop + 'px';
+
+                if (physicsTime >= recorded_t1 && !pg1Triggered) {
+                    pg1Triggered = true;
+                    t1Disp.innerText = recorded_t1.toFixed(3) + " s";
+                    beam1.classList.add('beam-active');
+                    setTimeout(() => beam1.classList.remove('beam-active'), 200);
+                }
+
+                if (physicsTime >= recorded_t2 && !pg2Triggered) {
+                    pg2Triggered = true;
+                    t2Disp.innerText = recorded_t2.toFixed(3) + " s";
+                    beam2.classList.add('beam-active');
+                    setTimeout(() => beam2.classList.remove('beam-active'), 200);
+                    
+                    ball.style.top = (OFFSET_Y + (y2_m + 0.1) * PIXEL_PER_METER) + 'px'; 
+                    logToTable(h_cm, recorded_t1, recorded_t2);
+                    
+                    // Re-enable controls
+                    btnDrop.disabled = false;
+                    document.getElementById('h-select').disabled = false;
+                    speedSlider.disabled = false;
+                    return; 
+                }
+
+                if (isDropping) {
+                    requestAnimationFrame(animateFrame);
+                }
+            }
+
+            requestAnimationFrame(animateFrame);
+        }
+
+        function resetApparatus() {
+            isDropping = false;
+            ball.style.top = '40px'; 
+            t1Disp.innerText = "0.000 s";
+            t2Disp.innerText = "0.000 s";
+            beam1.classList.remove('beam-active');
+            beam2.classList.remove('beam-active');
+            
+            // Re-enable controls
+            btnDrop.disabled = false;
+            document.getElementById('h-select').disabled = false;
+            speedSlider.disabled = false;
+        }
+
+        function logToTable(h_cm, t1, t2) {
+            let h_m = h_cm / 100;
+            let calc_g = (2 * h_m) / ((t2 * t2) - (t1 * t1));
+
+            const tbody = document.getElementById('data-table-body');
+            const row = document.createElement('tr');
+            row.className = "bg-white border-b hover:bg-gray-50";
+            
+            row.innerHTML = `
+                <td class="px-6 py-3 text-center border-r">${h_cm.toFixed(1)}</td>
+                <td class="px-6 py-3 text-center border-r">${t1.toFixed(3)}</td>
+                <td class="px-6 py-3 text-center border-r">${t2.toFixed(3)}</td>
+                <td class="px-6 py-3 text-center font-bold text-blue-600 bg-blue-50/50">${calc_g.toFixed(2)}</td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function clearTable() {
+            document.getElementById('data-table-body').innerHTML = '';
+        }
+
+        function downloadExcel() {
+            const tbody = document.getElementById('data-table-body');
+            if (tbody.children.length === 0) {
+                alert("Sila jalankan eksperimen sekurang-kurangnya sekali sebelum memuat turun jadual.");
+                return;
+            }
+
+            let table = document.getElementById("keputusan-table");
+            let workbook = XLSX.utils.table_to_book(table, {sheet: "Keputusan Eksperimen"});
+            XLSX.writeFile(workbook, "Keputusan_Eksperimen_2.1.xlsx");
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimen 1.1: Pendulum Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 300px;
+        }
+        canvas {
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: block;
+            margin: 0 auto 15px auto;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        input[type="range"] {
+            width: 80%;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #releaseBtn {
+            background-color: #28a745;
+        }
+        #releaseBtn:hover {
+            background-color: #218838;
+        }
+        #stopTimerBtn {
+            background-color: #dc3545;
+        }
+        #stopTimerBtn:hover {
+            background-color: #c82333;
+        }
+        #exportExcelBtn {
+            background-color: #198754;
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        #exportExcelBtn:hover {
+            background-color: #157347;
+        }
+        .display-box {
+            font-size: 28px;
+            font-weight: bold;
+            font-family: monospace;
+            text-align: center;
+            margin: 10px 0;
+            color: #333;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .counter-label {
+            font-size: 16px;
+            color: #555;
+            text-transform: uppercase;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #d1e7dd;
+        }
+        input[type="number"] {
+            width: 60px;
+            padding: 4px;
+            text-align: center;
+        }
+        .instructions {
+            background: #fff3cd;
+            padding: 10px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="panel">
+        <h2 style="text-align: center;">Experiment 1.1: Pendulum Simulator</h2>
+        <canvas id="pendulumCanvas" width="300" height="350"></canvas>
+        
+        <div class="controls">
+            <label><strong>Panjang bandul, l: <span id="lengthDisplay">20</span> cm</strong></label><br>
+            <input type="range" id="lengthSlider" min="20" max="70" step="10" value="20">
+        </div>
+        
+        <div class="controls">
+            <label><strong>Sudut pelepasan, θ: <span id="angleDisplay">10</span>°</strong></label><br>
+            <input type="range" id="angleSlider" min="10" max="70" step="1" value="10">
+        </div>
+
+        <div class="controls">
+            <button id="releaseBtn">Release Pendulum (Auto-Start Timer)</button>
+            <button id="stopSimBtn">Reset Pendulum</button>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Stopwatch & Data</h2>
+        <div class="instructions">
+            <strong>Prosedur:</strong> Tetapkan panjang dan sudut. Tekan <em>Release</em>. Perhatikan kiraan ayunan dan tekan <em>Stop Timer</em> tepat pada <strong>20 ayunan lengkap</strong>. Masukkan data ke dalam jadual.
+        </div>
+        
+        <div class="display-box">
+            <div class="counter-label">Masa (Jam Randik)</div>
+            <span id="timeDisplay">0.00 s</span>
+        </div>
+
+        <div class="display-box" style="background: #cfe2ff;">
+            <div class="counter-label">Jumlah Ayunan Lengkap</div>
+            <span id="swingCountDisplay">0</span>
+        </div>
+
+        <div class="controls">
+            <button id="stopTimerBtn">Stop Timer</button>
+            <button id="resetTimerBtn">Reset Timer</button>
+        </div>
+
+        <table id="dataTable">
+            <tr>
+                <th rowspan="2">l / cm</th>
+                <th colspan="3">Masa untuk 20 ayunan, t / s</th>
+                <th rowspan="2">T / s</th>
+                <th rowspan="2">T² / s²</th>
+            </tr>
+            <tr>
+                <th>t₁</th>
+                <th>t₂</th>
+                <th>t_purata</th>
+            </tr>
+            </table>
+
+        <button id="exportExcelBtn">⬇ Download Data as Excel (.xlsx)</button>
+    </div>
+</div>
+
+<script>
+    // --- Physics & Canvas Logic ---
+    const canvas = document.getElementById('pendulumCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const G = 9.81; // Earth's gravity in m/s^2
+    const dampingFactor = 0.012; // Controls how fast the pendulum slows down
+    
+    let lengthCm = 20;
+    let selectedAngleDeg = 10;
+    let maxAngleRad = selectedAngleDeg * (Math.PI / 180);
+    
+    let isSwinging = false;
+    let angle = maxAngleRad;
+    let simTime = 0;
+    let lastTime = 0;
+    let animationReq;
+
+    const lengthSlider = document.getElementById('lengthSlider');
+    const lengthDisplay = document.getElementById('lengthDisplay');
+    const angleSlider = document.getElementById('angleSlider');
+    const angleDisplay = document.getElementById('angleDisplay');
+    const releaseBtn = document.getElementById('releaseBtn');
+    const stopSimBtn = document.getElementById('stopSimBtn');
+    const swingCountDisplay = document.getElementById('swingCountDisplay');
+
+    lengthSlider.addEventListener('input', (e) => {
+        lengthCm = parseInt(e.target.value);
+        lengthDisplay.innerText = lengthCm;
+        resetPendulum();
+    });
+
+    angleSlider.addEventListener('input', (e) => {
+        selectedAngleDeg = parseInt(e.target.value);
+        angleDisplay.innerText = selectedAngleDeg;
+        resetPendulum();
+    });
+
+    releaseBtn.addEventListener('click', () => {
+        if (!isSwinging) {
+            isSwinging = true;
+            lastTime = performance.now();
+            
+            // Auto-start timer on release
+            if (!timerRunning) {
+                timerStartTime = performance.now() - elapsedTime;
+                timerInterval = setInterval(updateTimer, 10);
+                timerRunning = true;
+            }
+            
+            animate(lastTime);
+        }
+    });
+
+    stopSimBtn.addEventListener('click', resetPendulum);
+
+    function resetPendulum() {
+        isSwinging = false;
+        cancelAnimationFrame(animationReq);
+        maxAngleRad = selectedAngleDeg * (Math.PI / 180);
+        angle = maxAngleRad; 
+        simTime = 0;
+        swingCountDisplay.innerText = "0";
+        drawPendulum();
+    }
+
+    function drawPendulum() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const pivotX = canvas.width / 2;
+        const pivotY = 30;
+        const visualLength = lengthCm * 4; // visual scaling
+
+        const bobX = pivotX + visualLength * Math.sin(angle);
+        const bobY = pivotY + visualLength * Math.cos(angle);
+
+        // Draw Support
+        ctx.fillStyle = '#666';
+        ctx.fillRect(pivotX - 25, pivotY - 10, 50, 10);
+
+        // Draw String
+        ctx.beginPath();
+        ctx.moveTo(pivotX, pivotY);
+        ctx.lineTo(bobX, bobY);
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw Bob
+        ctx.beginPath();
+        ctx.arc(bobX, bobY, 14, 0, 2 * Math.PI);
+        
+        const gradient = ctx.createRadialGradient(bobX-4, bobY-4, 2, bobX, bobY, 14);
+        gradient.addColorStop(0, '#ccc');
+        gradient.addColorStop(1, '#555');
+        
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    function animate(currentTime) {
+        if (!isSwinging) return;
+
+        const deltaTime = (currentTime - lastTime) / 1000; // in seconds
+        lastTime = currentTime;
+        simTime += deltaTime;
+
+        const lengthMeters = lengthCm / 100;
+        const angularFrequency = Math.sqrt(G / lengthMeters);
+        
+        // Calculate damped amplitude
+        const currentAmplitude = maxAngleRad * Math.exp(-dampingFactor * simTime);
+        const phase = angularFrequency * simTime;
+        
+        angle = currentAmplitude * Math.cos(phase);
+
+        const swingsCompleted = Math.floor(phase / (2 * Math.PI));
+        swingCountDisplay.innerText = swingsCompleted;
+
+        drawPendulum();
+        animationReq = requestAnimationFrame(animate);
+    }
+
+    drawPendulum();
+
+    // --- Stopwatch Logic ---
+    let timerRunning = false;
+    let timerStartTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+
+    const timeDisplay = document.getElementById('timeDisplay');
+    const stopTimerBtn = document.getElementById('stopTimerBtn');
+    const resetTimerBtn = document.getElementById('resetTimerBtn');
+
+    stopTimerBtn.addEventListener('click', () => {
+        if (timerRunning) {
+            clearInterval(timerInterval);
+            timerRunning = false;
+        }
+    });
+
+    resetTimerBtn.addEventListener('click', () => {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        elapsedTime = 0;
+        timeDisplay.innerText = "0.00 s";
+    });
+
+    function updateTimer() {
+        elapsedTime = performance.now() - timerStartTime;
+        timeDisplay.innerText = (elapsedTime / 1000).toFixed(2) + " s";
+    }
+
+    // --- Table Generation Logic ---
+    const table = document.getElementById('dataTable');
+    const lengths = [20, 30, 40, 50, 60, 70];
+
+    lengths.forEach(l => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${l.toFixed(1)}</td>
+            <td><input type="number" step="0.01" class="t1"></td>
+            <td><input type="number" step="0.01" class="t2"></td>
+            <td class="t_avg">-</td>
+            <td class="T_val">-</td>
+            <td class="T2_val">-</td>
+        `;
+        table.appendChild(row);
+
+        const t1Input = row.querySelector('.t1');
+        const t2Input = row.querySelector('.t2');
+        const tAvgDisplay = row.querySelector('.t_avg');
+        const TDisplay = row.querySelector('.T_val');
+        const T2Display = row.querySelector('.T2_val');
+
+        function calculateRow() {
+            const t1 = parseFloat(t1Input.value);
+            const t2 = parseFloat(t2Input.value);
+            if (!isNaN(t1) && !isNaN(t2)) {
+                const tAvg = (t1 + t2) / 2;
+                const T = tAvg / 20; 
+                const T2 = Math.pow(T, 2);
+
+                tAvgDisplay.innerText = tAvg.toFixed(2);
+                TDisplay.innerText = T.toFixed(3);
+                T2Display.innerText = T2.toFixed(3);
+            } else {
+                tAvgDisplay.innerText = "-";
+                TDisplay.innerText = "-";
+                T2Display.innerText = "-";
+            }
+        }
+
+        t1Input.addEventListener('input', calculateRow);
+        t2Input.addEventListener('input', calculateRow);
+    });
+
+    // --- Excel Export Logic ---
+    document.getElementById('exportExcelBtn').addEventListener('click', () => {
+        // Prepare data array
+        let excelData = [];
+        
+        // Add Headers
+        excelData.push(["Panjang bandul (l / cm)", "Masa t1 (s)", "Masa t2 (s)", "Masa purata (t / s)", "Tempoh (T / s)", "T^2 (s^2)"]);
+        
+        // Loop through table rows (skipping the 2 header rows)
+        for (let i = 2; i < table.rows.length; i++) {
+            let row = table.rows[i];
+            
+            // Extract values, making sure to get the value from the input fields
+            let l = row.cells[0].innerText;
+            let t1 = row.querySelector('.t1').value || "";
+            let t2 = row.querySelector('.t2').value || "";
+            let tAvg = row.querySelector('.t_avg').innerText;
+            let T = row.querySelector('.T_val').innerText;
+            let T2 = row.querySelector('.T2_val').innerText;
+            
+            // Push to array
+            excelData.push([l, t1, t2, tAvg, T, T2]);
+        }
+
+        // Convert data array to worksheet
+        let worksheet = XLSX.utils.aoa_to_sheet(excelData);
+        
+        // Adjust column widths for better readability in Excel
+        worksheet['!cols'] = [
+            {wch: 22}, {wch: 12}, {wch: 12}, {wch: 20}, {wch: 15}, {wch: 15}
+        ];
+
+        // Create a new workbook and add the worksheet
+        let workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Data Eksperimen 1.1");
+        
+        // Trigger download
+        XLSX.writeFile(workbook, "Data_Eksperimen_Pendulum.xlsx");
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newton's Second Law | Velocity Valley</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 80%; max-width: 800px; margin-top: 2rem; }
+        .controls { display: flex; justify-content: space-between; margin-bottom: 20px; background: #ecf0f1; padding: 15px; border-radius: 8px;}
+        canvas { background: #dce4e6; border-radius: 5px; width: 100%; border: 2px solid #bdc3c7; }
+        .readouts { display: flex; justify-content: space-around; margin-top: 15px; font-weight: bold; font-size: 1.2rem;}
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold;}
+        button:hover { background: #2980b9; }
+        .back-link { margin-top: 20px; text-decoration: none; color: #3498db; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Explore: Newton's Second Law (F = ma)</h2>
+        <p>Adjust the force and mass to see how they affect the block's movement.</p>
+
+        <div class="controls">
+            <div>
+                <label>Force (F): <span id="forceVal">10</span> N</label><br>
+                <input type="range" id="forceSlider" min="-50" max="50" value="10">
+            </div>
+            <div>
+                <label>Mass (m): <span id="massVal">2</span> kg</label><br>
+                <input type="range" id="massSlider" min="1" max="20" value="2">
+            </div>
+            <button onclick="resetSim()">Reset Position</button>
+        </div>
+
+        <canvas id="simCanvas" width="800" height="200"></canvas>
+
+        <div class="readouts">
+            <span>Acceleration (a): <span id="accelReadout" style="color:#e74c3c;">5.00</span> m/s²</span>
+            <span>Velocity (v): <span id="velReadout" style="color:#27ae60;">0.00</span> m/s</span>
+        </div>
+        
+        <a href="/" class="back-link">← Back to Main Menu</a>
+    </div>
+
+    <script>
+        // Physics Engine Setup
+        const canvas = document.getElementById("simCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        let mass = 2;
+        let force = 10;
+        let acceleration = 0;
+        let velocity = 0;
+        let position = canvas.width / 2; // Start in the middle
+        let lastTime = 0;
+
+        // UI Elements
+        const forceSlider = document.getElementById("forceSlider");
+        const massSlider = document.getElementById("massSlider");
+        const forceVal = document.getElementById("forceVal");
+        const massVal = document.getElementById("massVal");
+        const accelReadout = document.getElementById("accelReadout");
+        const velReadout = document.getElementById("velReadout");
+
+        // Update values when sliders change
+        forceSlider.oninput = function() { force = Number(this.value); forceVal.innerText = force; updatePhysics(); }
+        massSlider.oninput = function() { mass = Number(this.value); massVal.innerText = mass; updatePhysics(); }
+
+        function updatePhysics() {
+            acceleration = force / mass;
+            accelReadout.innerText = acceleration.toFixed(2);
+        }
+
+        function resetSim() {
+            position = canvas.width / 2;
+            velocity = 0;
+            updatePhysics();
+        }
+
+        // The Animation Loop
+        function draw(timestamp) {
+            let deltaTime = (timestamp - lastTime) / 1000; // Convert to seconds
+            if (!lastTime) deltaTime = 0;
+            lastTime = timestamp;
+
+            // Physics Calculations (v = u + at, s = ut + 1/2at^2)
+            velocity += acceleration * deltaTime;
+            position += velocity * deltaTime * 10; // *10 just scales it so it moves visibly on screen
+
+            // Keep block on screen (wrap around)
+            if (position > canvas.width + 25) position = -25;
+            if (position < -25) position = canvas.width + 25;
+
+            velReadout.innerText = velocity.toFixed(2);
+
+            // Draw Background
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw Ground line
+            ctx.beginPath();
+            ctx.moveTo(0, 150);
+            ctx.lineTo(800, 150);
+            ctx.stroke();
+
+            // Draw Block
+            ctx.fillStyle = "#34495e";
+            // Size of block scales slightly with mass
+            let blockSize = 40 + (mass * 2); 
+            ctx.fillRect(position - (blockSize/2), 150 - blockSize, blockSize, blockSize);
+
+            requestAnimationFrame(draw);
+        }
+
+        updatePhysics();
+        requestAnimationFrame(draw);
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity Valley | Main Menu</title>
+    <style>
+        /* --- CORE STYLES --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            
+            /* Background Image Updates */
+            background-image: url('/static/images/bgimageindex.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Keeps the background still while scrolling */
+            background-color: #f4f7f6; /* Fallback color just in case image doesn't load */
+        }
+
+        /* --- HEADER & LOGO --- */
+        header {
+            background-color: rgba(44, 62, 80, 0.95); /* Made slightly transparent to hint at the background */
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        /* ADD THIS ENTIRE NEW BLOCK */
+        .top-right-logo {
+            position: absolute;
+            top: 10%;                 /* Pushes it halfway down the header */
+            transform: translateY(-50%); /* Pulls it up perfectly to the center */
+            right: 40px;              /* Distance from the right edge */
+            height: 120px;            /* Almost the height of your header content */
+            width: 120px;             /* Keep width and height identical for a circle */
+            border-radius: 50%;       /* This is the magic line that makes it a circle */
+            object-fit: cover;        /* Ensures the image crops nicely instead of stretching */
+            border: 3px solid rgba(255, 255, 255, 0.8); /* Optional: A nice white border */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);      /* Optional: A subtle shadow */
+        }
+
+        /* Flexbox wrapper to put logo and title side-by-side */
+        .title-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px; /* Space between logo and text */
+        }
+
+        .logo {
+            height: 50px; /* Adjust this value to make your logo bigger or smaller */
+            width: auto;
+        }
+
+        h1 { margin: 0; font-size: 2.5rem; }
+        p.subtitle { margin-top: 10px; font-size: 1.2rem; opacity: 0.8; }
+
+        /* --- LAYOUT & SECTIONS --- */
+        /* New container to hold a section title and its grid */
+        .section-container {
+            width: 90%;
+            max-width: 1000px;
+            margin-bottom: 3rem;
+        }
+
+        /* Styling for the section headers */
+        .section-title {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white for readability */
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+        }
+
+        /* --- SIMULATION CARDS --- */
+        .sim-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-top: 5px solid #3498db;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sim-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-top-color: #e74c3c;
+        }
+
+        .sim-card h2 { margin-top: 0; color: #2c3e50; font-size: 1.3rem; }
+        .sim-card p { color: #666; line-height: 1.5; font-size: 0.95rem; }
+        
+        /* --- BADGES --- */
+        .status-badge {
+            display: inline-block;
+            background: #2ecc71;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+        }
+        
+        .status-building { background: #f39c12; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="/static/images/logo.png" alt="Velocity Valley Circle Logo" class="top-right-logo">
+        <div class="title-wrapper">
+            <h1>Velocity Valley</h1>
+        </div>
+        <p class="subtitle">Interactive Physics Simulations & Games</p>
+    </header>
+
+    <!-- SECTION A: Mini Simulation -->
+    <div class="section-container">
+        <h2 class="section-title">Mini Simulation</h2>
+        <div class="menu-grid">
+            <a href="/newton" class="sim-card">
+                <h2>Mini Newton's Laws simulation</h2>
+                <p>Explore inertia, acceleration, and action-reaction through interactive mass and force sliders.</p>
+                <span class="status-badge">Ready to Use</span>
+            </a>
+
+            <a href="/electromagnetism" class="sim-card">
+                <h2>Electromagnetism (F=BIL)</h2>
+                <p>Visualize the magnetic force on a current-carrying wire. Adjust current, magnetic field, and length.</p>
+                <span class="status-badge status-building">Coming Soon</span>
+            </a>
+
+            <a href="/kinematics" class="sim-card">
+                <h2>Kinematics Canvas</h2>
+                <p>Launch projectiles and track their velocity, trajectory, and time in the air in real-time.</p>
+                <span class="status-badge status-building">Coming Soon</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECTION B: Tingkatan 4 -->
+    <div class="section-container">
+        <h2 class="section-title">Tingkatan 4</h2>
+        <div class="menu-grid">
+            <a href="/pendulum" class="sim-card">
+                <h2>Eksperimen 1.1</h2>
+                <p>Investigate the motion of a simple pendulum and how its period depends on length and gravity.</p>
+                <span class="status-badge">Ready to Use</span>
+            </a>
+            
+            <a href="/tingkatan4experiment2" class="sim-card">
+                <h2>Eksperimen 2.1</h2>
+                <p>To determine the value of Earth's gravitational acceleration.</p>
+                <span class="status-badge">Ready to Use</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECTION C: Tingkatan 5 -->
+    <div class="section-container">
+        <h2 class="section-title">Tingkatan 5</h2>
+        <div class="menu-grid">
+            <!-- Placeholder for future Tingkatan 5 content -->
+            <a href="#" class="sim-card" style="border-top-color: #95a5a6;">
+                <h2>To be added...</h2>
+                <p>More engaging physics experiments are currently in development.</p>
+                <span class="status-badge status-building">Coming Soon</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECTION D: Mini Game and Admin -->
+    <div class="section-container">
+        <h2 class="section-title">Mini Game and Admin</h2>
+        <div class="menu-grid">
+            <a href="/boardgame" class="sim-card" style="border-top-color: #9b59b6;">
+                <h2>Velocity Valley Board Game</h2>
+                <p>The interactive classroom game! Land on tiles, answer physics questions, and win.</p>
+                <span class="status-badge">Ready to Play</span>
+            </a>
+
+            <a href="/teacher-admin" class="sim-card" style="border-top-color: #9b59b6;">
+                <h2>Teacher Admin Panel</h2>
+                <p>Manage velocity valley board game, track student progress, and customize learning experiences.</p>
+                <span class="status-badge">Ready to Use</span>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
