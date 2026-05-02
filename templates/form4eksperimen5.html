@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Eksperimen 4.3: Haba Pendam Tentu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Control Panel */
+        .controls {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Apparatus CSS Drawing */
+        .lab-bench {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            min-height: 250px;
+            margin: 30px 0;
+            border-bottom: 4px solid #555;
+            padding-bottom: 10px;
+        }
+        .setup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .stand {
+            position: absolute;
+            width: 4px;
+            height: 200px;
+            background: #7f8c8d;
+            left: -30px;
+            bottom: 20px;
+        }
+        .clamp {
+            position: absolute;
+            width: 30px;
+            height: 4px;
+            background: #7f8c8d;
+            left: -30px;
+            top: 50px;
+        }
+        .funnel {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #333;
+            border-top: none;
+            clip-path: polygon(0% 0%, 100% 0%, 60% 100%, 40% 100%);
+            background: #e0f7fa;
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .heater-stick {
+            width: 10px;
+            height: 60px;
+            background: #e74c3c;
+            position: absolute;
+            top: -20px;
+            left: 35px;
+            border-radius: 5px;
+        }
+        .beaker {
+            width: 60px;
+            height: 70px;
+            border: 2px solid #333;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background: rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2px;
+        }
+        .water {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #3498db;
+            transition: height 0.2s;
+        }
+        .balance {
+            width: 120px;
+            height: 25px;
+            background: #bdc3c7;
+            border: 2px solid #95a5a6;
+            border-radius: 5px;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            line-height: 25px;
+            color: #2c3e50;
+        }
+        .setup-label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Simulasi Eksperimen 4.3</h1>
+    <div class="menu">
+        <button onclick="showPart('A')">Bahagian A: Pelakuran Ais</button>
+        <button onclick="showPart('B')">Bahagian B: Pengewapan Air</button>
+    </div>
+
+    <div id="partA" class="hidden">
+        <h2>Bahagian A: Menentukan Haba Pendam Tentu Pelakuran Ais</h2>
+        
+        <div class="controls">
+            <div>
+                <button id="btnStartA" onclick="startSim('A')">Mula Pemanas & Jam</button>
+                <button id="btnStopA" onclick="stopSim('A')" disabled>Henti</button>
+                <button onclick="resetSim('A')">Reset</button>
+            </div>
+            <div class="speed-control">
+                <label for="speedA">Kelajuan Masa:</label>
+                <input type="range" id="speedA" min="1" max="5" value="1" oninput="updateSpeed('A')">
+                <span id="speedDisplayA">1x</span>
+            </div>
+            <div>
+                <strong>Masa: <span id="timeDisplayA">0</span> s</strong>
+            </div>
+        </div>
+
+        <div class="lab-bench">
+            <div class="setup">
+                <div class="stand"></div>
+                <div class="clamp"></div>
+                <div class="funnel">Ais Hancur</div>
+                <div class="beaker"><div class="water" id="waterControlA" style="height: 0%;"></div></div>
+                <div class="balance" id="balanceControlA">0.00 g</div>
+                <div class="setup-label">Set Kawalan (m₂)</div>
+            </div>
+            
+            <div class="setup">
+                <div class="stand"></div>
+                <div class="clamp"></div>
+                <div class="funnel">Ais Hancur<div class="heater-stick"></div></div>
+                <div class="beaker"><div class="water" id="waterExpA" style="height: 0%;"></div></div>
+                <div class="balance" id="balanceExpA">0.00 g</div>
+                <div class="setup-label">Set Eksperimen (m₁)</div>
+            </div>
+        </div>
+
+        <button onclick="recordData('A')" style="background-color: #28a745;">Catat Bacaan ke Jadual</button>
+        <button onclick="downloadCSV('A')" style="background-color: #17a2b8;">Muat Turun Excel (CSV)</button>
+
+        <table id="tableA">
+            <thead>
+                <tr>
+                    <th>Masa, t (s)</th>
+                    <th>Jisim Set Eksperimen, m₁ (g)</th>
+                    <th>Jisim Set Kawalan, m₂ (g)</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <div id="partB" class="hidden">
+        <h2>Bahagian B: Menentukan Haba Pendam Tentu Pengewapan Air</h2>
+        
+        <div class="controls">
+            <div>
+                <button id="btnStartB" onclick="startSim('B')">Mula Pemanas & Jam</button>
+                <button id="btnStopB" onclick="stopSim('B')" disabled>Henti</button>
+                <button onclick="resetSim('B')">Reset</button>
+            </div>
+            <div class="speed-control">
+                <label for="speedB">Kelajuan Masa:</label>
+                <input type="range" id="speedB" min="1" max="5" value="1" oninput="updateSpeed('B')">
+                <span id="speedDisplayB">1x</span>
+            </div>
+            <div>
+                <strong>Masa: <span id="timeDisplayB">0</span> s</strong>
+            </div>
+        </div>
+
+        <div class="lab-bench">
+            <div class="setup">
+                <div class="heater-stick" style="top: 10px; height: 80px; z-index: 2;"></div>
+                <div class="beaker" style="width: 100px; height: 120px;">
+                    <div class="water" id="waterExpB" style="height: 90%;"></div>
+                </div>
+                <div class="balance" id="balanceExpB">450.00 g</div>
+                <div class="setup-label">Bikar + Air (m)</div>
+            </div>
+        </div>
+
+        <button onclick="recordData('B')" style="background-color: #28a745;">Catat Bacaan ke Jadual</button>
+        <button onclick="downloadCSV('B')" style="background-color: #17a2b8;">Muat Turun Excel (CSV)</button>
+
+        <table id="tableB">
+            <thead>
+                <tr>
+                    <th>Masa, t (s)</th>
+                    <th>Bacaan Neraca Elektronik, m (g)</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // Variables for Simulation State
+    let timerInterval = null;
+    let timeA = 0, timeB = 0;
+    let speedA = 1, speedB = 1;
+    let isRunningA = false, isRunningB = false;
+
+    // Physics parameters for realistic simulation
+    // Part A: Room temp melting rate vs Heater melting rate
+    let massControlA = 0; // g
+    let massExpA = 0;     // g
+    const rateControlMelting = 0.05; // g/s (room temperature)
+    const rateHeaterMelting = 0.075; // g/s (heater power contribution)
+
+    // Part B: Boiling water
+    let massExpB = 450; // initial mass of beaker + water (g)
+    const rateBoiling = 0.22; // g/s (decrease in mass due to 500W heater)
+
+    function showPart(part) {
+        document.getElementById('partA').classList.add('hidden');
+        document.getElementById('partB').classList.add('hidden');
+        document.getElementById('part' + part).classList.remove('hidden');
+    }
+
+    function updateSpeed(part) {
+        if (part === 'A') {
+            speedA = document.getElementById('speedA').value;
+            document.getElementById('speedDisplayA').innerText = speedA + 'x';
+            if(isRunningA) { stopSim('A'); startSim('A'); } // Restart with new speed
+        } else {
+            speedB = document.getElementById('speedB').value;
+            document.getElementById('speedDisplayB').innerText = speedB + 'x';
+            if(isRunningB) { stopSim('B'); startSim('B'); }
+        }
+    }
+
+    function startSim(part) {
+        if (part === 'A') {
+            isRunningA = true;
+            document.getElementById('btnStartA').disabled = true;
+            document.getElementById('btnStopA').disabled = false;
+            // The interval handles the real-time equivalent 
+            // 1000ms divided by speed multiplier makes it run faster visually
+            timerInterval = setInterval(() => tick('A'), 1000 / speedA);
+        } else {
+            isRunningB = true;
+            document.getElementById('btnStartB').disabled = true;
+            document.getElementById('btnStopB').disabled = false;
+            timerInterval = setInterval(() => tick('B'), 1000 / speedB);
+        }
+    }
+
+    function stopSim(part) {
+        clearInterval(timerInterval);
+        if (part === 'A') {
+            isRunningA = false;
+            document.getElementById('btnStartA').disabled = false;
+            document.getElementById('btnStopA').disabled = true;
+        } else {
+            isRunningB = false;
+            document.getElementById('btnStartB').disabled = false;
+            document.getElementById('btnStopB').disabled = true;
+        }
+    }
+
+    function resetSim(part) {
+        stopSim(part);
+        if (part === 'A') {
+            timeA = 0;
+            massControlA = 0;
+            massExpA = 0;
+            document.getElementById('timeDisplayA').innerText = timeA;
+            updateVisualsA();
+            document.querySelector('#tableA tbody').innerHTML = '';
+        } else {
+            timeB = 0;
+            massExpB = 450;
+            document.getElementById('timeDisplayB').innerText = timeB;
+            updateVisualsB();
+            document.querySelector('#tableB tbody').innerHTML = '';
+        }
+    }
+
+    function tick(part) {
+        if (part === 'A') {
+            timeA++;
+            massControlA += rateControlMelting;
+            massExpA += (rateControlMelting + rateHeaterMelting);
+            document.getElementById('timeDisplayA').innerText = timeA;
+            updateVisualsA();
+        } else {
+            timeB++;
+            massExpB -= rateBoiling;
+            if (massExpB < 150) massExpB = 150; // Prevent beaker from going empty/negative
+            document.getElementById('timeDisplayB').innerText = timeB;
+            updateVisualsB();
+        }
+    }
+
+    function updateVisualsA() {
+        document.getElementById('balanceControlA').innerText = massControlA.toFixed(2) + " g";
+        document.getElementById('balanceExpA').innerText = massExpA.toFixed(2) + " g";
+        
+        // Max capacity for visuals is roughly 100g = 100%
+        let heightCtrl = Math.min((massControlA / 100) * 100, 100);
+        let heightExp = Math.min((massExpA / 100) * 100, 100);
+        
+        document.getElementById('waterControlA').style.height = heightCtrl + "%";
+        document.getElementById('waterExpA').style.height = heightExp + "%";
+    }
+
+    function updateVisualsB() {
+        document.getElementById('balanceExpB').innerText = massExpB.toFixed(2) + " g";
+        
+        // Start mass 450. Base beaker mass ~150. Water max 300.
+        let waterMass = massExpB - 150;
+        let height = Math.min((waterMass / 300) * 90, 90); 
+        document.getElementById('waterExpB').style.height = height + "%";
+    }
+
+    function recordData(part) {
+        let tbody = document.querySelector(`#table${part} tbody`);
+        let row = document.createElement('tr');
+        
+        if (part === 'A') {
+            row.innerHTML = `<td>${timeA}</td><td>${massExpA.toFixed(2)}</td><td>${massControlA.toFixed(2)}</td>`;
+        } else {
+            row.innerHTML = `<td>${timeB}</td><td>${massExpB.toFixed(2)}</td>`;
+        }
+        tbody.appendChild(row);
+    }
+
+    function downloadCSV(part) {
+        let table = document.getElementById(`table${part}`);
+        let rows = table.querySelectorAll('tr');
+        let csvContent = "";
+
+        rows.forEach(row => {
+            let rowData = [];
+            let cols = row.querySelectorAll('th, td');
+            cols.forEach(col => {
+                // Fix: Wrap the text in double quotes so commas inside the text don't split the columns
+                let text = col.innerText.replace(/"/g, '""'); // Escape any existing quotes
+                rowData.push(`"${text}"`);
+            });
+            csvContent += rowData.join(",") + "\n";
+        });
+
+        // Create a downloadable link
+        let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Data_Eksperimen_4.3_Bahagian_${part}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
+<script>
+    // PASTE YOUR EXACT FIREBASE CONFIG HERE:
+    const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+    
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    // THE BOUNCER: Check if the user is allowed to be here
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // They have a VIP pass! Let them see the page.
+            console.log("Teacher logged in: " + user.email);
+            
+            // Optional: You can display their email on the page!
+            // document.getElementById("teacher-email").innerText = user.email;
+        } else {
+            // NO VIP PASS. Kick them back to the login page immediately.
+            window.location.replace('/login');
+        }
+    });
+</script>
+</body>
+</html>

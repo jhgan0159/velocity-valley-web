@@ -28,6 +28,14 @@ def form4experiment3():
 def form4experiment4():
     return render_template('form4eksperimen4.html')
 
+@app.route('/form4experiment5')
+def form4experiment5():
+    return render_template('form4eksperimen5.html')
+
+@app.route('/form4experiment6')
+def form4experiment6():
+    return render_template('form4eksperimen6.html')
+
 # The address for your Board Game
 @app.route('/boardgame')
 def play_game():

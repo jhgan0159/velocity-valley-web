@@ -12,12 +12,19 @@
     <style>
         /* A simple, clean design for your login card */
         body { font-family: Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding-top: 100px; }
-        .login-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        .login-card { background: rgb(255, 251, 251); padding: 40px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center; }
         input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
         button { width: 45%; padding: 10px; margin: 5px 2%; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; }
         .btn-login { background-color: #4CAF50; }
         .btn-signup { background-color: #008CBA; }
         .error-text { color: red; font-size: 14px; margin-top: 10px; }
+        body {
+            background-image: url('/static/images/loginpage.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Keeps the background still while scrolling */
+            background-color: #f4f7f6; /* Fallback color just in case image doesn't load */
+        }
     </style>
 </head>
 <body>

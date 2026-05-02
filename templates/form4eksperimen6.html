@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimen 4.4: Hukum Boyle</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        
+        /* Gaya Radas */
+        .apparatus-box { display: flex; justify-content: space-around; align-items: center; background: #eef2f3; padding: 30px; border-radius: 8px; margin-bottom: 20px; position: relative; }
+        .label { font-size: 12px; font-weight: bold; fill: #555; }
+
+        /* Kawalan */
+        .controls { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        
+        /* Jadual */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #3498db; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .btn { background-color: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .btn:hover { background-color: #219150; }
+        .btn-reset { background-color: #e74c3c; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Eksperimen 4.4: Hubungan Isi Padu dan Tekanan Gas</h2>
+    <p><em>Arahan: Gerakkan peluncur untuk mengubah isi padu (V) dan catat tekanan (P) yang terhasil.</em></p>
+
+    <div class="apparatus-box">
+        <svg width="500" height="200" viewBox="0 0 500 200">
+            <circle cx="100" cy="100" r="45" stroke="#333" stroke-width="3" fill="#fff" />
+            <text x="65" y="160" class="label">Tolok Tekanan</text>
+            <path id="needle" d="M 100 100 L 100 65" stroke="red" stroke-width="3" />
+            <circle cx="100" cy="100" r="4" fill="#000" />
+            
+            <path d="M 145 100 Q 200 130 250 100" stroke="#333" stroke-width="8" fill="none" />
+            <text x="170" y="145" class="label">Tiub Getah</text>
+
+            <rect x="250" y="70" width="150" height="60" stroke="#333" stroke-width="2" fill="rgba(52, 152, 219, 0.1)" />
+            <rect id="plunger" x="300" y="75" width="140" height="50" fill="#bdc3c7" />
+            <text x="300" y="155" class="label">Picagari 100ml</text>
+            
+            <line x1="280" y1="70" x2="280" y2="80" stroke="#333" />
+            <line x1="310" y1="70" x2="310" y2="80" stroke="#333" />
+            <line x1="340" y1="70" x2="340" y2="80" stroke="#333" />
+            <line x1="370" y1="70" x2="370" y2="80" stroke="#333" />
+        </svg>
+    </div>
+
+    <div class="controls">
+        <label>Isi padu, V (ml): <strong id="v-val">100</strong> ml</label>
+        <input type="range" id="volumeSlider" min="60" max="100" step="10" value="100">
+        <p>Tekanan, P (kPa): <strong id="p-val">100.00</strong> kPa</p>
+        <button class="btn" onclick="recordData()">Catat Data</button>
+        <button class="btn btn-reset" onclick="resetTable()">Padam Jadual</button>
+    </div>
+
+    <h3>Jadual 4.10: Keputusan Eksperimen</h3>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Isi padu, V (ml)</th>
+                <th>Tekanan, P (kPa)</th>
+                <th>1/V (ml⁻¹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <button class="btn" onclick="downloadExcel()" style="background-color: #3498db; margin-top: 20px;">Muat Turun Data (CSV)</button>
+</div>
+
+<script>
+    const slider = document.getElementById('volumeSlider');
+    const vDisplay = document.getElementById('v-val');
+    const pDisplay = document.getElementById('p-val');
+    const needle = document.getElementById('needle');
+    const plunger = document.getElementById('plunger');
+    const k = 10000; // Pemalar (P * V = k)
+
+    slider.oninput = function() {
+        let V = this.value;
+        let P = k / V;
+        
+        vDisplay.innerText = V;
+        pDisplay.innerText = P.toFixed(2);
+
+        // Animasi Jarum (Rotation)
+        let angle = (P - 100) * 1.5; // Justifikasi visual
+        needle.setAttribute("transform", `rotate(${angle}, 100, 100)`);
+
+        // Animasi Picagari
+        let plungerPos = 150 + (V) * 2; 
+        plunger.setAttribute("x", plungerPos);
+    };
+
+    function recordData() {
+        let V = slider.value;
+        let P = (k / V).toFixed(2);
+        let invV = (1 / V).toFixed(4);
+
+        let table = document.getElementById("resultTable").getElementsByTagName('tbody')[0];
+        let newRow = table.insertRow();
+
+        newRow.innerHTML = `<td>${V}</td><td>${P}</td><td>${invV}</td>`;
+    }
+
+    function resetTable() {
+        document.querySelector("#resultTable tbody").innerHTML = "";
+    }
+
+    function downloadExcel() {
+        let table = document.getElementById("resultTable");
+        let rows = Array.from(table.rows);
+        let csvContent = "data:text/csv;charset=utf-8,";
+
+        rows.forEach(row => {
+            let cols = Array.from(row.cells).map(cell => cell.innerText);
+            csvContent += cols.join(",") + "\r\n";
+        });
+
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "data_eksperimen_hukum_boyle.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
+<script>
+    // PASTE YOUR EXACT FIREBASE CONFIG HERE:
+    const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+    
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    // THE BOUNCER: Check if the user is allowed to be here
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // They have a VIP pass! Let them see the page.
+            console.log("Teacher logged in: " + user.email);
+            
+            // Optional: You can display their email on the page!
+            // document.getElementById("teacher-email").innerText = user.email;
+        } else {
+            // NO VIP PASS. Kick them back to the login page immediately.
+            window.location.replace('/login');
+        }
+    });
+</script>
+</body>
+</html>
