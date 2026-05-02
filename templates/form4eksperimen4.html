@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Eksperimen: Muatan Haba Tentu Pelbagai Bahan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        
+        /* Layout Grid */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Panel Kawalan */
+        .control-panel {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        input[type="number"], input[type="range"], select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .slider-value {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* Ruang Visual / Radas */
+        .simulation-area {
+            text-align: center;
+            padding: 20px;
+            background: #e0f7fa;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* CSS Drawing Radas */
+        .lab-setup {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin-top: 20px;
+        }
+        
+        /* Bikar / Bekas */
+        .beaker {
+            position: absolute;
+            bottom: 10px;
+            left: 50px;
+            width: 140px;
+            height: 160px;
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            border-bottom: 4px solid #b0bec5;
+            border-left: 4px solid #b0bec5;
+            border-right: 4px solid #b0bec5;
+            border-radius: 0 0 15px 15px;
+            background: rgba(255, 255, 255, 0.5);
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        /* Bahan di dalam bekas */
+        .substance {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: rgba(41, 182, 246, 0.6); /* Warna default air */
+            transition: height 0.3s, background-color 0.5s;
+        }
+
+        /* Pemanas Rendam */
+        .heater {
+            position: absolute;
+            bottom: 20px;
+            left: 70px;
+            width: 30px;
+            height: 180px;
+            background: #78909c;
+            border-radius: 5px;
+            z-index: 2;
+            transition: background 0.5s;
+        }
+        .wire {
+            position: absolute;
+            top: 50px;
+            left: -40px;
+            width: 110px;
+            height: 40px;
+            border: 3px solid #333;
+            border-bottom: none;
+            border-left: none;
+            border-radius: 0 20px 0 0;
+            z-index: 1;
+        }
+
+        /* Termometer */
+        .thermometer {
+            position: absolute;
+            bottom: 30px;
+            left: 130px;
+            width: 14px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #555;
+            border-radius: 7px 7px 0 0;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .bulb {
+            position: absolute;
+            bottom: -15px;
+            left: -5px;
+            width: 20px;
+            height: 20px;
+            background: red;
+            border-radius: 50%;
+            border: 2px solid #555;
+            z-index: 4;
+        }
+        .mercury {
+            width: 6px;
+            height: 28%;
+            background: red;
+            transition: height 0.1s linear;
+        }
+
+        .status-box {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+        .timer { font-weight: bold; font-size: 1.2em; color: #333; margin-top: 10px; }
+
+        /* Butang */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #aaa; cursor: not-allowed; }
+        .btn-download { background-color: #28a745; }
+        .btn-download:hover { background-color: #218838; }
+
+        /* Jadual */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 10px; text-align: center; }
+        th { background-color: #343a40; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Simulasi Muatan Haba Tentu Pelbagai Bahan</h1>
+    
+    <div class="main-layout">
+        <div class="control-panel">
+            <h3>Pembolehubah Eksperimen</h3>
+            
+            <div class="input-group">
+                <label for="material">Pilih Bahan:</label>
+                <select id="material" onchange="updateVisuals()">
+                    <option value="air">Air (c ≈ 4200 J kg⁻¹ °C⁻¹)</option>
+                    <option value="minyak">Minyak Masak (c ≈ 2000 J kg⁻¹ °C⁻¹)</option>
+                    <option value="aluminium">Bongkah Aluminium (c ≈ 900 J kg⁻¹ °C⁻¹)</option>
+                    <option value="keluli">Bongkah Keluli / Besi (c ≈ 450 J kg⁻¹ °C⁻¹)</option>
+                    <option value="kuprum">Bongkah Kuprum (c ≈ 390 J kg⁻¹ °C⁻¹)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="power">Kuasa pemanas rendam, P (W):</label>
+                <input type="number" id="power" value="50" min="10" max="2000">
+            </div>
+            
+            <div class="input-group">
+                <label for="mass">Jisim bahan, m: <span class="slider-value" id="massLabel">0.5 kg</span></label>
+                <input type="range" id="mass" value="0.5" min="0.1" max="1.0" step="0.1" oninput="updateVisuals()">
+            </div>
+            
+            <div class="input-group">
+                <label for="time">Masa pemanasan, t (s):</label>
+                <input type="number" id="time" value="300" min="10">
+            </div>
+            
+            <div class="input-group">
+                <label for="temp1">Suhu awal, θ₁ (°C):</label>
+                <input type="number" id="temp1" value="28" min="0" max="100" oninput="updateVisuals()">
+            </div>
+
+            <div class="input-group" style="margin-top: 5px; border-top: 2px solid #ccc; padding-top: 10px;">
+                <label for="speedMultiplier">Kelajuan Simulasi:</label>
+                <select id="speedMultiplier">
+                    <option value="1">1x (Masa Sebenar)</option>
+                    <option value="2">2x (2x ganda pantas)</option>
+                    <option value="5" selected>5x (5x ganda pantas)</option>
+                    <option value="10">10x (10x ganda pantas)</option>
+                </select>
+            </div>
+
+            <button id="startBtn" onclick="mulakanEksperimen()" style="margin-top: 5px;">▶ Mulakan Pemanasan</button>
+        </div>
+
+        <div class="simulation-area">
+            <div class="status-box">
+                <div id="status" style="color:#555; font-weight:bold;">Status: Sedia</div>
+                Suhu Semasa: <b style="color:red;"><span id="currentTemp">28.0</span> °C</b>
+            </div>
+
+            <div class="lab-setup">
+                <div class="wire"></div>
+                <div class="heater" id="heaterObj"></div>
+                <div class="thermometer">
+                    <div class="mercury" id="mercuryLevel"></div>
+                    <div class="bulb"></div>
+                </div>
+                <div class="beaker" id="beakerObj">
+                    <div class="substance" id="substanceLevel"></div>
+                </div>
+            </div>
+
+            <div class="timer" id="timerDisplay">Masa berlalu: 0.0 s</div>
+        </div>
+    </div>
+
+    <h2>Jadual Keputusan</h2>
+    <div class="btn-group" style="justify-content: flex-end; margin-bottom: 10px;">
+        <button class="btn-download" onclick="muatTurunExcel()">⬇ Muat Turun Data (Excel/CSV)</button>
+    </div>
+    
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Bahan</th>
+                <th>Kuasa, P (W)</th>
+                <th>Masa, t (s)</th>
+                <th>Jisim, m (kg)</th>
+                <th>Suhu Awal, θ₁ (°C)</th>
+                <th>Suhu Akhir, θ₂ (°C)</th>
+                <th>Kiraan c (J kg⁻¹ °C⁻¹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</div>
+
+<script>
+    // Pangkalan Data Bahan (Nilai c teori dan warna visual)
+    const senaraiBahan = {
+        air: { nama: "Air", c_teori: 4200, warna: "rgba(41, 182, 246, 0.6)" },
+        minyak: { nama: "Minyak Masak", c_teori: 2000, warna: "rgba(255, 213, 79, 0.7)" },
+        aluminium: { nama: "Aluminium", c_teori: 900, warna: "rgba(176, 190, 197, 0.9)" },
+        keluli: { nama: "Keluli", c_teori: 450, warna: "rgba(96, 125, 139, 0.9)" },
+        kuprum: { nama: "Kuprum", c_teori: 390, warna: "rgba(216, 112, 64, 0.9)" }
+    };
+
+    let timerInterval;
+
+    function updateVisuals() {
+        const mass = document.getElementById('mass').value;
+        const temp1 = parseFloat(document.getElementById('temp1').value) || 0;
+        const bahanKey = document.getElementById('material').value;
+
+        // Tukar warna bahan berdasarkan pilihan
+        document.getElementById('substanceLevel').style.background = senaraiBahan[bahanKey].warna;
+
+        document.getElementById('massLabel').innerText = mass + " kg";
+        
+        // Kemas kini Ketinggian Bahan
+        const volumePercentage = (mass / 1.0) * 90;
+        document.getElementById('substanceLevel').style.height = Math.max(10, volumePercentage) + "%";
+
+        // Kemas kini termometer
+        const tempPercentage = Math.min((temp1 / 150) * 100, 100); // Max visual suhu 150C
+        document.getElementById('mercuryLevel').style.height = tempPercentage + "%";
+        document.getElementById('currentTemp').innerText = temp1.toFixed(1);
+    }
+
+    // Panggil sewaktu muat halaman
+    updateVisuals();
+
+    function mulakanEksperimen() {
+        const P = parseFloat(document.getElementById('power').value);
+        const m = parseFloat(document.getElementById('mass').value);
+        const t_total = parseFloat(document.getElementById('time').value);
+        const theta1 = parseFloat(document.getElementById('temp1').value);
+        const kelajuan = parseFloat(document.getElementById('speedMultiplier').value);
+        const bahanKey = document.getElementById('material').value;
+
+        if (isNaN(P) || isNaN(m) || isNaN(t_total) || isNaN(theta1)) {
+            alert("Sila pastikan semua ruangan diisi dengan betul.");
+            return;
+        }
+
+        // Ambil data bahan yang dipilih
+        const bahanDipilih = senaraiBahan[bahanKey];
+
+        // Kunci input
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('mass').disabled = true;
+        document.getElementById('temp1').disabled = true;
+        document.getElementById('speedMultiplier').disabled = true;
+        document.getElementById('material').disabled = true;
+
+        // Simulasi 'heat loss' rawak (Kehilangan haba). Untuk logam pepejal, heat loss mungkin sedikit berbeza tapi kita kekalkan 5-20% rawak.
+        const heatLossFactor = 1.05 + (Math.random() * 0.15); 
+        
+        // Formula Pengiraan Suhu Akhir Teori
+        const theta2_akhir = theta1 + ( (P * t_total) / (m * bahanDipilih.c_teori * heatLossFactor) );
+
+        let masaSemasa = 0;
+        let suhuSemasa = theta1;
+
+        document.getElementById('heaterObj').style.background = "#ff7043";
+        document.getElementById('status').innerText = `Status: Memanaskan ${bahanDipilih.nama} (${kelajuan}x)...`;
+        document.getElementById('status').style.color = "#d84315";
+
+        const intervalMs = 100; 
+        const masaSimulasiPerTick = (intervalMs / 1000) * kelajuan; 
+        const kadarSuhuPerSaat = (theta2_akhir - theta1) / t_total;
+        const kenaikanSuhuPerTick = kadarSuhuPerSaat * masaSimulasiPerTick;
+
+        timerInterval = setInterval(() => {
+            masaSemasa += masaSimulasiPerTick;
+            suhuSemasa += kenaikanSuhuPerTick;
+
+            if (masaSemasa >= t_total) {
+                masaSemasa = t_total;
+                suhuSemasa = theta2_akhir;
+                clearInterval(timerInterval);
+                tamatEksperimen(bahanDipilih.nama, P, t_total, m, theta1, theta2_akhir);
+            }
+
+            document.getElementById('timerDisplay').innerText = `Masa berlalu: ${masaSemasa.toFixed(1)} s`;
+            document.getElementById('currentTemp').innerText = suhuSemasa.toFixed(1);
+            
+            // Visual termometer - diubah supaya boleh tunjuk suhu tinggi untuk logam (max visual 150°C)
+            const tempPercentage = Math.min((suhuSemasa / 150) * 100, 100);
+            document.getElementById('mercuryLevel').style.height = tempPercentage + "%";
+
+        }, intervalMs);
+    }
+
+    function tamatEksperimen(namaBahan, P, t, m, theta1, theta2) {
+        document.getElementById('status').innerText = "Status: Pemanasan Tamat";
+        document.getElementById('status').style.color = "green";
+        document.getElementById('heaterObj').style.background = "#78909c";
+        
+        // Buka balik input
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('mass').disabled = false;
+        document.getElementById('temp1').disabled = false;
+        document.getElementById('speedMultiplier').disabled = false;
+        document.getElementById('material').disabled = false;
+
+        const dTheta = theta2 - theta1;
+        const c_kiraan = (P * t) / (m * dTheta);
+
+        const tbody = document.querySelector("#resultTable tbody");
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td><b>${namaBahan}</b></td>
+            <td>${P}</td>
+            <td>${t}</td>
+            <td>${m.toFixed(1)}</td>
+            <td>${theta1.toFixed(1)}</td>
+            <td>${theta2.toFixed(1)}</td>
+            <td><b>${Math.round(c_kiraan)}</b></td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    function muatTurunExcel() {
+        let table = document.getElementById("resultTable");
+        let rows = table.querySelectorAll("tr");
+        
+        if (rows.length <= 1) {
+            alert("Tiada data eksperimen untuk dimuat turun. Sila jalankan eksperimen terlebih dahulu.");
+            return;
+        }
+
+        let csvContent = "";
+        
+        rows.forEach(function(row) {
+            let cols = row.querySelectorAll("th, td");
+            let rowData = [];
+            cols.forEach(function(col) {
+                rowData.push('"' + col.innerText.replace(/"/g, '""') + '"');
+            });
+            csvContent += rowData.join(",") + "\r\n";
+        });
+
+        let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Data_Muatan_Haba_Tentu.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
+<script>
+    // PASTE YOUR EXACT FIREBASE CONFIG HERE:
+    const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+    
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    // THE BOUNCER: Check if the user is allowed to be here
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // They have a VIP pass! Let them see the page.
+            console.log("Teacher logged in: " + user.email);
+            
+            // Optional: You can display their email on the page!
+            // document.getElementById("teacher-email").innerText = user.email;
+        } else {
+            // NO VIP PASS. Kick them back to the login page immediately.
+            window.location.replace('/login');
+        }
+    });
+</script>
+</body>
+</html>

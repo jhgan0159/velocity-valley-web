@@ -114,5 +114,39 @@
     </div>
 
     <script src="/static/script.js"></script>
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
+<script>
+    // PASTE YOUR EXACT FIREBASE CONFIG HERE:
+    const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+    
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    // THE BOUNCER: Check if the user is allowed to be here
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // They have a VIP pass! Let them see the page.
+            console.log("Teacher logged in: " + user.email);
+            
+            // Optional: You can display their email on the page!
+            // document.getElementById("teacher-email").innerText = user.email;
+        } else {
+            // NO VIP PASS. Kick them back to the login page immediately.
+            window.location.replace('/login');
+        }
+    });
+</script>
 </body>
 </html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Eksperimen Inersia (Eksperimen 2.2)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1, h3 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .simulation-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 8px;
+        }
+        .controls {
+            flex: 1;
+        }
+        .controls select, .controls button {
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .controls button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .controls button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .controls button:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+        .btn-reset {
+            background-color: #e74c3c !important;
+        }
+        .btn-excel {
+            background-color: #27ae60 !important;
+        }
+        .animation-box {
+            flex: 1;
+            height: 200px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            border-left: 20px solid #8d6e63; /* Kaki meja */
+            padding-left: 0;
+        }
+        .clamp {
+            width: 15px;
+            height: 40px;
+            background: #7f8c8d;
+            position: absolute;
+            left: 0;
+            z-index: 10;
+            border-radius: 3px;
+        }
+        .blade {
+            width: 250px;
+            height: 8px;
+            background: #bdc3c7;
+            position: relative;
+            transform-origin: left center;
+        }
+        .plasticine {
+            width: 40px;
+            height: 40px;
+            background: #27ae60;
+            border-radius: 50%;
+            position: absolute;
+            right: -20px;
+            top: -16px;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.3);
+        }
+        .oscillate {
+            animation: swing var(--period) ease-in-out infinite alternate;
+        }
+        @keyframes swing {
+            0% { transform: rotate(-15deg); }
+            100% { transform: rotate(15deg); }
+        }
+        .stopwatch {
+            flex: 0.5;
+            text-align: center;
+            background: #34495e;
+            color: #f1c40f;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            box-shadow: inset 0 0 10px #000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        .editable {
+            background-color: #fffde7;
+            cursor: text;
+        }
+        .instructions {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+        .action-buttons button {
+            width: auto;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Simulasi Eksperimen 2.2: Inersia & Jisim</h1>
+    
+    <div class="instructions">
+        <strong>Cara menggunakan simulasi:</strong><br>
+        1. Pilih jisim plastisin (m).<br>
+        2. Klik <strong>"Sesarkan & Lepaskan"</strong> untuk memulakan ayunan.<br>
+        3. Jam randik akan merekodkan masa untuk <strong>10 ayunan lengkap</strong> secara automatik.<br>
+        4. Data akan masuk ke lajur t₁. Ulang langkah untuk jisim yang sama bagi mendapatkan t₂.<br>
+        5. Kira dan taip sendiri nilai t purata dan Tempoh ayunan (T) ke dalam kotak kuning.<br>
+        6. Klik <strong>"Muat Turun Excel"</strong> untuk menyimpan data eksperimen anda.
+    </div>
+
+    <div class="simulation-area">
+        <div class="controls">
+            <label for="massSelect"><strong>Jisim Plastisin, m (g):</strong></label>
+            <select id="massSelect">
+                <option value="20.0">20.0 g</option>
+                <option value="30.0">30.0 g</option>
+                <option value="40.0">40.0 g</option>
+                <option value="50.0">50.0 g</option>
+                <option value="60.0">60.0 g</option>
+            </select>
+            <button id="startBtn" onclick="startExperiment()">Sesarkan & Lepaskan</button>
+            <button id="resetBtn" class="btn-reset" onclick="resetTable()">Kosongkan Jadual</button>
+        </div>
+
+        <div class="animation-box">
+            <div class="clamp"></div>
+            <div class="blade" id="blade">
+                <div class="plasticine" id="plasticine-obj"></div>
+            </div>
+        </div>
+
+        <div class="stopwatch" id="timer">0.00 s</div>
+    </div>
+
+    <h3>Jadual 2.7 Keputusan Eksperimen</h3>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th rowspan="2">Jisim plastisin<br>m / g</th>
+                <th colspan="3">Masa untuk 10 ayunan, t / s</th>
+                <th rowspan="2">Tempoh ayunan<br>T / s</th>
+            </tr>
+            <tr>
+                <th>t₁</th>
+                <th>t₂</th>
+                <th>t purata (Kira sendiri)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="row-20">
+                <td>20.0</td><td class="t1"></td><td class="t2"></td><td contenteditable="true" class="editable"></td><td contenteditable="true" class="editable"></td>
+            </tr>
+            <tr id="row-30">
+                <td>30.0</td><td class="t1"></td><td class="t2"></td><td contenteditable="true" class="editable"></td><td contenteditable="true" class="editable"></td>
+            </tr>
+            <tr id="row-40">
+                <td>40.0</td><td class="t1"></td><td class="t2"></td><td contenteditable="true" class="editable"></td><td contenteditable="true" class="editable"></td>
+            </tr>
+            <tr id="row-50">
+                <td>50.0</td><td class="t1"></td><td class="t2"></td><td contenteditable="true" class="editable"></td><td contenteditable="true" class="editable"></td>
+            </tr>
+            <tr id="row-60">
+                <td>60.0</td><td class="t1"></td><td class="t2"></td><td contenteditable="true" class="editable"></td><td contenteditable="true" class="editable"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="action-buttons">
+        <button class="btn-excel" onclick="downloadExcel()">Muat Turun Excel</button>
+    </div>
+</div>
+
+<script>
+    let isRunning = false;
+
+    function startExperiment() {
+        if(isRunning) return;
+        
+        let mass = parseFloat(document.getElementById('massSelect').value);
+        let startBtn = document.getElementById('startBtn');
+        let blade = document.getElementById('blade');
+        let display = document.getElementById('timer');
+        let plasticine = document.getElementById('plasticine-obj');
+        
+        let rowId = 'row-' + Math.round(mass);
+        let row = document.getElementById(rowId);
+        let t1Cell = row.querySelector('.t1');
+        let t2Cell = row.querySelector('.t2');
+        
+        if (t1Cell.innerText !== '' && t2Cell.innerText !== '') {
+            alert('Data t1 dan t2 untuk jisim ' + mass + 'g telah direkodkan. Sila pilih jisim lain.');
+            return;
+        }
+
+        isRunning = true;
+        startBtn.disabled = true;
+        display.innerText = "0.00 s";
+        
+        let scale = 1 + ((mass - 20) * 0.015);
+        plasticine.style.transform = `scale(${scale})`;
+
+        let T = 0.35 * Math.sqrt(mass / 20); 
+        let timeFor10 = 10 * T;
+
+        let humanError = (Math.random() - 0.5) * 0.3;
+        let finalTime = (timeFor10 + humanError).toFixed(2);
+
+        blade.style.setProperty('--period', (T/2) + 's');
+        blade.classList.add('oscillate');
+
+        let startTime = Date.now();
+        
+        let interval = setInterval(() => {
+            let elapsed = (Date.now() - startTime) / 1000;
+            
+            if(elapsed >= finalTime) {
+                clearInterval(interval);
+                display.innerText = finalTime + " s";
+                blade.classList.remove('oscillate');
+                
+                if (t1Cell.innerText === '') {
+                    t1Cell.innerText = finalTime;
+                } else {
+                    t2Cell.innerText = finalTime;
+                }
+                
+                isRunning = false;
+                startBtn.disabled = false;
+            } else {
+                display.innerText = elapsed.toFixed(2) + " s";
+            }
+        }, 30);
+    }
+
+    function resetTable() {
+        if(isRunning) return;
+        let cellsT1 = document.querySelectorAll('.t1');
+        let cellsT2 = document.querySelectorAll('.t2');
+        let cellsEdit = document.querySelectorAll('.editable');
+        
+        cellsT1.forEach(cell => cell.innerText = '');
+        cellsT2.forEach(cell => cell.innerText = '');
+        cellsEdit.forEach(cell => cell.innerText = '');
+        document.getElementById('timer').innerText = "0.00 s";
+    }
+
+    // Fungsi baharu untuk memuat turun jadual ke dalam format Excel
+    function downloadExcel() {
+        let table = document.getElementById("dataTable");
+        
+        // Membina struktur fail Excel (.xls)
+        let excelFile = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>";
+        excelFile += "<head><meta charset='utf-8'></head><body>";
+        
+        // Menambah tajuk ke dalam fail Excel
+        excelFile += "<h2>Keputusan Eksperimen 2.2: Inersia</h2>";
+        
+        // Menggabungkan jadual HTML
+        // border='1' ditambah supaya Excel memaparkan kotak jadual dengan kemas
+        let tableHTML = table.outerHTML.replace("<table", "<table border='1'");
+        excelFile += tableHTML;
+        excelFile += "</body></html>";
+        
+        // Cipta fail menggunakan Blob
+        let blob = new Blob([excelFile], { type: 'application/vnd.ms-excel' });
+        
+        // Cipta pautan muat turun
+        let downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = "Keputusan_Eksperimen_Inersia.xls";
+        
+        // Laksanakan klik automatik untuk muat turun
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+</script>
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
+<script>
+    // PASTE YOUR EXACT FIREBASE CONFIG HERE:
+    const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+    
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    // THE BOUNCER: Check if the user is allowed to be here
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // They have a VIP pass! Let them see the page.
+            console.log("Teacher logged in: " + user.email);
+            
+            // Optional: You can display their email on the page!
+            // document.getElementById("teacher-email").innerText = user.email;
+        } else {
+            // NO VIP PASS. Kick them back to the login page immediately.
+            window.location.replace('/login');
+        }
+    });
+</script>
+</body>
+</html>

@@ -38,7 +38,7 @@
             position: absolute;
             top: 10%;                 /* Pushes it halfway down the header */
             transform: translateY(-50%); /* Pulls it up perfectly to the center */
-            right: 40px;              /* Distance from the right edge */
+            left: 40px;              /* Distance from the left edge */
             height: 120px;            /* Almost the height of your header content */
             width: 120px;             /* Keep width and height identical for a circle */
             border-radius: 50%;       /* This is the magic line that makes it a circle */
@@ -53,6 +53,7 @@
             justify-content: center;
             align-items: center;
             gap: 15px; /* Space between logo and text */
+            
         }
 
         .logo {
@@ -128,11 +129,28 @@
 <body>
 
     <header>
+
         <img src="/static/images/logo.png" alt="Velocity Valley Circle Logo" class="top-right-logo">
+                    <!-- We wrap them in a div and set them to "display: none" so they are invisible until Firebase checks who is looking -->
+        <div id="auth-menu" style="text-align: right; padding: 15px;">
+              <!-- If they are NOT logged in, they see this: -->
+            <button id="btn-login" style="display: none; padding: 15px; background-color: #008CBA; color: white; border: none; border-radius: 5px; cursor: pointer;" onclick="window.location.href='/login'">
+               Sign In
+            </button>
+    <!-- If they ARE logged in, they see these two instead: -->
+            <button id="btn-admin" style="display: none; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;" onclick="window.location.href='/admin'">
+               Teacher Dashboard
+            </button>
+            <button id="btn-logout" style="display: none; padding: 15px; background-color: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;" onclick="logoutUser()">
+                Sign Out
+            </button>
+        </div>
+
         <div class="title-wrapper">
             <h1>Velocity Valley</h1>
         </div>
         <p class="subtitle">Interactive Physics Simulations & Games</p>
+
     </header>
 
     <!-- SECTION A: Mini Simulation -->
@@ -161,17 +179,29 @@
 
     <!-- SECTION B: Tingkatan 4 -->
     <div class="section-container">
-        <h2 class="section-title">Tingkatan 4</h2>
+        <h2 class="section-title">Form 4</h2>
         <div class="menu-grid">
             <a href="/pendulum" class="sim-card">
-                <h2>Eksperimen 1.1</h2>
+                <h2>Experiment 1.1</h2>
                 <p>Investigate the motion of a simple pendulum and how its period depends on length and gravity.</p>
                 <span class="status-badge">Ready to Use</span>
             </a>
             
             <a href="/tingkatan4experiment2" class="sim-card">
-                <h2>Eksperimen 2.1</h2>
+                <h2>Experiment 2.1</h2>
                 <p>To determine the value of Earth's gravitational acceleration.</p>
+                <span class="status-badge">Ready to Use</span>
+            </a>
+
+            <a href="/form4experiment3" class="sim-card">
+                <h2>Experiment 2.2</h2>
+                <p>Inertia is directly proportional to mass.</p>
+                <span class="status-badge">Ready to Use</span>
+            </a>
+
+            <a href="/form4experiment4" class="sim-card">
+                <h2>Experiment 4.1 & 4.2</h2>
+                <p>Find the value of the specific heat capacity (c) for water or aluminium.</p>
                 <span class="status-badge">Ready to Use</span>
             </a>
         </div>
@@ -179,9 +209,9 @@
 
     <!-- SECTION C: Tingkatan 5 -->
     <div class="section-container">
-        <h2 class="section-title">Tingkatan 5</h2>
+        <h2 class="section-title">Form 5</h2>
         <div class="menu-grid">
-            <!-- Placeholder for future Tingkatan 5 content -->
+            <!-- Placeholder for future Form 5 content -->
             <a href="#" class="sim-card" style="border-top-color: #95a5a6;">
                 <h2>To be added...</h2>
                 <p>More engaging physics experiments are currently in development.</p>
@@ -207,6 +237,55 @@
             </a>
         </div>
     </div>
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
 
+<script>
+    // PASTE YOUR EXACT FIREBASE CONFIG HERE:
+    const firebaseConfig = {
+            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+            authDomain: "velocity-valley-edu.firebaseapp.com",
+            projectId: "velocity-valley-edu",
+            storageBucket: "velocity-valley-edu.firebasestorage.app",
+            messagingSenderId: "340043533038",
+            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+    
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    // Grab the buttons we created in Step 1
+    const loginBtn = document.getElementById('btn-login');
+    const adminBtn = document.getElementById('btn-admin');
+    const logoutBtn = document.getElementById('btn-logout');
+
+    // THE LISTENER: Check who is looking at the page
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // VIP IS HERE: Hide Login, Show Admin & Logout
+            loginBtn.style.display = 'none';
+            adminBtn.style.display = 'inline-block';
+            logoutBtn.style.display = 'inline-block';
+        } else {
+            // REGULAR VISITOR: Show Login, Hide Admin & Logout
+            loginBtn.style.display = 'inline-block';
+            adminBtn.style.display = 'none';
+            logoutBtn.style.display = 'none';
+        }
+    });
+
+    // FUNCTION: What happens when they click Sign Out
+    function logoutUser() {
+        firebase.auth().signOut().then(() => {
+            // Firebase will automatically trigger the listener above and flip the buttons back!
+            console.log("User signed out successfully.");
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
+</script>
 </body>
 </html>
