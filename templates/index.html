@@ -125,6 +125,24 @@
         
         .status-building { background: #f39c12; }
     </style>
+    <!-- Google Analytics Tracking Code -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff",
+        measurementId: "G-N9LFZVH1YX"  // <-- This is the magic tracker!
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      // Initialize Analytics
+      const analytics = firebase.analytics();
+    </script>
 </head>
 <body>
 
