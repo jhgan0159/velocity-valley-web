@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Eksperimen 4.5: Hukum Charles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            width: 100%;
+        }
+        /* Bahagian Kiri: Visual Simulasi */
+        .simulation-area {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .apparatus {
+            position: relative;
+            width: 250px;
+            height: 400px;
+            margin-top: 20px;
+        }
+        /* Bikar & Air */
+        .beaker {
+            position: absolute;
+            bottom: 40px;
+            left: 50px;
+            width: 150px;
+            height: 200px;
+            border: 3px solid #ccc;
+            border-top: none;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            z-index: 2;
+        }
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 150, 255, 0.3);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            transition: background 0.3s;
+        }
+        /* Pemanas Bunsen */
+        .heater {
+            position: absolute;
+            bottom: 0;
+            left: 100px;
+            width: 50px;
+            height: 30px;
+            background: #555;
+            border-radius: 5px;
+        }
+        .flame {
+            position: absolute;
+            bottom: 30px;
+            left: 115px;
+            width: 20px;
+            height: 30px;
+            background: orange;
+            border-radius: 50% 50% 20% 20%;
+            opacity: 0.5;
+            transition: height 0.3s, opacity 0.3s;
+        }
+        /* Tiub Kapilari & Pembaris */
+        .ruler {
+            position: absolute;
+            bottom: 10px;
+            left: 30px;
+            width: 20px;
+            height: 250px;
+            background: #f0e68c;
+            border: 1px solid #aaa;
+            z-index: 3;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+        .ruler-tick {
+            width: 10px;
+            border-top: 1px solid black;
+            flex-grow: 1;
+        }
+        .ruler-tick:nth-child(5n) {
+            width: 100%;
+        }
+        .capillary-tube {
+            position: absolute;
+            bottom: 10px;
+            left: 60px;
+            width: 12px;
+            height: 250px;
+            border: 2px solid #ccc;
+            border-top: none;
+            background: white;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .gas {
+            width: 100%;
+            background: #e0f7fa; /* Warna udara terperangkap */
+            height: 100px; /* Nilai awal */
+            transition: height 0.3s ease;
+        }
+        .acid-plug {
+            width: 100%;
+            height: 20px;
+            background: #888; /* Asid sulfurik pekat */
+        }
+        /* Termometer */
+        .thermometer {
+            position: absolute;
+            bottom: 20px;
+            left: 110px;
+            width: 10px;
+            height: 200px;
+            border: 2px solid #aaa;
+            border-radius: 10px;
+            background: white;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2px;
+        }
+        .mercury {
+            width: 100%;
+            background: red;
+            height: 30%;
+            border-radius: 10px;
+            transition: height 0.3s ease;
+        }
+
+        /* Bahagian Kanan: Kawalan dan Data */
+        .controls-area {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .control-group {
+            background: #eef2f5;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #d1d9e0;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+        .btn-record { background-color: #28a745; }
+        .btn-record:hover { background-color: #218838; }
+        .btn-download { background-color: #007bff; margin-top: 10px; }
+        .btn-download:hover { background-color: #0069d9; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #bbb;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="simulation-area">
+        <h2>Visual Radas</h2>
+        <div class="apparatus">
+            <div class="heater"></div>
+            <div class="flame" id="flame"></div>
+            
+            <div class="beaker">
+                <div class="water" id="water">
+                    <div class="ruler" id="ruler">
+                        </div>
+                    <div class="capillary-tube">
+                        <div class="acid-plug"></div>
+                        <div class="gas" id="gas"></div>
+                    </div>
+                    <div class="thermometer">
+                        <div class="mercury" id="mercury"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p><em>Petunjuk: Blok kelabu mewakili asid sulfurik pekat yang memerangkap udara.</em></p>
+    </div>
+
+    <div class="controls-area">
+        <h2>Panel Kawalan & Data</h2>
+        
+        <div class="control-group">
+            <label for="tempSlider"><strong>Suhu Air, &theta; (&deg;C): </strong></label>
+            <span id="tempDisplay" style="font-size: 1.2em; font-weight: bold; color: red;">30</span> &deg;C
+            <br><br>
+            <input type="range" id="tempSlider" min="30" max="80" step="10" value="30">
+        </div>
+
+        <div class="control-group">
+            <p><strong>Panjang Turus Udara, L: </strong> <span id="lengthDisplay">9.0</span> cm</p>
+            <button class="btn btn-record" onclick="rekodData()">Rekod Data ke Jadual</button>
+        </div>
+
+        <div>
+            <h3>Jadual Keputusan</h3>
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Suhu, &theta; (&deg;C)</th>
+                        <th>Panjang turus udara, L (cm)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+            <button class="btn btn-download" onclick="muatTurunExcel()">Muat Turun Data (Excel/CSV)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inisialisasi visual pembaris
+    const ruler = document.getElementById('ruler');
+    for (let i = 0; i < 20; i++) {
+        let tick = document.createElement('div');
+        tick.className = 'ruler-tick';
+        ruler.appendChild(tick);
+    }
+
+    // Pemboleh ubah DOM
+    const tempSlider = document.getElementById('tempSlider');
+    const tempDisplay = document.getElementById('tempDisplay');
+    const lengthDisplay = document.getElementById('lengthDisplay');
+    const gas = document.getElementById('gas');
+    const mercury = document.getElementById('mercury');
+    const flame = document.getElementById('flame');
+    const water = document.getElementById('water');
+    const tableBody = document.getElementById('tableBody');
+
+    // Formula Hukum Charles: V/T = pemalar. L berkadar terus dengan Suhu Mutlak (K)
+    // Anggap pada 0 darjah Celsius (273.15 K), L = 8.13 cm. 
+    // Maka pemalar k = 8.13 / 273.15 ≈ 0.0297.
+    // L (cm) = (Suhu_C + 273.15) * 0.0297. (Menghasilkan L=9.0 pada 30C, L=10.5 pada 80C)
+    const factor = 0.02976;
+
+    // Fungsi kemas kini visual apabila slider digerakkan
+    function updateSimulation() {
+        let suhuC = parseInt(tempSlider.value);
+        tempDisplay.innerText = suhuC;
+
+        // Kira panjang turus udara (L)
+        let suhuK = suhuC + 273.15;
+        let panjangL = (suhuK * factor).toFixed(1);
+        lengthDisplay.innerText = panjangL;
+
+        // Kemas kini visual Tinggi Gas dalam piksel (skalakan untuk nampak perubahan)
+        let visualHeight = (panjangL * 15); // 1cm = 15px visual
+        gas.style.height = visualHeight + 'px';
+
+        // Kemas kini visual Termometer
+        let mercuryHeight = ((suhuC / 100) * 100); 
+        mercury.style.height = mercuryHeight + '%';
+
+        // Visualisasi Pemanasan (Nyalaan makin kuat & air sedikit merah)
+        let intensity = (suhuC - 30) / 50; // 0 hingga 1
+        flame.style.opacity = 0.5 + (intensity * 0.5);
+        flame.style.height = 30 + (intensity * 20) + 'px';
+        water.style.background = `rgba(${intensity * 100}, 150, 255, 0.3)`;
+    }
+
+    // Panggil sekali pada mulanya
+    updateSimulation();
+
+    // Event Listener untuk Slider
+    tempSlider.addEventListener('input', updateSimulation);
+
+    // Fungsi merekod data ke dalam jadual HTML
+    function rekodData() {
+        let suhuC = tempSlider.value;
+        let panjangL = lengthDisplay.innerText;
+
+        // Cek jika data sudah wujud untuk elak rekod berulang yang sama berturut-turut
+        let barisSediaAda = tableBody.getElementsByTagName('tr');
+        for (let i = 0; i < barisSediaAda.length; i++) {
+            let selSuhu = barisSediaAda[i].getElementsByTagName('td')[0].innerText;
+            if (selSuhu == suhuC) {
+                alert(`Data untuk suhu ${suhuC} °C telah direkodkan!`);
+                return;
+            }
+        }
+
+        let row = document.createElement('tr');
+        row.innerHTML = `<td>${suhuC}</td><td>${panjangL}</td>`;
+        
+        // Memastikan susunan rekod kemas mengikut urutan suhu (optional, tapi digalakkan)
+        tableBody.appendChild(row);
+    }
+
+    // Fungsi memuat turun jadual sebagai fail Excel (format .csv)
+    function muatTurunExcel() {
+        let rows = document.querySelectorAll("#dataTable tr");
+        if (rows.length <= 1) {
+            alert("Tiada data untuk dimuat turun. Sila rekod data terlebih dahulu.");
+            return;
+        }
+
+        let csvContent = "\uFEFF"; // BOM untuk pastikan Excel baca aksara khas dengan betul
+        
+        rows.forEach(function(row) {
+            let cols = row.querySelectorAll("th, td");
+            let barisData = [];
+            cols.forEach(function(col) {
+                barisData.push(col.innerText);
+            });
+            csvContent += barisData.join(",") + "\n";
+        });
+
+        // Cipta objek Blob untuk muat turun
+        let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        let url = URL.createObjectURL(blob);
+        
+        // Cipta pautan sementara dan klik untuk muat turun
+        let link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Data_Hukum_Charles.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>

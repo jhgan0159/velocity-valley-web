@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimen 4.6: Hukum Gay-Lussac</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #e67e22; padding-bottom: 10px; }
+        
+        /* Gaya Radas */
+        .apparatus-box { display: flex; justify-content: center; align-items: center; background: #eef2f3; padding: 30px; border-radius: 8px; margin-bottom: 20px; }
+        .label { font-size: 12px; font-weight: bold; fill: #333; }
+
+        /* Kawalan */
+        .controls { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .status-box { background: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #ffeeba; display: none; font-weight: bold; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 5px; color: white; transition: 0.3s; }
+        .btn-heat { background-color: #e74c3c; }
+        .btn-heat:hover { background-color: #c0392b; }
+        .btn-record { background-color: #27ae60; }
+        .btn-record:hover { background-color: #219150; }
+        .btn-reset { background-color: #7f8c8d; }
+        .btn-reset:hover { background-color: #95a5a6; }
+        .btn-download { background-color: #3498db; }
+
+        /* Jadual */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #e67e22; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Eksperimen 4.6: Hubungan Suhu dan Tekanan Gas</h2>
+    <p><em>Arahan: Klik "Panaskan" untuk memulakan pemanasan. Sistem akan mengingatkan anda untuk mencatat data apabila suhu mencapai 30°C, 40°C, 50°C, 60°C, 70°C, dan 80°C.</em></p>
+
+    <div id="statusMessage" class="status-box">Suhu telah mencapai tahap sasaran! Sila klik "Catat Data".</div>
+
+    <div class="apparatus-box">
+        <svg width="600" height="350" viewBox="0 0 600 350">
+            <rect x="235" y="290" width="30" height="40" fill="#7f8c8d" />
+            <rect x="220" y="330" width="60" height="10" fill="#2c3e50" />
+            <path id="flame" d="M 250 290 Q 235 260 250 240 Q 265 260 250 290" fill="red" opacity="0" />
+            <text x="160" y="320" class="label">Pemanas</text>
+            
+            <line x1="190" y1="240" x2="310" y2="240" stroke="#555" stroke-width="4" />
+            <line x1="200" y1="240" x2="180" y2="340" stroke="#555" stroke-width="4" />
+            <line x1="300" y1="240" x2="320" y2="340" stroke="#555" stroke-width="4" />
+
+            <rect x="190" y="120" width="120" height="120" stroke="#333" stroke-width="3" fill="none" />
+            <rect x="193" y="140" width="114" height="98" fill="rgba(52, 152, 219, 0.4)" />
+            <text x="130" y="180" class="label">Bikar</text>
+
+            <circle cx="250" cy="180" r="40" stroke="#333" stroke-width="3" fill="rgba(255, 255, 255, 0.8)" />
+            <rect x="235" y="70" width="30" height="80" stroke="#333" stroke-width="3" fill="rgba(255, 255, 255, 0.8)" stroke-bottom="none"/>
+            <rect x="235" y="60" width="30" height="15" fill="#e67e22" /> <text x="260" y="210" class="label">Kelalang</text>
+
+            <rect x="200" y="50" width="8" height="180" stroke="#333" stroke-width="2" fill="#fff" />
+            <circle cx="204" cy="230" r="8" fill="red" />
+            <rect id="thermoBar" x="202" y="190" width="4" height="40" fill="red" />
+            <text x="120" y="60" class="label">Termometer</text>
+
+            <path d="M 250 60 Q 250 20 350 40 T 450 140" stroke="#333" stroke-width="6" fill="none" />
+            <text x="350" y="30" class="label">Tiub Getah</text>
+
+            <circle cx="450" cy="160" r="45" stroke="#333" stroke-width="4" fill="#fff" />
+            <circle cx="450" cy="160" r="4" fill="#000" />
+            <path id="gaugeNeedle" d="M 450 160 L 420 130" stroke="red" stroke-width="3" />
+            <rect x="420" y="205" width="60" height="135" fill="#f1c40f" /> <text x="410" y="100" class="label">Tolok Tekanan</text>
+            
+            <text x="20" y="30" font-weight="bold" fill="#2c3e50">Suhu Semasa: <tspan id="svgTemp">25.0</tspan> °C</text>
+            <text x="20" y="50" font-weight="bold" fill="#2c3e50">Tekanan: <tspan id="svgPressure">98.35</tspan> kPa</text>
+        </svg>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-heat" id="btnHeat" onclick="toggleHeat()">Panaskan</button>
+        <button class="btn btn-record" onclick="recordData()">Catat Data</button>
+        <button class="btn btn-reset" onclick="resetExperiment()">Semula</button>
+    </div>
+
+    <h3>Jadual 4.13: Keputusan Eksperimen</h3>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Suhu, <em>&theta;</em> / &deg;C</th>
+                <th>Tekanan udara, <em>P</em> / kPa</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <div style="text-align: right;">
+        <button class="btn btn-download" onclick="downloadExcel()">Muat Turun Data (CSV)</button>
+    </div>
+</div>
+
+<script>
+    let temperature = 25.0; // Suhu bilik bermula
+    let isHeating = false;
+    let heatInterval;
+    const targetTemps = [30, 40, 50, 60, 70, 80];
+    let recordedTargets = [];
+    
+    // Pemalar bagi Hukum Gay-Lussac: P / T = k. 
+    // Andaikan pada 30 darjah (303K), P = 100 kPa. k = 100/303 = 0.33003
+    const k = 0.33003; 
+
+    // Elemen DOM
+    const btnHeat = document.getElementById("btnHeat");
+    const flame = document.getElementById("flame");
+    const thermoBar = document.getElementById("thermoBar");
+    const gaugeNeedle = document.getElementById("gaugeNeedle");
+    const svgTemp = document.getElementById("svgTemp");
+    const svgPressure = document.getElementById("svgPressure");
+    const statusMessage = document.getElementById("statusMessage");
+
+    function getPressure(tempCelsius) {
+        let tempKelvin = tempCelsius + 273.15;
+        return (k * tempKelvin).toFixed(2);
+    }
+
+    function toggleHeat() {
+        if (isHeating) {
+            pauseHeat();
+        } else {
+            startHeat();
+        }
+    }
+
+    function startHeat() {
+        isHeating = true;
+        btnHeat.innerText = "Berhenti Panaskan";
+        btnHeat.style.backgroundColor = "#e67e22";
+        flame.setAttribute("opacity", "1"); // Tunjuk api
+        statusMessage.style.display = "none";
+
+        heatInterval = setInterval(() => {
+            if (temperature >= 85) {
+                pauseHeat();
+                return;
+            }
+
+            temperature += 0.2;
+            updateVisuals();
+
+            // Semak jika mencapai suhu sasaran
+            let currentInt = Math.floor(temperature);
+            if (targetTemps.includes(currentInt) && !recordedTargets.includes(currentInt)) {
+                pauseHeat();
+                temperature = currentInt; // Genapkan suhu untuk bacaan mudah
+                updateVisuals();
+                statusMessage.innerText = `Suhu mencapai ${currentInt}°C! Sila klik "Catat Data".`;
+                statusMessage.style.display = "block";
+            }
+        }, 100);
+    }
+
+    function pauseHeat() {
+        isHeating = false;
+        clearInterval(heatInterval);
+        btnHeat.innerText = "Panaskan";
+        btnHeat.style.backgroundColor = "#e74c3c";
+        flame.setAttribute("opacity", "0"); // Padam api
+    }
+
+    function updateVisuals() {
+        let currentP = getPressure(temperature);
+        svgTemp.textContent = temperature.toFixed(1);
+        svgPressure.textContent = currentP;
+
+        // Animasi Termometer (naik ke atas)
+        // Suhu 25C (y=190, h=40) -> Suhu 85C (y=60, h=170)
+        let newHeight = 40 + ((temperature - 25) * 2.16);
+        let newY = 230 - newHeight;
+        thermoBar.setAttribute("height", newHeight);
+        thermoBar.setAttribute("y", newY);
+
+        // Animasi Jarum Tolok Tekanan (Pusingan)
+        // Julat tekanan dijangka: ~98 kPa ke ~116 kPa
+        let angle = (currentP - 90) * 4; 
+        gaugeNeedle.setAttribute("transform", `rotate(${angle}, 450, 160)`);
+    }
+
+    function recordData() {
+        let currentTemp = Math.round(temperature); // Ambil integer terhampir
+        let pValue = getPressure(currentTemp);
+
+        // Elak rekod berganda bagi sasaran yang sama
+        if (targetTemps.includes(currentTemp) && !recordedTargets.includes(currentTemp)) {
+            recordedTargets.push(currentTemp);
+        }
+
+        let table = document.getElementById("resultTable").getElementsByTagName('tbody')[0];
+        let newRow = table.insertRow();
+        newRow.innerHTML = `<td>${currentTemp}</td><td>${pValue}</td>`;
+        
+        statusMessage.style.display = "none";
+    }
+
+    function resetExperiment() {
+        pauseHeat();
+        temperature = 25.0;
+        recordedTargets = [];
+        document.querySelector("#resultTable tbody").innerHTML = "";
+        statusMessage.style.display = "none";
+        updateVisuals();
+    }
+
+    function downloadExcel() {
+        let table = document.getElementById("resultTable");
+        let rows = Array.from(table.rows);
+        let csvContent = "\uFEFF"; // BOM untuk format UTF-8 (elak ralat simbol darjah)
+
+        rows.forEach(row => {
+            let cols = Array.from(row.cells).map(cell => `"${cell.innerText}"`);
+            csvContent += cols.join(",") + "\n";
+        });
+
+        let encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "data_eksperimen_hukum_gay_lussac.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Set paparan awal
+    updateVisuals();
+</script>
+
+</body>
+</html>
