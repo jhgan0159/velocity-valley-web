@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Eksperimen 6.3: Kanta Cembung</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f3;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 500px;
+            max-width: 700px;
+        }
+        canvas {
+            border: 2px solid #bdc3c7;
+            background-color: #2c3e50; /* Latar belakang gelap untuk nampak cahaya */
+            display: block;
+            margin: 0 auto 15px auto;
+            border-radius: 5px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        input[type="range"] {
+            width: 55%;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .btn-excel {
+            background-color: #27ae60;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .btn-excel:hover {
+            background-color: #2ecc71;
+        }
+        .reminder {
+            font-weight: bold;
+            text-align: center;
+            margin-top: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .reminder.warning {
+            background-color: #fdecea;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+        .reminder.success {
+            background-color: #eafaf1;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        table, th, td {
+            border: 1px solid #95a5a6;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Simulasi Formula Kanta Cembung</h1>
+    <p class="subtitle">Eksperimen 6.3: Mengkaji hubungan antara jarak objek (u) dan jarak imej (v)</p>
+
+    <div class="container">
+        <div class="panel">
+            <canvas id="simCanvas" width="650" height="350"></canvas>
+            
+            <div class="controls">
+                <div class="info-box">
+                    Panjang Fokus Kanta, <i>f</i> = 10.0 cm (Dimalarkan)
+                </div>
+                <div class="control-group">
+                    <label for="jarakObjek"><strong>Jarak Objek, <i>u</i> : <span id="nilaiU">15.0</span> cm</strong></label>
+                    <input type="range" id="jarakObjek" min="15.0" max="35.0" value="15.0" step="5.0">
+                </div>
+                <button id="btnRekod" onclick="rekodData()">Rekod Data ke Jadual</button>
+                <div id="reminderText" class="reminder warning">⚠️ Sila rekodkan data untuk jarak objek u = 15.0 cm!</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Jadual 6.9 Keputusan</h3>
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th><i>u</i> / cm</th>
+                        <th><i>v</i> / cm</th>
+                        <th>1/<i>u</i> / cm<sup>-1</sup></th>
+                        <th>1/<i>v</i> / cm<sup>-1</sup></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+            
+            <button class="btn-excel" onclick="muatTurunExcel()">Muat Turun Jadual (Excel / CSV)</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const sliderU = document.getElementById('jarakObjek');
+        const labelU = document.getElementById('nilaiU');
+        const reminderText = document.getElementById('reminderText');
+        const jadualBody = document.querySelector('#dataTable tbody');
+
+        // Pemalar Eksperimen
+        const f = 10.0; // Panjang fokus kanta = 10.0 cm
+        const skala = 6; // 1 cm real = 6 pixel canvas
+        
+        let u_semasa = 15.0;
+        let v_semasa = 0;
+        let dataSet = new Set();
+
+        function kiraNilai() {
+            // Formula Kanta: 1/f = 1/u + 1/v  =>  1/v = 1/f - 1/u  =>  v = (u*f)/(u-f)
+            if (u_semasa === f) {
+                v_semasa = Infinity; // Elak ralat bahagi sifar (walaupun slider bermula 15)
+            } else {
+                v_semasa = (u_semasa * f) / (u_semasa - f);
+            }
+        }
+
+        function lukisRadas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            kiraNilai();
+
+            const pusatY = 180; // Paksi utama (Principal axis)
+            const kantaX = 325; // Letak kanta tepat di tengah canvas (X = 325)
+            const dasarY = 280; // Kedudukan meja/pembaris
+
+            // 1. Lukis Pembaris Meter (Dasar)
+            ctx.fillStyle = "#f1c40f"; // Kuning pembaris
+            ctx.fillRect(25, dasarY, 600, 20);
+            ctx.fillStyle = "black";
+            for (let i = 0; i <= 100; i += 2) {
+                let xPos = 25 + (i * (600/100)); // Anggap pembaris mewakili 100 bahagian
+                ctx.beginPath();
+                ctx.moveTo(xPos, dasarY);
+                if (i % 10 === 0) {
+                    ctx.lineTo(xPos, dasarY + 12); // Tanda besar
+                } else {
+                    ctx.lineTo(xPos, dasarY + 6); // Tanda kecil
+                }
+                ctx.stroke();
+            }
+
+            // Hitung kedudukan X sebenar untuk Objek dan Imej (berdasarkan skala)
+            let objX = kantaX - (u_semasa * skala);
+            let imejX = kantaX + (v_semasa * skala);
+
+            // 2. Lukis Sinar Cahaya (Rays)
+            // Sinar 1: Selari paksi utama, dibiaskan melalui titik fokus F
+            ctx.strokeStyle = "rgba(255, 255, 0, 0.6)"; // Kuning cahaya
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(objX, pusatY - 40); // Dari puncak objek
+            ctx.lineTo(kantaX, pusatY - 40); // Selari ke kanta
+            ctx.lineTo(imejX, pusatY + 40); // Dibiaskan ke imej
+            ctx.stroke();
+
+            // Sinar 2: Terus melalui pusat optik kanta
+            ctx.beginPath();
+            ctx.moveTo(objX, pusatY - 40);
+            ctx.lineTo(imejX, pusatY + 40);
+            ctx.stroke();
+
+            // 3. Lukis Paksi Utama (Garis Putus-putus)
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(10, pusatY);
+            ctx.lineTo(640, pusatY);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 4. Lukis Kanta Cembung dan Pemegang
+            // Pemegang kanta
+            ctx.fillStyle = "#e67e22"; // Blok kayu
+            ctx.fillRect(kantaX - 10, pusatY + 60, 20, dasarY - (pusatY + 60));
+            
+            // Kanta (Bentuk Elips)
+            ctx.beginPath();
+            ctx.ellipse(kantaX, pusatY, 15, 60, 0, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(135, 206, 250, 0.5)"; // Biru lutsinar
+            ctx.fill();
+            ctx.strokeStyle = "#fff";
+            ctx.stroke();
+            ctx.fillStyle = "white";
+            ctx.font = "14px Arial";
+            ctx.fillText("Kanta", kantaX - 20, pusatY - 70);
+
+            // Tanda Fokus (F)
+            ctx.fillStyle = "red";
+            ctx.fillRect(kantaX - (f * skala) - 2, pusatY - 2, 4, 4); // F kiri
+            ctx.fillRect(kantaX + (f * skala) - 2, pusatY - 2, 4, 4); // F kanan
+            ctx.fillText("F", kantaX + (f * skala) - 5, pusatY + 20);
+
+            // 5. Lukis Objek (Mentol + Kadbod berlubaang)
+            // Blok kayu bawah
+            ctx.fillStyle = "#8e44ad";
+            ctx.fillRect(objX - 15, pusatY + 30, 30, dasarY - (pusatY + 30));
+            // Kadbod menegak
+            ctx.fillStyle = "#bdc3c7";
+            ctx.fillRect(objX - 5, pusatY - 50, 10, 80);
+            // Segi tiga bercahaya (Objek)
+            ctx.fillStyle = "#f1c40f";
+            ctx.beginPath();
+            ctx.moveTo(objX, pusatY - 40);
+            ctx.lineTo(objX - 5, pusatY - 10);
+            ctx.lineTo(objX + 5, pusatY - 10);
+            ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.fillText("Objek", objX - 15, pusatY - 60);
+
+            // 6. Lukis Skrin Putih (Tempat Imej terbentuk)
+            ctx.fillStyle = "#ecf0f1"; // Skrin putih
+            ctx.fillRect(imejX - 5, pusatY - 80, 10, dasarY - (pusatY - 80));
+            // Lukis Imej tersongsang
+            ctx.fillStyle = "rgba(241, 196, 15, 0.8)";
+            ctx.beginPath();
+            ctx.moveTo(imejX, pusatY + 40);
+            ctx.lineTo(imejX - 5, pusatY + 10);
+            ctx.lineTo(imejX + 5, pusatY + 10);
+            ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.fillText("Skrin (Imej)", imejX - 35, pusatY - 90);
+
+            // 7. Label Jarak (u dan v)
+            ctx.strokeStyle = "#3498db";
+            ctx.beginPath(); // Arrow for u
+            ctx.moveTo(objX, dasarY + 30); ctx.lineTo(kantaX, dasarY + 30);
+            ctx.moveTo(objX, dasarY + 25); ctx.lineTo(objX, dasarY + 35);
+            ctx.moveTo(kantaX, dasarY + 25); ctx.lineTo(kantaX, dasarY + 35);
+            ctx.stroke();
+            ctx.fillStyle = "#3498db";
+            ctx.fillText("u = " + u_semasa.toFixed(1) + " cm", (objX + kantaX)/2 - 30, dasarY + 45);
+
+            ctx.strokeStyle = "#2ecc71";
+            ctx.beginPath(); // Arrow for v
+            ctx.moveTo(kantaX, dasarY + 30); ctx.lineTo(imejX, dasarY + 30);
+            ctx.moveTo(imejX, dasarY + 25); ctx.lineTo(imejX, dasarY + 35);
+            ctx.stroke();
+            ctx.fillStyle = "#2ecc71";
+            ctx.fillText("v = " + v_semasa.toFixed(1) + " cm", (kantaX + imejX)/2 - 30, dasarY + 45);
+        }
+
+        function kemaskiniPeringatan() {
+            if(dataSet.has(u_semasa)) {
+                reminderText.className = "reminder success";
+                reminderText.innerText = "✓ Data untuk u = " + u_semasa.toFixed(1) + " cm telah direkodkan.";
+            } else {
+                reminderText.className = "reminder warning";
+                reminderText.innerText = "⚠️ Sila rekodkan data untuk jarak objek u = " + u_semasa.toFixed(1) + " cm!";
+            }
+        }
+
+        // Event Listeners
+        sliderU.addEventListener('input', function() {
+            u_semasa = parseFloat(this.value);
+            labelU.innerText = u_semasa.toFixed(1);
+            kemaskiniPeringatan();
+            lukisRadas();
+        });
+
+        // Fungsi Merekod Data
+        function rekodData() {
+            if (dataSet.has(u_semasa)) {
+                alert("Data untuk u = " + u_semasa.toFixed(1) + " cm telah pun direkodkan.");
+                return;
+            }
+
+            let u_str = u_semasa.toFixed(1);
+            let v_str = v_semasa.toFixed(1);
+            
+            // Kira 1/u dan 1/v dalam 4 titik perpuluhan
+            let inv_u = (1 / u_semasa).toFixed(4);
+            let inv_v = (1 / v_semasa).toFixed(4);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${u_str}</td>
+                <td>${v_str}</td>
+                <td>${inv_u}</td>
+                <td>${inv_v}</td>
+            `;
+            jadualBody.appendChild(row);
+
+            dataSet.add(u_semasa);
+            kemaskiniPeringatan();
+        }
+
+        // Fungsi Muat Turun Data ke Excel (CSV)
+        function muatTurunExcel() {
+            if(dataSet.size === 0) {
+                alert("Jadual masih kosong. Sila rekodkan sekurang-kurangnya satu data.");
+                return;
+            }
+
+            let csvContent = "Jarak objek u (cm),Jarak imej v (cm),1/u (cm^-1),1/v (cm^-1)\n";
+            let rows = jadualBody.querySelectorAll("tr");
+            
+            rows.forEach(function(row) {
+                let cols = row.querySelectorAll("td");
+                let rowData = [];
+                cols.forEach(function(col) {
+                    rowData.push(col.innerText);
+                });
+                csvContent += rowData.join(",") + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Data_Eksperimen_Kanta_Cembung.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Mula simulasi
+        lukisRadas();
+    </script>
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+
+<script>
+    // 2. Kunci Firebase Anda
+    const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+    
+    // 3. Initialize Firebase & Firestore
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    // 4. THE BOUNCER & THE TRACKER (Digabungkan!)
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // --- BAHAGIAN 1: THE BOUNCER (Dibenarkan Masuk) ---
+            console.log("Student/Teacher logged in: " + user.email);
+            
+            // --- BAHAGIAN 2: THE TRACKER (Tambah Markah Simulasi) ---
+            // NAMA UNIK UNTUK MUKA SURAT INI:
+            const pageID = "visited_kanta_cembung_eksperimen6_3"; 
+
+            // Semak kalau dia dah dapat markah untuk page ini semasa sesi ini
+            if (!sessionStorage.getItem(pageID)) {
+                
+                // Kalau belum, beritahu Buku Log untuk tambah +1 pada simsExplored
+                db.collection("users").doc(user.uid).set({
+                    simsExplored: firebase.firestore.FieldValue.increment(1)
+                }, { merge: true })
+                .then(() => {
+                    console.log("Point added for exploring Convex Lens Simulation!");
+                    // Lekatkan nota supaya kalau dia refresh page, markah tak bertambah lagi
+                    sessionStorage.setItem(pageID, "true"); 
+                })
+                .catch((error) => {
+                    console.error("Gagal tambah markah:", error);
+                });
+            }
+
+        } else {
+            // NO VIP PASS. Halau mereka ke muka surat login.
+            window.location.replace('/login');
+        }
+    });
+</script>
+</body>
+</html>

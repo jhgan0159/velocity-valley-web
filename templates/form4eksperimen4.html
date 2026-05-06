@@ -467,9 +467,10 @@
 <!-- Firebase Libraries -->
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // PASTE YOUR EXACT FIREBASE CONFIG HERE:
+    // 2. Kunci Firebase Anda
     const firebaseConfig = {
         apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
         authDomain: "velocity-valley-edu.firebaseapp.com",
@@ -479,21 +480,41 @@
         appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
     };
     
-    // Initialize Firebase
+    // 3. Initialize Firebase & Firestore
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
+    const db = firebase.firestore();
 
-    // THE BOUNCER: Check if the user is allowed to be here
+    // 4. THE BOUNCER & THE TRACKER (Digabungkan!)
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-            // They have a VIP pass! Let them see the page.
-            console.log("Teacher logged in: " + user.email);
+            // --- BAHAGIAN 1: THE BOUNCER (Dibenarkan Masuk) ---
+            console.log("Student/Teacher logged in: " + user.email);
             
-            // Optional: You can display their email on the page!
-            // document.getElementById("teacher-email").innerText = user.email;
+            // --- BAHAGIAN 2: THE TRACKER (Tambah Markah Simulasi) ---
+            // NAMA UNIK UNTUK MUKA SURAT INI:
+            const pageID = "visited_specific_heat_capacity_eksperimen41_42"; 
+
+            // Semak kalau dia dah dapat markah untuk page ini semasa sesi ini
+            if (!sessionStorage.getItem(pageID)) {
+                
+                // Kalau belum, beritahu Buku Log untuk tambah +1 pada simsExplored
+                db.collection("users").doc(user.uid).set({
+                    simsExplored: firebase.firestore.FieldValue.increment(1)
+                }, { merge: true })
+                .then(() => {
+                    console.log("Point added for exploring Specific Heat Capacity Experiment!");
+                    // Lekatkan nota supaya kalau dia refresh page, markah tak bertambah lagi
+                    sessionStorage.setItem(pageID, "true"); 
+                })
+                .catch((error) => {
+                    console.error("Gagal tambah markah:", error);
+                });
+            }
+
         } else {
-            // NO VIP PASS. Kick them back to the login page immediately.
+            // NO VIP PASS. Halau mereka ke muka surat login.
             window.location.replace('/login');
         }
     });

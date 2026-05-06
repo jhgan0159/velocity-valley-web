@@ -8,6 +8,7 @@
     <!-- Firebase Libraries (Notice we removed the FirebaseUI library!) -->
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
     <style>
         /* A simple, clean design for your login card */
@@ -47,6 +48,7 @@
         <p id="error-message" class="error-text"></p>
     </div>
 
+    
     <script>
         // PASTE YOUR EXACT FIREBASE CONFIG HERE:
         const firebaseConfig = {
@@ -57,44 +59,65 @@
             messagingSenderId: "340043533038",
             appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
         };
-        
-        // Initialize Firebase
+
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
 
-        // Grab the text the user types into the boxes
+        // Initialize Firestore (Panggil Buku Log kita)
+        const db = firebase.firestore();
+
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const errorText = document.getElementById('error-message');
 
         // FUNCTION 1: When they click "Log In"
+        // FUNCTION 1: When they click "Log In"
         function loginUser() {
-            errorText.innerText = ""; // Clear old errors
+            errorText.innerText = ""; 
             firebase.auth().signInWithEmailAndPassword(emailInput.value, passwordInput.value)
                 .then((userCredential) => {
-                    // Success! Teleport to main menu
-                    window.location.replace('/');
+                    const user = userCredential.user;
+                    
+                    // GUNA .set BERSAMA { merge: true } UNTUK ELAK ERROR AKAUN LAMA
+                    db.collection("users").doc(user.uid).set({
+                        email: user.email, // Pastikan e-mel direkodkan juga
+                        loginCount: firebase.firestore.FieldValue.increment(1)
+                    }, { merge: true })
+                    .then(() => {
+                        // Selepas database berjaya direkod, baru teleport!
+                        window.location.replace('/'); 
+                    })
+                    .catch((dbError) => {
+                        // Sebagai backup keselamatan: Kalau database ada masalah sikit pun, 
+                        // kita tetap bagi student masuk ke main page.
+                        console.error("Ralat Buku Log: ", dbError);
+                        window.location.replace('/');
+                    });
                 })
-                .catch((error) => {
-                    // Fail! Show them the error message on screen
-                    errorText.innerText = error.message;
+                .catch((error) => { 
+                    errorText.innerText = error.message; 
                 });
         }
 
         // FUNCTION 2: When they click "Sign Up"
         function signUpUser() {
-            errorText.innerText = ""; // Clear old errors
+            errorText.innerText = ""; 
             firebase.auth().createUserWithEmailAndPassword(emailInput.value, passwordInput.value)
                 .then((userCredential) => {
-                    // Success! Teleport to main menu
-                    window.location.replace('/');
+                    const user = userCredential.user;
+                    // Cipta fail profil baru untuk user ini dalam Buku Log
+                    db.collection("users").doc(user.uid).set({
+                        email: user.email,
+                        loginCount: 1,
+                        simsExplored: 0
+                    }).then(() => {
+                        window.location.replace('/'); // Berjaya! Teleport.
+                    });
                 })
-                .catch((error) => {
-                    // Fail! Show them the error message on screen
-                    errorText.innerText = error.message;
-                });
+                .catch((error) => { errorText.innerText = error.message; });
         }
     </script>
+
 </body>
 </html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Eksperimen 6.1: Indeks Biasan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .simulation-panel, .data-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 400px;
+            max-width: 600px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            display: block;
+            margin: 0 auto 15px auto;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        input[type="range"] {
+            width: 60%;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .btn-excel {
+            background-color: #28a745;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .btn-excel:hover {
+            background-color: #218838;
+        }
+        .reminder {
+            font-weight: bold;
+            color: #dc3545; /* Merah */
+            text-align: center;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        table, th, td {
+            border: 1px solid #aaa;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Simulasi Menentukan Indeks Biasan Blok Kaca</h1>
+
+    <div class="container">
+        <div class="simulation-panel">
+            <canvas id="simCanvas" width="500" height="350"></canvas>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="sudutTuju"><strong>Sudut Tuju, <i>i</i> : <span id="nilaiI">20</span>°</strong></label>
+                    <input type="range" id="sudutTuju" min="0" max="80" value="20" step="1">
+                </div>
+                <div class="control-group">
+                    <span><strong>Sudut Biasan, <i>r</i> : <span id="nilaiR">13.2</span>°</strong> <em>(Auto-kira untuk rujukan)</em></span>
+                </div>
+                <button id="btnRekod" onclick="rekodData()">Rekod Data ke Jadual</button>
+                <div id="reminderText" class="reminder">⚠️ Sila rekodkan data untuk sudut tuju ini!</div>
+            </div>
+        </div>
+
+        <div class="data-panel">
+            <h3>Jadual 6.2 Keputusan</h3>
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Sudut tuju, <i>i</i> / °</th>
+                        <th>Sudut biasan, <i>r</i> / °</th>
+                        <th>sin <i>i</i></th>
+                        <th>sin <i>r</i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+            
+            <button class="btn-excel" onclick="muatTurunExcel()">Muat Turun Jadual (Excel / CSV)</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const sliderTuju = document.getElementById('sudutTuju');
+        const labelI = document.getElementById('nilaiI');
+        const labelR = document.getElementById('nilaiR');
+        const reminderText = document.getElementById('reminderText');
+        const jadualBody = document.querySelector('#dataTable tbody');
+
+        // Pemalar Eksperimen
+        const indeksBiasanKaca = 1.5; // Indeks biasan anggaran untuk kaca
+        let sudutTujuSemasa = 20;
+        let sudutBiasanSemasa = 0;
+        let dataTelahDirekod = false;
+        let dataSet = new Set(); // Elak rekod data bersudut sama berulang kali
+
+        // Fungsi melukis simulasi di Canvas
+        function lukisSimulasi() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // 1. Lukis Blok Kaca
+            ctx.fillStyle = "rgba(173, 216, 230, 0.4)"; // Biru cair (Blok Kaca)
+            ctx.fillRect(50, cy, 400, 150);
+            ctx.strokeStyle = "#555";
+            ctx.strokeRect(50, cy, 400, 150);
+            ctx.fillStyle = "#333";
+            ctx.font = "14px Arial";
+            ctx.fillText("Blok Kaca", 380, cy + 20);
+            ctx.fillText("Udara", 380, cy - 10);
+
+            // 2. Lukis Garis Normal
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(cx, 20);
+            ctx.lineTo(cx, canvas.height - 20);
+            ctx.strokeStyle = "#888";
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillText("Garis Normal", cx - 40, 15);
+
+            // Pengiraan Sudut Biasan (Hukum Snell: n1 sin i = n2 sin r)
+            // sin r = (sin i) / n2
+            let radI = sudutTujuSemasa * (Math.PI / 180);
+            let sinR = Math.sin(radI) / indeksBiasanKaca;
+            let radR = Math.asin(sinR);
+            sudutBiasanSemasa = radR * (180 / Math.PI);
+            
+            // Kemaskini label
+            labelR.innerText = sudutBiasanSemasa.toFixed(1);
+
+            // 3. Lukis Sinar Tuju (Merah)
+            let panjangSinar = 180;
+            let mulaX = cx - panjangSinar * Math.sin(radI);
+            let mulaY = cy - panjangSinar * Math.cos(radI);
+            
+            ctx.beginPath();
+            ctx.moveTo(mulaX, mulaY);
+            ctx.lineTo(cx, cy);
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Lukis Kotak Sinar pada hujung sinar tuju
+            ctx.fillStyle = "purple";
+            ctx.save();
+            ctx.translate(mulaX, mulaY);
+            ctx.rotate(-radI);
+            ctx.fillRect(-15, -30, 30, 30);
+            ctx.restore();
+            ctx.fillStyle = "black";
+            ctx.fillText("Kotak Sinar", mulaX - 30, mulaY - 35);
+
+            // 4. Lukis Sinar Biasan (Merah gelap)
+            let hujungX = cx + panjangSinar * Math.sin(radR);
+            let hujungY = cy + panjangSinar * Math.cos(radR);
+            
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(hujungX, hujungY);
+            ctx.strokeStyle = "darkred";
+            ctx.stroke();
+
+            // 5. Lukis Lengkuk Sudut (Skala)
+// 5. Lukis Lengkuk Sudut (Skala)
+            
+            // Lengkuk sudut tuju (Biru)
+            ctx.beginPath();
+            ctx.arc(cx, cy, 40, -Math.PI/2 - radI, -Math.PI/2, false);
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.fillStyle = "blue";
+            ctx.fillText("i = " + sudutTujuSemasa + "°", cx - 60, cy - 45);
+
+            // Lengkuk sudut biasan (Hijau) - TELAH DIBETULKAN
+            ctx.beginPath();
+            // Tukar parameter terakhir kepada 'false' supaya ia melukis lengkuk kecil yang betul
+            ctx.arc(cx, cy, 45, Math.PI/2 - radR, Math.PI/2, false);
+            ctx.strokeStyle = "green";
+            ctx.stroke();
+            ctx.fillStyle = "green";
+            ctx.fillText("r = " + sudutBiasanSemasa.toFixed(1) + "°", cx + 15, cy + 60);
+        }
+
+        // Event Listener untuk Slider
+        sliderTuju.addEventListener('input', function() {
+            sudutTujuSemasa = parseInt(this.value);
+            labelI.innerText = sudutTujuSemasa;
+            
+            // Periksa jika data ini telah direkod
+            if(dataSet.has(sudutTujuSemasa)) {
+                reminderText.innerText = "✓ Data untuk sudut ini telah direkodkan.";
+                reminderText.style.color = "green";
+                dataTelahDirekod = true;
+            } else {
+                reminderText.innerText = "⚠️ Sila rekodkan data untuk sudut tuju " + sudutTujuSemasa + "° ini!";
+                reminderText.style.color = "#dc3545";
+                dataTelahDirekod = false;
+            }
+            
+            lukisSimulasi();
+        });
+
+        // Fungsi Merekod Data ke Jadual
+        function rekodData() {
+            if (dataSet.has(sudutTujuSemasa)) {
+                alert("Data untuk sudut tuju " + sudutTujuSemasa + "° telah pun direkodkan.");
+                return;
+            }
+
+            let sinI = Math.sin(sudutTujuSemasa * Math.PI / 180).toFixed(4);
+            let sinR = Math.sin(sudutBiasanSemasa * Math.PI / 180).toFixed(4);
+            let rFixed = sudutBiasanSemasa.toFixed(1);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${sudutTujuSemasa}</td>
+                <td>${rFixed}</td>
+                <td>${sinI}</td>
+                <td>${sinR}</td>
+            `;
+            jadualBody.appendChild(row);
+
+            dataSet.add(sudutTujuSemasa);
+            dataTelahDirekod = true;
+            
+            // Kemaskini teks peringatan
+            reminderText.innerText = "✓ Data berjaya direkod. Sila ubah sudut tuju yang lain.";
+            reminderText.style.color = "green";
+        }
+
+        // Fungsi Muat Turun Data ke format CSV (Boleh dibuka menggunakan Excel)
+        function muatTurunExcel() {
+            if(dataSet.size === 0) {
+                alert("Jadual masih kosong. Sila rekodkan data terlebih dahulu.");
+                return;
+            }
+
+            let csvContent = "Sudut tuju i (darjah),Sudut biasan r (darjah),sin i,sin r\n";
+            let rows = jadualBody.querySelectorAll("tr");
+            
+            rows.forEach(function(row) {
+                let cols = row.querySelectorAll("td");
+                let rowData = [];
+                cols.forEach(function(col) {
+                    rowData.push(col.innerText);
+                });
+                csvContent += rowData.join(",") + "\n";
+            });
+
+            // Buat blob CSV dan pautan muat turun
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Data_Eksperimen_Biasan.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Lukis kanvas kali pertama halaman dimuatkan
+        lukisSimulasi();
+    </script>
+
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+
+<script>
+    // 2. Kunci Firebase Anda
+    const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+    
+    // 3. Initialize Firebase & Firestore
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    // 4. THE BOUNCER & THE TRACKER (Digabungkan!)
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // --- BAHAGIAN 1: THE BOUNCER (Dibenarkan Masuk) ---
+            console.log("Student/Teacher logged in: " + user.email);
+            
+            // --- BAHAGIAN 2: THE TRACKER (Tambah Markah Simulasi) ---
+            // NAMA UNIK UNTUK MUKA SURAT INI:
+            const pageID = "visited_index_biasan_eksperimen6_1"; 
+
+            // Semak kalau dia dah dapat markah untuk page ini semasa sesi ini
+            if (!sessionStorage.getItem(pageID)) {
+                
+                // Kalau belum, beritahu Buku Log untuk tambah +1 pada simsExplored
+                db.collection("users").doc(user.uid).set({
+                    simsExplored: firebase.firestore.FieldValue.increment(1)
+                }, { merge: true })
+                .then(() => {
+                    console.log("Point added for exploring Index of Refraction Simulation!");
+                    // Lekatkan nota supaya kalau dia refresh page, markah tak bertambah lagi
+                    sessionStorage.setItem(pageID, "true"); 
+                })
+                .catch((error) => {
+                    console.error("Gagal tambah markah:", error);
+                });
+            }
+
+        } else {
+            // NO VIP PASS. Halau mereka ke muka surat login.
+            window.location.replace('/login');
+        }
+    });
+</script>
+</body>
+</html>
