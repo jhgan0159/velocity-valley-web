@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Velocity Valley | Main Menu</title>
+    <title>Velocity Valley | Interactive KSSM Physics Simulations</title>
+    <meta name="google-site-verification" content="MmRkRKEuUX1VPten0QgZRXs1jkrW6EJuv5LmH45Qkao" />
+    <meta name="description" content="Velocity Valley is an interactive physics experiment simulation platform and an educational board game specifically for the Form 4 and 5 KSSM Physics syllabus in Malaysia.">
+    <meta name="keywords" content="Fizik KSSM, eksperimen fizik tingkatan 4, simulasi fizik, belajar fizik online, Velocity Valley, amali fizik, KSSM Physics, Form 4 physics experiment, physics simulation, learning physics online, educational physics game, physics practical">
+    
+    <meta name="robots" content="index, follow">
     <style>
         /* --- CORE STYLES --- */
         body {
@@ -277,7 +282,23 @@
                 flex-direction: column;
                 text-align: center;
             }
+    /* --- KOD BARU: KAWALAN LOGO DI TELEFON --- */
+            .top-right-logo {
+                width: 65px;         /* Saiz dikecilkan khas untuk telefon */
+                height: 65px;
+                left: 15px;          /* Rapatkan sedikit ke tepi dinding kiri */
+                top: 25px;           /* Letak elok-elok sebaris dengan butang Sign In */
+                transform: none;     /* Matikan fungsi tarik ke tengah */
+                border-width: 2px;   /* Nipiskan border putih sikit */
+            }
+
+            /* Kecilkan tajuk utama sikit supaya tak berlanggar dengan logo */
+            header h1 {
+                font-size: 1.8rem;
+                margin-top: 15px;
+            }
         }
+
         .status-badge {
             display: inline-block;
             background: #2ecc71;
@@ -621,7 +642,7 @@
         <div class="about-card reverse">
             <div class="about-content">
                 <h3>Meet the Founder</h3>
-                <p>Hello! I am the founder of Velocity Valley, a passionate Physics educator and currently a student at Universiti Teknologi Malaysia (UTM) specializing in Physics Education.</p>
+                <p>Hello! I am Gan Jun Heng, the founder of Velocity Valley Education Simulation Games, a passionate Physics educator and currently a student at Universiti Teknologi Malaysia (UTM) specializing in Physics Education.</p>
                 <p>My mission is to break away from traditional rote memorization. By integrating modern web technologies and Constructivist learning theories, I aim to create digital tools that help students truly visualize and understand complex physics concepts.</p>
             </div>
             <!-- Pastikan anda ada gambar founder.png di dalam folder static/images/ -->
@@ -662,7 +683,7 @@
                     <!-- Kad 4 -->
                     <div class="advantage-item" style="border-bottom-color: #f39c12; background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.9)), url('/static/images/advantage4.png');">
                         <strong>📈 Progress Tracking</strong>
-                        <span>ake ownership of your academic growth by creating a personal account. Our platform allows you to archive your simulation explorations, save your progress, and visualize your learning journey as you evolve from a curious student into a Physics expert.</span>
+                        <span>Make ownership of your academic growth by creating a personal account. Our platform allows you to archive your simulation explorations, save your progress, and visualize your learning journey as you evolve from a curious student into a Physics expert.</span>
                     </div>
 
                 </div>
@@ -711,7 +732,7 @@
                     const freeBox = document.getElementById('free-user-box');
                     const promoBox = document.getElementById('promo-popup');
 
-if (userData.isPro === true) {
+                    if (userData.isPro === true) {
                         // VIP IS PRO: Show Download, Hide Warning
                         if(proBox) proBox.style.display = 'block';
                         if(freeBox) freeBox.style.display = 'none';
@@ -1006,7 +1027,7 @@ if (userData.isPro === true) {
 
             if (selectedIndex === currentDailyQuestion.correctAnswer) {
                 currentStreak += 1; // Tambah Streak
-                alert(`Tepat sekali! 🔥 Streak anda: ${currentStreak} Hari.`);
+                alert(`Correct!! 🔥 Your streak: ${currentStreak} Day.`);
 
                 userRef.set({
                     streakCount: currentStreak,
@@ -1019,7 +1040,7 @@ if (userData.isPro === true) {
                     }
                 });
             } else {
-                alert(`Salah! Jawapan sebenar: ${currentDailyQuestion.options[currentDailyQuestion.correctAnswer]}. Cuba lagi esok!`);
+                alert(`Wrong! The correct answer is: ${currentDailyQuestion.options[currentDailyQuestion.correctAnswer]}. Try again tomorrow!`);
                 userRef.set({
                     streakCount: 0, // Reset Streak ke 0
                     lastAnsweredDate: today
