@@ -74,5 +74,12 @@ def admin_panel():
 def login_page():
     return render_template('login.html')
 
+from flask import Flask, render_template, send_from_directory, request
+
+# Tambah route ini supaya Google boleh baca sitemap
+@app.route('/sitemap.xml')
+def static_from_root():
+    return send_from_directory(app.static_folder, request.path[1:])
+
 if __name__ == '__main__':
     app.run(debug=True)
