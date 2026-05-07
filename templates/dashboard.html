@@ -76,6 +76,15 @@
             </div>
         </div>
 
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 5px solid #f39c12; text-align: center; margin-top: 20px;">
+            <h3 style="margin:0 0 5px 0; color:#7f8c8d; font-size: 1rem; font-weight: normal;">Physics Achievement Badges</h3>
+            <p style="margin:0 0 15px 0; color:#2c3e50;">Current Streak: <span id="displayStreak" style="font-weight:bold; color:#e67e22; font-size:1.5rem;">0</span> Days</p>
+
+            <div id="badgeContainer" style="display: flex; justify-content: center; gap: 15px; min-height: 80px; align-items: center;">
+                <p style="color: #bdc3c7; font-size: 0.9rem; font-style: italic;">No badge yet. Answer daily questions to collect!</p>
+            </div>
+        </div>
+
         <div class="btn-group">
             <a href="/" class="btn btn-home">Back to Menu</a>
             <button class="btn btn-logout" onclick="logoutUser()">Sign Out</button>
@@ -97,11 +106,37 @@
                 document.getElementById('display-last-login').innerText = rawDate.toLocaleString(); 
 
                 // 2. BACA DARI BUKU LOG (FIRESTORE) UNTUK DAPATKAN STATISTIK
+// 2. BACA DARI BUKU LOG (FIRESTORE) UNTUK DAPATKAN STATISTIK & LENCANA
                 db.collection("users").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const userData = doc.data();
+                        
+                        // Kemas kini Statistik Asal
                         document.getElementById('display-login-count').innerText = userData.loginCount || 0;
                         document.getElementById('display-sims-explored').innerText = userData.simsExplored || 0;
+                        
+                        // ==========================================
+                        // LOGIK LENCANA BARU BERMULA DI SINI
+                        // ==========================================
+                        const streak = userData.streakCount || 0;
+                        document.getElementById("displayStreak").innerText = streak;
+                        
+                        let badgeHtml = "";
+                        
+                        // Semak jika layak dapat lencana 50 Hari
+                        if (streak >= 50 && streak < 100) {
+                            badgeHtml += `<img src="/static/images/badge50days.png" alt="50 Hari" style="width: 80px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));">`;
+                        } 
+                        // Semak jika layak dapat kedua-dua lencana 50 & 100 Hari
+                        if (streak >= 100) {
+                            badgeHtml += `<img src="/static/images/badge50days.png" alt="50 Hari" style="width: 80px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));">`;
+                            badgeHtml += `<img src="/static/images/badge100days.png" alt="100 Hari" style="width: 80px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));">`;
+                        }
+
+                        // Jika ada lencana, masukkan ke dalam HTML. Jika tiada, biarkan teks asal (Belum ada lencana).
+                        if (badgeHtml !== "") {
+                            document.getElementById("badgeContainer").innerHTML = badgeHtml;
+                        }
                     }
                 });
 

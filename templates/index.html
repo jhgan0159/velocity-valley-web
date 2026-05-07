@@ -416,6 +416,17 @@
             </div>
         </div>
     </div>
+
+    <div id="dailyQuestionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000;">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:30px; border-radius:15px; width:90%; max-width:500px; text-align:center;">
+           <h2 style="color:#e67e22; margin-top:0;">⚡ Challenge of the Day</h2>
+           <img id="dailyQuestionImage" src="" alt="Gambar Soalan" style="display:none; width:100%; max-height:200px; object-fit:contain; border-radius:8px; margin-bottom:15px;">
+           <p id="dailyQuestionText" style="font-size:1.1rem; font-weight:bold; margin-bottom:20px;">Loading question...</p>
+           <div id="dailyOptionsBox" style="display:flex; flex-direction:column; gap:10px;"></div>
+           <button onclick="document.getElementById('dailyQuestionModal').style.display='none'" style="margin-top:20px; background:none; border:none; color:#e74c3c; font-weight:bold; cursor:pointer;">Close (Answer Later)</button>
+        </div>
+    </div>
+
     <header>
 
         <img src="/static/images/logo.png" alt="Velocity Valley Circle Logo" class="top-right-logo">
@@ -441,6 +452,14 @@
 
     </header>
 
+    <div class="section-container" style="text-align: center; background: linear-gradient(135deg, #f39c12, #e67e22); padding: 30px; border-radius: 15px; box-shadow: 0 8px 15px rgba(0,0,0,0.2); color: white; margin-top: -20px; margin-bottom: 3rem; position: relative; z-index: 10;">
+        <h2 style="margin-top: 0; font-size: 2rem; color: white;">⚡ Daily Physics Challenge</h2>
+        <p style="font-size: 1.1rem; opacity: 0.9;">Keep on your momentum and solve daily physics questions!</p>
+        
+        <button onclick="checkAndShowDailyQuestion(true)" style="background-color: white; color: #d35400; padding: 12px 30px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s;">
+            🎯 Answer Now
+        </button>
+    </div>
     <!-- SECTION A: Mini Simulation -->
     <div class="section-container">
         <h2 class="section-title">Mini Simulation</h2>
@@ -576,11 +595,11 @@
 
         <!-- BOKS 2: Untuk Akaun Pro (Buka) -->
         <div id="pro-user-box" style="display: none; text-align: center; padding: 20px; background: #e8f8f5; border: 2px solid #1abc9c; border-radius: 8px;">
-            <h3 style="color: #16a085;">Terima Kasih, Pengguna Pro! 🔓</h3>
-            <p>Anda boleh memuat turun bahan anda di bawah.</p>
+            <h3 style="color: #16a085;">Hi, Pro User! 🔓</h3>
+            <p>You have access to all premium features and can download the admin tools at any time.</p>
             <!-- Pastikan fail zip anda berada di folder static/downloads/ -->
             <a href="/static/downloads/Bahan_Fizik.zip" download="Bahan_Fizik.zip" style="background-color: #1abc9c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                📥 Muat Turun Sekarang
+                📥 download now
             </a>
         </div>
 
@@ -692,10 +711,20 @@
                     const freeBox = document.getElementById('free-user-box');
                     const promoBox = document.getElementById('promo-popup');
 
-                    if (userData.isPro === true) {
+if (userData.isPro === true) {
                         // VIP IS PRO: Show Download, Hide Warning
                         if(proBox) proBox.style.display = 'block';
                         if(freeBox) freeBox.style.display = 'none';
+
+                        // --- KOD BARU: AUTO TEMBAK SOALAN UNTUK PRO ---
+                        // Tembak soalan selepas 1.5 saat jika belum ditunjuk
+                        if (!sessionStorage.getItem('seenDailyQ')) {
+                            setTimeout(() => {
+                                checkAndShowDailyQuestion();
+                                sessionStorage.setItem('seenDailyQ', 'true');
+                            }, 1500);
+                        }
+
                     } else {
                         // REGULAR USER: Show Warning, Hide Download
                         if(proBox) proBox.style.display = 'none';
@@ -729,9 +758,12 @@
     });
 
     // FUNGSI BAHARU: Menutup kotak iklan dan simpan memori di browser
+// FUNGSI BAHARU: Menutup kotak iklan dan simpan memori di browser
     function closePromo() {
         document.getElementById('promo-popup').style.display = 'none';
         sessionStorage.setItem('seenPromo', 'true');
+    
+        checkAndShowDailyQuestion();
     }
 
     // Fungsi Sign Out (Kekalkan yang asal)
@@ -745,7 +777,257 @@
 
     // Fungsi Naik Taraf (Kekalkan yang asal)
     function upgradePrompt() {
-        alert("Sistem Pembayaran RM5 sedang diselenggara. Sila hubungi Cikgu untuk naik taraf akaun secara manual!");
+        alert("The RM5 Payment System is under maintenance. Please contact the Teacher to manually upgrade the account!");
+    }
+    // --- 1. BANK SOALAN (Boleh letak imej) ---
+    // --- 1. BANK SOALAN (Boleh letak imej) ---
+    const questionBank = [
+        {
+            id: "q_newton1",
+            question: "Hubungan antara daya, F, jisim, m dan pecutan, a diberi oleh persamaan \nF = ma \nAntara yang berikut, manakah yang betul mewakili persamaan tersebut? ",
+            image: "",// Letak nama fail gambar di sini
+            options: ["A Hukum Gerakan Newton pertama", "B Hukum Gerakan Newton kedua", "C Hukum Gerakan Newton ketiga"],
+            correctAnswer: 1 
+        },
+        {
+            id: "q_newton2",
+            question: "Rajah 1 menunjukkan sebuah graf halaju melawan masa bagi sebuah kereta.  \nKereta itu bergerak dengan:",
+            image: "/static/images/imageS21.jpg", // Letak nama fail gambar di sini
+            options: ["A. pecutan seragam", "B. halaju seragam", "C. pecutan bertambah", "D. nyahpecutan seragam"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton3",
+            question: "Antara kuantiti fizik berikut, yang manakah mempunyai unit m s⁻²?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Laju", "B. Halaju", "C. Pecutan", "D. Sesaran"],
+            correctAnswer: 2
+        },
+        {
+            id: "q_newton4",
+            question: "Apakah nilai g?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. 9.81 m s⁻¹", "B. 9.81 m s⁻²", "C. 10 m s⁻¹", "D. 12.81 m s⁻²"],
+            correctAnswer: 1
+        },
+        {
+            id: "q_newton5",
+            question: "Inersia sesuatu objek dipengaruhi oleh",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Suhu", "B. Jirim", "C. Jisim", "D. Kuantiti Bahan"],
+            correctAnswer: 2
+        },
+        {
+            id: "q_newton6",
+            question: "Antara berikut, yang manakah merupakan unit bagi momentum?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. N", "B. kg m s⁻¹", "C. kg m s⁻²", "D. kg⁻¹ s⁻²"],
+            correctAnswer: 1
+        },
+        {
+            id: "q_newton7",
+            question: "Antara berikut, prinsip fizik manakah menyatakan bahawa jumlah momentum dalam sistem tertutup adalah kekal?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A Prinsip Keabadian Tenaga", "B. Prinsip Keabadian Momentum", "C. Prinsip Inersia", "D. Prinsip Keseimbangan Daya"],
+            correctAnswer: 1
+        },
+        {
+            id: "q_newton8",
+            question: "Prinsip Keabadian Momentum menyatakan bahawa",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Dalam suatu pelanggaran, jumlah momentum sebelum pelanggaran adalah sentiasa sama dengan jumlah momentum selepas pelanggaran jika tiada daya luar bertindak ke atas sistem itu", "B. Dalam suatu pelanggaran, jumlah momentum sebelum pelanggaran adalah hasil tambah pelanggaran jika tiada daya luar bertindak ke atas sistem itu", "C. Dalam suatu pelanggaran, jumlah momentum sebelum pelanggaran adalah lebih besar daripada jumlah momentum selepas pelanggaran jika tiada daya luar bertindak ke atas sistem itu"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton9",
+            question: "Apakah unit SI bagi daya?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. N", "B. kg m s⁻¹", "C. kg m s⁻²", "D. kg⁻¹ s⁻²"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton10",
+            question: "Apakah formula asas untuk mengira daya mengikut Hukum Newton Kedua?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. F = ma", "B. F = mv", "C. F = m/v", "D. F = v/t"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton11",
+            question: "Jika jisim sesuatu objek adalah malar, hubungan antara daya, F dan pecutan, a ialah …",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. F berkadar terus dengan a", "B. F berkadar songsang dengan a", "C. F tidak bergantung pada a", "D. F berkadar terus dengan jisim"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton12",
+            question: "Inersia ditakrifkan sebagai …… ",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Kecenderungan objek untuk mengekalkan keadaan asalnya", "B. Kadar perubahan halaju", "C. Daya yang bertindak ke atas objek", "D. Pecutan akibat graviti"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton13",
+            question: "Apakah maksud pecutan seragam?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Pecutan yang sifar", "B. Pecutan yang berubah-ubah", "C. Pecutan yang malar", "D.Pecutan yang semakin berkurang"],
+            correctAnswer: 2
+        },
+        {
+            id: "q_newton14",
+            question: "Inersia sesuatu objek bergantung kepada",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Berat", "B. Pecutan Graviti", "C. Jisim", "D.Halaju"],
+            correctAnswer: 2
+        },
+        {
+            id: "q_newton15",
+            question: "Momentum ditakrifkan sebagai",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. hasil darab jisim dan halaju", "B. hasil darab daya dan masa", "C. kadar perubahan halaju", "D.tenaga kinetik objek"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton16",
+            question: "Nyatakan faktor yang mempengaruhi pecutan.\nI	Daya\nII	Jisim\nIII	Kuasa\nIV 	Tenaga",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. I dan II", "B. I dan III", "C. II dan IV", "D. III dan IV"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton17",
+            question: "Apabila suatu objek bergeak dengan halaju seragam, pecutannya akan",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Sifar", "B. Malar", "C. Berkurang", "D. Bertambah"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton18",
+            question: "Antara berikut, yang manakah bukan kesan daya yang bertindak ke atas sebuah kereta yang sedang bergerak?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Jisim kereta itu berkurang", "B. Halaju kereta itu bertambah", "C. Halaju kereta itu berkurang", "D. Arah gerakan kereta berubah"],
+            correctAnswer: 0
+        },
+        {
+            id: "q_newton19",
+            question: "Apakah maksud berat ketara?",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Berat sebenar objek", "B. Daya graviti yang bertindak ke atas objek", "C. Daya sokongan yang dialami oleh objek", "D. Jisim objek"],
+            correctAnswer: 2
+        },
+        {
+            id: "q_newton20",
+            question: "Pita detik digunakan untuk mengkaji",
+            image: "", // Letak nama fail gambar di sini
+            options: ["A. Jisim objek", "B. Daya yang bertindak", "C. Gerakan objek", "D. Tenaga objek"],
+            correctAnswer: 2
+        },
+        {
+            id: "q_newton42",
+            question: "Antara berikut, pernyataan manakah yang betul tentang berat?",
+            image: "", // Biarkan KOSONG jika soalan ini tiada gambar
+            options: ["A Kuantiti vektor", "B Tetap di semua tempat", "C Pecutan graviti", "D Kuantiti jirim dalam sesuatu objek"],
+            correctAnswer: 0
+        }
+    ];
+
+    let currentDailyQuestion = null;
+
+// --- 2. FUNGSI PAPAR SOALAN ---
+// --- 2. FUNGSI PAPAR SOALAN ---
+    function checkAndShowDailyQuestion(isManualClick = false) {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            if(isManualClick) alert("Please sign in first to join the Daily Challenge!");
+            return;
+        }
+
+        const today = new Date().toLocaleDateString('en-GB'); 
+        const userRef = db.collection("users").doc(user.uid);
+
+        userRef.get().then((doc) => {
+            const data = doc.data() || {};
+            const lastAnswered = data.lastAnsweredDate || "";
+            const answeredQs = data.answeredQuestions || [];
+
+        // Henti jika dah jawab hari ini
+            if (lastAnswered === today) {
+                if(isManualClick) {
+                    alert("Great job! You've already completed the challenge for today. Please come back tomorrow to maintain your streak!");
+                }
+                return; 
+            }
+
+        // Tapis soalan yang belum dijawab
+            const availableQuestions = questionBank.filter(q => !answeredQs.includes(q.id));
+            if (availableQuestions.length === 0) {
+                if(isManualClick) {
+                    alert("Congratulations! You have answered all the questions in our database.");
+                }
+                return;
+            }
+
+        // Pilih soalan secara rawak
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            currentDailyQuestion = availableQuestions[randomIndex];
+
+        // Masukkan teks soalan
+            document.getElementById("dailyQuestionText").innerText = currentDailyQuestion.question;
+        
+        // LOGIK GAMBAR
+            const imgElement = document.getElementById("dailyQuestionImage");
+            if (currentDailyQuestion.image !== "") {
+                imgElement.src = currentDailyQuestion.image;
+                imgElement.style.display = "block"; // Tunjuk gambar
+            } else {
+                imgElement.style.display = "none"; // Sembunyi gambar
+            }
+        
+        // Cipta butang pilihan jawapan
+            let optionsHtml = "";
+            currentDailyQuestion.options.forEach((opt, index) => {
+                optionsHtml += `<button onclick="submitDailyAnswer(${index})" style="padding:10px; margin-top:5px; background:#f1f2f6; border:none; border-radius:8px; cursor:pointer; font-size:1rem; width:100%; text-align:left;">${opt}</button>`;
+            });
+            document.getElementById("dailyOptionsBox").innerHTML = optionsHtml;
+
+        // Buka Pop-up
+            document.getElementById("dailyQuestionModal").style.display = "block";
+        });
+    }
+
+// --- 3. FUNGSI SEMAK JAWAPAN ---
+    function submitDailyAnswer(selectedIndex) {
+        const user = firebase.auth().currentUser;
+        const today = new Date().toLocaleDateString('en-GB');
+        const userRef = db.collection("users").doc(user.uid);
+
+        userRef.get().then((doc) => {
+            let currentStreak = doc.data().streakCount || 0;
+
+            if (selectedIndex === currentDailyQuestion.correctAnswer) {
+                currentStreak += 1; // Tambah Streak
+                alert(`Tepat sekali! 🔥 Streak anda: ${currentStreak} Hari.`);
+
+                userRef.set({
+                    streakCount: currentStreak,
+                    lastAnsweredDate: today,
+                    answeredQuestions: firebase.firestore.FieldValue.arrayUnion(currentDailyQuestion.id)
+                }, { merge: true }).then(() => {
+                    // Refresh dashboard untuk tunjuk lencana baru
+                    if(window.location.pathname.includes("dashboard.html")) {
+                        location.reload(); 
+                    }
+                });
+            } else {
+                alert(`Salah! Jawapan sebenar: ${currentDailyQuestion.options[currentDailyQuestion.correctAnswer]}. Cuba lagi esok!`);
+                userRef.set({
+                    streakCount: 0, // Reset Streak ke 0
+                    lastAnsweredDate: today
+                }, { merge: true });
+            }
+
+            document.getElementById("dailyQuestionModal").style.display = "none";
+        });
     }
 </script>
 </body>
