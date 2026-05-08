@@ -74,6 +74,11 @@ def admin_panel():
 def login_page():
     return render_template('login.html')
 
+@app.route('/journey')
+def journey():
+    # 确保最上方有 from flask import render_template
+    return render_template('journey.html')
+
 from flask import Flask, render_template, send_from_directory, request
 
 # Tambah route ini supaya Google boleh baca sitemap
