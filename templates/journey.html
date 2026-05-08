@@ -90,10 +90,66 @@
         @keyframes flashText { 0% { transform: scale(0.5); opacity: 0; } 30% { transform: scale(1.2); opacity: 1; } 70% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
 
         .effect-img { position: absolute; z-index: 50; pointer-events: none; mix-blend-mode: multiply; }
+                /* ================= MOBILE OPTIMIZATION & ROTATE OVERLAY ================= */
+        /* 1. 竖屏提示的遮罩层 */
+        #rotate-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #2c3e50; color: white; z-index: 9999;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .rotate-icon { font-size: 5rem; animation: rotatePhone 2s infinite ease-in-out; margin-bottom: 20px; }
+        @keyframes rotatePhone {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg); }
+            100% { transform: rotate(-90deg); }
+        }
+
+        /* 2. 侦测如果是竖屏 (Portrait) 并且是手机屏幕，就强制显示遮罩，隐藏游戏 */
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            #rotate-overlay { display: flex !important; }
+            #game-container { display: none !important; }
+            #name-screen, #intro-screen, #select-screen { display: none !important; }
+        }
+
+        /* 3. 侦测如果是手机横屏 (Landscape)，自动缩小部分字体和按钮，让画面不拥挤 */
+        @media screen and (max-height: 500px) {
+            /* 缩小开场介绍的排版 */
+            .intro-content h2 { font-size: 1.5rem; margin-bottom: 5px; }
+            .intro-content p { font-size: 0.9rem; margin-bottom: 5px; }
+            .rules-box { font-size: 0.85rem; padding: 10px; }
+            .start-btn { padding: 8px 20px; font-size: 1rem; margin-top: 10px; }
+            
+            /* 缩小选角卡片 */
+            .char-card { width: 110px; padding: 10px; }
+            .char-card img { width: 50px; height: 50px; }
+            .char-card button { font-size: 0.85rem; padding: 5px; }
+            #select-screen h1 { font-size: 1.8rem; margin-bottom: 5px; }
+            
+            /* 缩小游戏内的卷轴和按钮 */
+            #question-scroll { padding: 4% 8%; }
+            #q-text { font-size: 1rem; margin-bottom: 5px; }
+            #q-image { max-height: 100px; }
+            .q-option-btn { font-size: 0.85rem; padding: 6px; margin: 3px 0; max-width: 100%; }
+            
+            /* 缩小技能按键和血条 */
+            #skill-btn { width: 45px; height: 45px; font-size: 22px; }
+            #battle-ui { padding: 10px; }
+            .health-bar-bg { height: 15px; width: 40%; }
+            
+            /* 缩小名字输入框 */
+            #name-screen h2 { font-size: 1.5rem; }
+            #name-screen input { padding: 10px; font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
-
+    <div id="rotate-overlay">
+        <div class="rotate-icon">📱</div>
+        <h2 style="color: #f39c12;">Please Rotate Your Device</h2>
+        <p>This game must be played in Landscape mode.</p>
+    </div>
     <div id="game-container">
         <div class="scrolling-bg" id="bg-layer"></div>
 
