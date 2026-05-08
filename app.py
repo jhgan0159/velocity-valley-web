@@ -79,6 +79,11 @@ def journey():
     # 确保最上方有 from flask import render_template
     return render_template('journey.html')
 
+@app.route('/tcadminwest')
+def tcadminwest():
+    # 以后你可以在这里加逻辑，比如只有 Pro User (老师) 才能访问这个页面
+    return render_template('tcadminwest.html')
+
 from flask import Flask, render_template, send_from_directory, request
 
 # Tambah route ini supaya Google boleh baca sitemap

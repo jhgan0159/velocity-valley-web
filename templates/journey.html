@@ -17,237 +17,77 @@
             messagingSenderId: "340043533038",
             appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
         };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
     </script>
 
     <style>
-        /* ================= CORE & LAYOUT ================= */
-        body {
-            margin: 0; padding: 0; background-color: #2c3e50;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; font-family: 'Segoe UI', Tahoma, sans-serif;
-            overflow: hidden;
-        }
+        body { margin: 0; padding: 0; background-color: #2c3e50; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; }
+        #game-container { width: 100vw; max-width: 1000px; aspect-ratio: 16 / 9; background-color: #87CEEB; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        @media (max-aspect-ratio: 16/9) { #game-container { width: 100vw; height: 56.25vw; } }
 
-        #game-container {
-            width: 100vw; max-width: 1000px; aspect-ratio: 16 / 9;
-            background-color: #87CEEB; position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .scrolling-bg { position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url('/static/images/bg_mountain.png'); background-size: 50% 100%; background-repeat: repeat-x; animation: scrollBg 10s linear infinite; animation-play-state: paused; z-index: 1; }
+        @keyframes scrollBg { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        @media (max-aspect-ratio: 16/9) {
-            #game-container { width: 100vw; height: 56.25vw; }
-        }
+        /* 新增：输入名字界面 */
+        #name-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
+        #name-screen input { padding: 15px; font-size: 1.5rem; border-radius: 8px; border: 2px solid #e67e22; margin-bottom: 20px; width: 80%; max-width: 300px; text-align: center; }
 
-        /* ================= BACKGROUND ================= */
-        .scrolling-bg {
-            position: absolute; top: 0; left: 0; width: 200%; height: 100%;
-            background-image: url('/static/images/bg_mountain.png'); 
-            background-size: 50% 100%; background-repeat: repeat-x;
-            animation: scrollBg 10s linear infinite;
-            animation-play-state: paused; z-index: 1;
-        }
-
-        @keyframes scrollBg {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* ================= INTRO, START & END SCREENS ================= */
-        #intro-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('/static/images/journey_bg.png'); 
-            background-size: cover; background-position: center;
-            background-color: rgba(0,0,0,0.8); background-blend-mode: overlay;
-            z-index: 150; display: flex; justify-content: center; align-items: center;
-        }
-
-        #intro-scroll {
-            width: 90%; height: 85%; max-width: 800px;
-            background-image: url('/static/images/ui_scroll.jpg');
-            background-size: 100% 100%; padding: 8% 12%; box-sizing: border-box;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; color: #2c3e50;
-        }
-
-        /* 修复前传故事的溢出问题 */
-        .intro-content {
-            width: 100%; height: 100%; overflow-y: auto; 
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            padding-right: 10px; 
-        }
-        .intro-content::-webkit-scrollbar { width: 5px; }
-        .intro-content::-webkit-scrollbar-thumb { background: #d35400; border-radius: 10px; }
-
+        #intro-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('/static/images/journey_bg.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.8); background-blend-mode: overlay; z-index: 150; display: none; justify-content: center; align-items: center; }
+        #intro-scroll { width: 90%; height: 85%; max-width: 800px; background-image: url('/static/images/ui_scroll.jpg'); background-size: 100% 100%; padding: 8% 12%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #2c3e50; }
+        .intro-content { width: 100%; height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-right: 10px; }
+        .intro-content::-webkit-scrollbar { width: 5px; } .intro-content::-webkit-scrollbar-thumb { background: #d35400; border-radius: 10px; }
         .intro-content h2 { font-size: 2.2rem; color: #d35400; margin-bottom: 15px; margin-top: 0; }
         .intro-content p { font-size: 1.1rem; line-height: 1.5; font-weight: bold; margin-bottom: 15px; }
+        .rules-box { text-align: left; width: 100%; max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.4); padding: 15px; border-radius: 10px; font-size: 1rem; line-height: 1.4; }
         
-        .rules-box {
-            text-align: left; width: 100%; max-width: 600px; margin: 0 auto; 
-            background: rgba(255,255,255,0.4); padding: 15px; border-radius: 10px;
-            font-size: 1rem; line-height: 1.4;
-        }
-
-        .start-btn {
-            background: #e67e22; color: white; border: 2px solid #d35400; padding: 12px 30px;
-            border-radius: 8px; font-size: 1.3rem; font-weight: bold; cursor: pointer; transition: 0.2s;
-            margin-top: 15px; flex-shrink: 0;
-        }
+        .start-btn { background: #e67e22; color: white; border: 2px solid #d35400; padding: 12px 30px; border-radius: 8px; font-size: 1.3rem; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 15px; flex-shrink: 0; }
         .start-btn:hover { background: #d35400; transform: scale(1.05); }
 
-        #select-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('/static/images/journey_bg.png'); 
-            background-size: cover; background-position: center;
-            background-color: rgba(0,0,0,0.8); background-blend-mode: overlay;
-            z-index: 100; display: none; flex-direction: column; 
-            justify-content: center; align-items: center; color: white;
-        }
-        
-        #end-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('/static/images/bgwin.png');
-            background-size: cover; background-position: center;
-            z-index: 100; display: none; flex-direction: column; 
-            justify-content: center; align-items: center; color: white;
-        }
+        #select-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('/static/images/journey_bg.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.8); background-blend-mode: overlay; z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; }
+        #end-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('/static/images/bgwin.png'); background-size: cover; background-position: center; z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; }
 
         .char-grid { display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
-
-        .char-card {
-            background: rgba(255,255,255,0.1); border: 2px solid #f39c12; border-radius: 10px;
-            padding: 15px; text-align: center; cursor: pointer; transition: transform 0.2s;
-            width: 150px; backdrop-filter: blur(5px);
-        }
+        .char-card { background: rgba(255,255,255,0.1); border: 2px solid #f39c12; border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; transition: transform 0.2s; width: 150px; backdrop-filter: blur(5px); }
         .char-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.2); }
         .char-card img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px; }
-        .char-card button { 
-            background: #f39c12; color: white; border: none; padding: 8px; 
-            border-radius: 5px; font-weight: bold; width: 100%; cursor: pointer;
-        }
+        .char-card button { background: #f39c12; color: white; border: none; padding: 8px; border-radius: 5px; font-weight: bold; width: 100%; cursor: pointer; }
 
-        /* ================= GAME OBJECTS ================= */
-        .character-box {
-            position: absolute; bottom: 15%; left: 10%; height: 35%;
-            z-index: 20; transform-origin: center bottom;
-        }
-        
+        .character-box { position: absolute; bottom: 15%; left: 10%; height: 35%; z-index: 20; transform-origin: center bottom; }
         .character-img { height: 100%; animation: walkBob 0.6s infinite alternate; animation-play-state: paused; }
+        #tang-shield { position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; z-index: 21; display: none; pointer-events: none; mix-blend-mode: screen; opacity: 0.6; }
+        @keyframes walkBob { 0% { transform: translateY(0); } 100% { transform: translateY(-8%); } }
 
-        #tang-shield {
-            position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
-            z-index: 21; display: none; pointer-events: none; 
-            mix-blend-mode: screen; opacity: 0.6;
-        }
-
-        @keyframes walkBob {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-8%); }
-        }
-
-        .enemy-container {
-            position: absolute; right: 5%; bottom: 15%; width: 50%; height: 35%;
-            z-index: 10; display: flex; justify-content: space-around; align-items: flex-end;
-        }
-
-        #boss-origin {
-            position: absolute; right: -100vw; bottom: 0;
-            width: 100%; display: flex; justify-content: center;
-            transition: transform 1.2s ease-out; z-index: 15;
-        }
-
-        .enemy-wrapper {
-            position: relative; height: 100%; transition: opacity 0.3s;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-            transform-origin: center bottom;
-        }
-
-        .enemy-label {
-            background: #e74c3c; color: white; font-weight: bold; padding: 2px 8px;
-            border-radius: 5px; border: 2px solid white; margin-bottom: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 1.2rem;
-        }
-
+        .enemy-container { position: absolute; right: 5%; bottom: 15%; width: 50%; height: 35%; z-index: 10; display: flex; justify-content: space-around; align-items: flex-end; }
+        #boss-origin { position: absolute; right: -100vw; bottom: 0; width: 100%; display: flex; justify-content: center; transition: transform 1.2s ease-out; z-index: 15; }
+        .enemy-wrapper { position: relative; height: 100%; transition: opacity 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; transform-origin: center bottom; }
+        .enemy-label { background: #e74c3c; color: white; font-weight: bold; padding: 2px 8px; border-radius: 5px; border: 2px solid white; margin-bottom: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 1.2rem; }
         .enemy-img { height: 80%; animation: float 1.5s infinite alternate; }
-
-        @keyframes float {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-10%); }
-        }
+        @keyframes float { 0% { transform: translateY(0); } 100% { transform: translateY(-10%); } }
 
         .split-pop { animation: splitOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes splitOut {
-            0% { transform: scale(0.5) translate(0, 50px); opacity: 0; filter: blur(5px); }
-            100% { transform: scale(1) translate(0, 0); opacity: 1; filter: blur(0); }
-        }
+        @keyframes splitOut { 0% { transform: scale(0.5) translate(0, 50px); opacity: 0; filter: blur(5px); } 100% { transform: scale(1) translate(0, 0); opacity: 1; filter: blur(0); } }
 
-        /* ================= UI & SCROLL ================= */
-        #battle-ui {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 15px; box-sizing: border-box; 
-            z-index: 100; display: flex; justify-content: space-between; align-items: flex-start;
-        }
-
+        #battle-ui { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; box-sizing: border-box; z-index: 100; display: flex; justify-content: space-between; align-items: flex-start; }
         .health-bar-bg { width: 30%; height: 20px; background: #333; border: 2px solid white; border-radius: 10px; overflow: hidden; }
         #health-fill { width: 100%; height: 100%; background: #2ecc71; transition: width 0.3s; }
-
-        #skill-btn {
-            background: rgba(255, 255, 255, 0.9); border: 3px solid #f39c12; border-radius: 50%;
-            width: 60px; height: 60px; font-size: 30px; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3); transition: transform 0.2s; pointer-events: auto;
-        }
+        #skill-btn { background: rgba(255, 255, 255, 0.9); border: 3px solid #f39c12; border-radius: 50%; width: 60px; height: 60px; font-size: 30px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3); transition: transform 0.2s; pointer-events: auto; }
         #skill-btn:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.6; }
 
-        #question-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 80; display: none;
-            justify-content: center; align-items: center;
-        }
-
-        #question-scroll {
-            width: 95%; height: 90%; background-image: url('/static/images/ui_scroll.jpg');
-            background-size: 100% 100%; padding: 8% 12%; box-sizing: border-box;
-            display: flex; flex-direction: column; align-items: center;
-            animation: popUp 0.3s ease-out forwards;
-        }
-
-        .scroll-content {
-            width: 100%; height: 100%; overflow-y: auto; 
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            padding-right: 10px; 
-        }
-        .scroll-content::-webkit-scrollbar { width: 5px; }
-        .scroll-content::-webkit-scrollbar-thumb { background: #d35400; border-radius: 10px; }
-
-        @keyframes popUp {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        #question-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 80; display: none; justify-content: center; align-items: center; }
+        #question-scroll { width: 95%; height: 90%; background-image: url('/static/images/ui_scroll.jpg'); background-size: 100% 100%; padding: 8% 12%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; animation: popUp 0.3s ease-out forwards; }
+        .scroll-content { width: 100%; height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-right: 10px; }
+        .scroll-content::-webkit-scrollbar { width: 5px; } .scroll-content::-webkit-scrollbar-thumb { background: #d35400; border-radius: 10px; }
+        @keyframes popUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         #q-text { font-size: 1.3rem; font-weight: bold; color: #2c3e50; text-align: center; margin-bottom: 10px; width: 100%; }
         #q-image { max-height: 150px; max-width: 100%; object-fit: contain; margin-bottom: 10px; border-radius: 8px; border: 2px solid #555; display: none; }
-        
-        .q-option-btn {
-            width: 100%; max-width: 500px; background: #fdf2e9; border: 2px solid #d35400; padding: 10px; margin: 5px 0;
-            border-radius: 8px; font-size: 1rem; font-weight: bold; color: #d35400; cursor: pointer; transition: 0.2s; flex-shrink: 0;
-        }
+        .q-option-btn { width: 100%; max-width: 500px; background: #fdf2e9; border: 2px solid #d35400; padding: 10px; margin: 5px 0; border-radius: 8px; font-size: 1rem; font-weight: bold; color: #d35400; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
         .q-option-btn:hover { background: #d35400; color: white; }
         .q-option-btn.disabled-option { opacity: 0.3; pointer-events: none; text-decoration: line-through; }
 
-        #round-announcer {
-            position: absolute; top: 40%; left: 0; width: 100%; text-align: center;
-            font-size: 4rem; font-weight: bold; color: #f39c12; text-shadow: 3px 3px #000;
-            z-index: 70; display: none; animation: flashText 1.5s forwards;
-        }
-
-        @keyframes flashText {
-            0% { transform: scale(0.5); opacity: 0; }
-            30% { transform: scale(1.2); opacity: 1; }
-            70% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; }
-        }
+        #round-announcer { position: absolute; top: 40%; left: 0; width: 100%; text-align: center; font-size: 4rem; font-weight: bold; color: #f39c12; text-shadow: 3px 3px #000; z-index: 70; display: none; animation: flashText 1.5s forwards; }
+        @keyframes flashText { 0% { transform: scale(0.5); opacity: 0; } 30% { transform: scale(1.2); opacity: 1; } 70% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
 
         .effect-img { position: absolute; z-index: 50; pointer-events: none; mix-blend-mode: multiply; }
     </style>
@@ -257,10 +97,17 @@
     <div id="game-container">
         <div class="scrolling-bg" id="bg-layer"></div>
 
+        <div id="name-screen">
+            <h2>Joining Room: <span id="display-room-id" style="color: #f39c12;"></span></h2>
+            <p style="margin-top:0; color:#ccc;">Please enter your name to begin.</p>
+            <input type="text" id="player-name-input" placeholder="Your Name" autocomplete="off">
+            <button class="start-btn" onclick="submitName()">Enter Room</button>
+        </div>
+
         <div id="intro-screen">
             <div id="intro-scroll">
                 <div class="intro-content">
-                    <h2>The Journey Begins</h2>
+                    <h2 id="intro-title">The Journey Begins</h2>
                     <p>The sacred scriptures await in the West, but the path is swarming with cunning demons who clone themselves to confuse travelers!</p>
                     <div class="rules-box">
                         📜 <b>Rules of the Journey:</b><br><br>
@@ -268,7 +115,7 @@
                         💥 A wrong answer means you hit a fake clone, leaving you open to a punishing attack from the real demon!<br><br>
                         ⭐ Each hero has a unique skill. Use it wisely—it can only be used <b>ONCE</b> per journey!
                     </div>
-                    <button class="start-btn" onclick="goToSelectScreen()">Accept the Quest</button>
+                    <button class="start-btn" id="accept-quest-btn" onclick="goToSelectScreen()">Accept the Quest</button>
                 </div>
             </div>
         </div>
@@ -342,36 +189,37 @@
     </div>
 
     <script>
-        // --- 1. AUDIO OBJECTS & MIXING ---
-        const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
-        sfxBgm.loop = true;
-        sfxBgm.volume = 0.3; // 降低背景音乐，让特效音更震撼
+const sfxBgm = new Audio('/static/audio/bgmusic.mp3'); 
+        sfxBgm.loop = true; 
+        sfxBgm.volume = 0.3; 
         
         const sfxHit = new Audio('/static/audio/hitsound.mp3');
         const sfxScratch = new Audio('/static/audio/scratch.mp3');
         const sfxLaugh = new Audio('/static/audio/demonlaugh.mp3');
         const sfxWin = new Audio('/static/audio/winning.mp3');
 
-        // --- 2. GAME DATA (Dynamic Question Length) ---
-        const questionBank = [
-            { q: "Apakah formula bagi Hukum Gerakan Newton Kedua?", options: ["F = ma", "F = mv", "F = m/v", "F = v/t"], correct: 0 },
-            { q: "Apakah unit SI untuk Daya?", image: "", options: ["kg m s⁻¹", "N", "kg m s⁻²", "J"], correct: 1 },
-            { q: "Antara kuantiti fizik berikut, yang manakah mempunyai unit m s⁻²?", options: ["A. Laju", "B. Halaju", "C. Pecutan", "D. Sesaran"], correct: 2 },
-            { q: "Prinsip Keabadian Momentum menyatakan bahawa", options: ["A. Dalam suatu pelanggaran, jumlah momentum sebelum pelanggaran adalah sentiasa sama dengan jumlah momentum selepas pelanggaran jika tiada daya luar bertindak ke atas sistem itu", "B. Dalam suatu pelanggaran, jumlah momentum sebelum pelanggaran adalah hasil tambah pelanggaran jika tiada daya luar bertindak ke atas sistem itu", "C. Dalam suatu pelanggaran, jumlah momentum sebelum pelanggaran adalah lebih besar daripada jumlah momentum selepas pelanggaran jika tiada daya luar bertindak ke atas sistem itu"], correct: 0 },
-            { q: "Rajah 1 menunjukkan sebuah graf halaju melawan masa bagi sebuah kereta.  \nKereta itu bergerak dengan:", image: "/static/images/imageS21.jpg", options: ["A. pecutan seragam", "B. halaju seragam", "C. pecutan bertambah", "D. nyahpecutan seragam"], correct: 0 }
+        const defaultQuestionBank = [
+            { q: "What is the formula for Newton's Second Law of Motion?", options: ["F = ma", "F = mv", "F = m/v", "F = v/t"], correct: 0 },
+            { q: "What is the SI unit for Force?", image: "", options: ["kg m s⁻¹", "N", "kg m s⁻²", "J"], correct: 1 },
+            { q: "Inertia of an object is influenced by...", options: ["Temperature", "Mass", "Volume", "Velocity"], correct: 1 },
+            { q: "What does this graph represent?", image: "/static/images/imageS21.jpg", options: ["Constant acceleration", "Constant velocity", "Increasing acceleration", "Constant deceleration"], correct: 0 }
         ];
         
+        let questionBank = [];
         let player = { id: '', hp: 100 };
         let currentQIndex = 0;
         let selectedQuestions = [];
         let wrongRecords = [];
+        let correctCount = 0; 
         
-        let TOTAL_ROUNDS = questionBank.length; 
-        let DAMAGE = 100 / TOTAL_ROUNDS;
-
+        let TOTAL_ROUNDS = 0; 
+        let DAMAGE = 0;
         let skillUsed = false;
         let tangShieldActive = false;
         let shaDefenseTurns = 0;
+
+        let currentRoomId = null;
+        let livePlayerId = null;
 
         const bgLayer = document.getElementById('bg-layer');
         const playerBox = document.getElementById('player-box');
@@ -379,34 +227,84 @@
         const enemiesBox = document.getElementById('enemies-box');
         const qOverlay = document.getElementById('question-overlay');
 
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentRoomId = urlParams.get('room');
+
+            if (currentRoomId) {
+                document.getElementById('display-room-id').innerText = currentRoomId;
+                document.getElementById('name-screen').style.display = 'flex';
+                document.getElementById('intro-title').innerText = "Teacher's Challenge";
+                
+                db.collection("journey_rooms").doc(currentRoomId).get().then((doc) => {
+                    if (doc.exists) {
+                        questionBank = doc.data().questions;
+                        TOTAL_ROUNDS = questionBank.length;
+                        DAMAGE = 100 / TOTAL_ROUNDS;
+                    } else {
+                        alert("Invalid Room Code! Loading Default Game...");
+                        loadDefaultGame();
+                    }
+                }).catch(err => {
+                    console.log(err); loadDefaultGame();
+                });
+            } else {
+                loadDefaultGame();
+                document.getElementById('intro-screen').style.display = 'flex';
+            }
+        };
+
+        function loadDefaultGame() {
+            currentRoomId = null;
+            questionBank = [...defaultQuestionBank];
+            TOTAL_ROUNDS = questionBank.length; 
+            DAMAGE = 100 / TOTAL_ROUNDS;
+        }
+
+        function submitName() {
+            const nameInput = document.getElementById('player-name-input').value.trim();
+            if(!nameInput) return alert("Please enter your name!");
+
+            document.getElementById('name-screen').style.display = 'none';
+            document.getElementById('intro-screen').style.display = 'flex';
+            
+            db.collection("journey_rooms").doc(currentRoomId).collection("players").add({
+                name: nameInput,
+                status: "not_started",
+                answers: {},
+                totalCorrect: 0,
+                hp: 100,
+                joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(docRef => {
+                livePlayerId = docRef.id; 
+            });
+        }
+
         function goToSelectScreen() {
             document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('select-screen').style.display = 'flex';
             sfxBgm.play().catch(e => console.log("Audio play prevented: ", e));
+
+            if(currentRoomId && livePlayerId) {
+                db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({
+                    status: "playing"
+                });
+            }
         }
 
         function dashToTarget(mover, target, callback) {
-            const moverRect = mover.getBoundingClientRect();
-            const targetRect = target.getBoundingClientRect();
-            
-            const moverCenterX = moverRect.left + moverRect.width / 2;
-            const moverCenterY = moverRect.top + moverRect.height / 2;
-            
-            const targetCenterX = targetRect.left + targetRect.width / 2;
-            const targetCenterY = targetRect.top + targetRect.height / 2;
-
-            const dx = targetCenterX - moverCenterX;
-            const dy = targetCenterY - moverCenterY;
-
+            const moverRect = mover.getBoundingClientRect(); const targetRect = target.getBoundingClientRect();
+            const moverCenterX = moverRect.left + moverRect.width / 2; const moverCenterY = moverRect.top + moverRect.height / 2;
+            const targetCenterX = targetRect.left + targetRect.width / 2; const targetCenterY = targetRect.top + targetRect.height / 2;
+            const dx = targetCenterX - moverCenterX; const dy = targetCenterY - moverCenterY;
             mover.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-            mover.style.transform = `translate(${dx}px, ${dy}px)`;
-
+            mover.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
             setTimeout(() => { if(callback) callback(); }, 350);
         }
 
         function returnToOrigin(mover, callback) {
             mover.style.transition = 'transform 0.4s ease-in-out';
-            mover.style.transform = `translate(0px, 0px)`;
+            mover.style.transform = 'translate(0px, 0px)';
             setTimeout(() => { if(callback) callback(); }, 400);
         }
 
@@ -422,8 +320,7 @@
             if (charId === 'sha') { playerImg.src = '/static/images/char_sha.png'; skillBtn.innerHTML = '💪'; }
 
             document.getElementById('total-turn-text').innerText = TOTAL_ROUNDS;
-
-            selectedQuestions = [...questionBank].sort(() => 0.5 - Math.random());
+            selectedQuestions = [...questionBank]; 
             runSequence();
         }
 
@@ -442,46 +339,28 @@
             setTimeout(() => {
                 bgLayer.style.animationPlayState = 'paused';
                 playerImg.style.animationPlayState = 'paused';
-
                 const announcer = document.getElementById('round-announcer');
-                announcer.innerText = `ROUND ${currentQIndex + 1}`;
+                announcer.innerText = 'ROUND ' + (currentQIndex + 1);
                 announcer.style.display = 'block';
-                
                 spawnEnemiesLogic();
-
-                setTimeout(() => {
-                    announcer.style.display = 'none';
-                    showScroll();
-                }, 2800);
-
+                setTimeout(() => { announcer.style.display = 'none'; showScroll(); }, 2800);
             }, 2000);
         }
 
         function spawnEnemiesLogic() {
-            enemiesBox.innerHTML = `
-                <div id="boss-origin">
-                    <img src="/static/images/enemy_demon_1.png" style="height: 180px; animation: float 1.5s infinite alternate;">
-                </div>
-            `;
+            enemiesBox.innerHTML = '<div id="boss-origin"><img src="/static/images/enemy_demon_1.png" style="height: 180px; animation: float 1.5s infinite alternate;"></div>';
             const origin = document.getElementById('boss-origin');
-            
             setTimeout(() => { origin.style.transform = 'translateX(-100vw)'; }, 50); 
-
             setTimeout(() => {
                 origin.style.opacity = '0'; 
-                
                 const labels = ['A', 'B', 'C', 'D'];
                 for (let i = 0; i < 4; i++) {
                     let wrapper = document.createElement('div');
                     wrapper.className = 'enemy-wrapper split-pop'; 
-                    wrapper.id = `enemy-${i}`;
-                    wrapper.innerHTML = `
-                        <div class="enemy-label">${labels[i]}</div>
-                        <img src="/static/images/enemy_demon_1.png" class="enemy-img">
-                    `;
+                    wrapper.id = 'enemy-' + i;
+                    wrapper.innerHTML = '<div class="enemy-label">' + labels[i] + '</div><img src="/static/images/enemy_demon_1.png" class="enemy-img">';
                     enemiesBox.appendChild(wrapper);
                 }
-                
                 setTimeout(() => { origin.remove(); }, 600);
             }, 1400);
         }
@@ -489,21 +368,14 @@
         function showScroll() {
             const qData = selectedQuestions[currentQIndex];
             document.getElementById('q-text').innerText = qData.q;
-            
             const imgEl = document.getElementById('q-image');
-            if (qData.image) {
-                imgEl.src = qData.image;
-                imgEl.style.display = 'block';
-            } else {
-                imgEl.style.display = 'none';
-            }
-
+            if (qData.image) { imgEl.src = qData.image; imgEl.style.display = 'block'; } else { imgEl.style.display = 'none'; }
+            const labels = ['A', 'B', 'C', 'D'];
             for (let i = 0; i < 4; i++) {
-                let btn = document.getElementById(`opt-${i}`);
-                btn.innerText = `${['A', 'B', 'C', 'D'][i]}: ${qData.options[i]}`;
+                let btn = document.getElementById('opt-' + i);
+                btn.innerText = labels[i] + ': ' + qData.options[i];
                 btn.className = 'q-option-btn'; 
             }
-            
             qOverlay.style.display = 'flex';
         }
 
@@ -512,70 +384,54 @@
             const qData = selectedQuestions[currentQIndex];
             const isCorrect = (selectedIndex === qData.correct);
             
-            const targetEnemy = document.getElementById(`enemy-${selectedIndex}`);
-            const realEnemy = document.getElementById(`enemy-${qData.correct}`);
+            const targetEnemy = document.getElementById('enemy-' + selectedIndex);
+            const realEnemy = document.getElementById('enemy-' + qData.correct);
 
-            document.querySelectorAll('.enemy-wrapper').forEach(el => {
-                el.classList.remove('split-pop');
-            });
+            document.querySelectorAll('.enemy-wrapper').forEach(el => el.classList.remove('split-pop'));
 
-            // 【音效修复】：不等待冲刺结束，起跑瞬间立刻触发音效抵消MP3自带空白延迟
-            if (isCorrect) {
-                sfxHit.currentTime = 0; 
-                sfxHit.play(); 
-            } else {
-                sfxLaugh.currentTime = 0;
-                sfxLaugh.play(); 
+            if (isCorrect) { sfxHit.currentTime = 0; sfxHit.play(); correctCount++; } 
+            else { sfxLaugh.currentTime = 0; sfxLaugh.play(); }
+
+            if(currentRoomId && livePlayerId) {
+                let updateData = {
+                    totalCorrect: correctCount,
+                    hp: Math.max(0, Math.round(player.hp)) 
+                };
+                updateData['answers.' + currentQIndex] = isCorrect ? "O" : "X";
+                db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update(updateData);
             }
 
             dashToTarget(playerBox, targetEnemy, () => {
-                
                 if (isCorrect) {
-                    showEffect('/static/images/fx_hit.jpg', targetEnemy);
-                    targetEnemy.style.opacity = '0'; 
-                    
+                    showEffect('/static/images/fx_hit.jpg', targetEnemy); targetEnemy.style.opacity = '0'; 
                     returnToOrigin(playerBox, () => {
                         setTimeout(() => {
                             document.querySelectorAll('.enemy-wrapper').forEach(el => el.style.opacity = '0');
                             setTimeout(() => { currentQIndex++; runSequence(); }, 600);
                         }, 300); 
                     });
-
                 } else {
-                    wrongRecords.push(`Q: ${qData.q} (Correct: ${qData.options[qData.correct]})`);
-                    
+                    wrongRecords.push('Q: ' + qData.q + ' (Correct: ' + qData.options[qData.correct] + ')');
                     targetEnemy.style.opacity = '0'; 
-                    
                     returnToOrigin(playerBox, () => {
-                        for(let i=0; i<4; i++){
-                            if(i !== qData.correct && i !== selectedIndex) {
-                                document.getElementById(`enemy-${i}`).style.opacity = '0';
-                            }
-                        }
-                        
-                        // 准备被真妖怪撞击
+                        for(let i=0; i<4; i++){ if(i !== qData.correct && i !== selectedIndex) document.getElementById('enemy-' + i).style.opacity = '0'; }
                         setTimeout(() => {
-                            // 同样提前 150 毫秒播放抓伤音效抵消延迟
                             setTimeout(() => { sfxScratch.currentTime = 0; sfxScratch.play(); }, 150);
-
                             dashToTarget(realEnemy, playerBox, () => {
                                 let dmg = DAMAGE;
                                 if (tangShieldActive) { dmg = 0; tangShieldActive = false; document.getElementById('tang-shield').style.display='none'; }
                                 else if (shaDefenseTurns > 0) { dmg = dmg / 2; }
+                                player.hp -= dmg; updateHealth();
                                 
-                                player.hp -= dmg;
-                                updateHealth();
-                                
-                                showEffect('/static/images/fx_scratch.jpg', playerBox);
+                                if(currentRoomId && livePlayerId) {
+                                    db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({ hp: Math.max(0, Math.round(player.hp)) });
+                                }
 
+                                showEffect('/static/images/fx_scratch.jpg', playerBox);
                                 realEnemy.style.transition = 'transform 0.8s ease-in, opacity 0.8s';
                                 realEnemy.style.transform = 'translate(-100vw, -50vh) scale(0.5)';
                                 realEnemy.style.opacity = '0';
-                                
-                                setTimeout(() => { 
-                                    if(player.hp <= 0) showEndScreen();
-                                    else { currentQIndex++; runSequence(); }
-                                }, 1000);
+                                setTimeout(() => { if(player.hp <= 0) showEndScreen(); else { currentQIndex++; runSequence(); } }, 1000);
                             });
                         }, 200); 
                     });
@@ -585,103 +441,60 @@
 
         function useSkill() {
             if (skillUsed) return; 
-            
             const btn = document.getElementById('skill-btn');
-            
             if (player.id === 'wukong') {
                 if (qOverlay.style.display !== 'flex') return alert("Use this when the question is open!");
-                const correctIdx = selectedQuestions[currentQIndex].correct;
-                let crossed = 0;
+                const correctIdx = selectedQuestions[currentQIndex].correct; let crossed = 0;
                 for(let i=0; i<4; i++) {
-                    if (i !== correctIdx && crossed < 2) {
-                        document.getElementById(`opt-${i}`).classList.add('disabled-option');
-                        document.getElementById(`enemy-${i}`).style.opacity = '0.3';
-                        crossed++;
-                    }
+                    if (i !== correctIdx && crossed < 2) { document.getElementById('opt-' + i).classList.add('disabled-option'); document.getElementById('enemy-' + i).style.opacity = '0.3'; crossed++; }
                 }
                 skillUsed = true; btn.disabled = true;
-
-            } else if (player.id === 'tang') {
-                tangShieldActive = true;
-                document.getElementById('tang-shield').style.display = 'block'; 
-                skillUsed = true; btn.disabled = true;
-
-            } else if (player.id === 'bajie') {
-                player.hp = Math.min(100, player.hp + 20); 
-                updateHealth();
-                skillUsed = true; btn.disabled = true;
-
-            } else if (player.id === 'sha') {
-                shaDefenseTurns = 2;
-                skillUsed = true; btn.disabled = true;
-            }
+            } else if (player.id === 'tang') { tangShieldActive = true; document.getElementById('tang-shield').style.display = 'block'; skillUsed = true; btn.disabled = true;
+            } else if (player.id === 'bajie') { player.hp = Math.min(100, player.hp + 20); updateHealth(); skillUsed = true; btn.disabled = true;
+                if(currentRoomId && livePlayerId) db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({ hp: Math.round(player.hp) }); 
+            } else if (player.id === 'sha') { shaDefenseTurns = 2; skillUsed = true; btn.disabled = true; }
         }
 
         function showEffect(src, targetEl) {
-            const effect = document.createElement('img');
-            effect.src = src; effect.className = 'effect-img';
-            const rect = targetEl.getBoundingClientRect();
-            const containerRect = document.getElementById('game-container').getBoundingClientRect();
-            
-            effect.style.left = (rect.left - containerRect.left) + 'px';
-            effect.style.top = (rect.top - containerRect.top) + 'px';
-            effect.style.width = rect.width + 'px';
-            
-            document.getElementById('game-container').appendChild(effect);
-            setTimeout(() => effect.remove(), 500);
+            const effect = document.createElement('img'); effect.src = src; effect.className = 'effect-img';
+            const rect = targetEl.getBoundingClientRect(); const containerRect = document.getElementById('game-container').getBoundingClientRect();
+            effect.style.left = (rect.left - containerRect.left) + 'px'; effect.style.top = (rect.top - containerRect.top) + 'px'; effect.style.width = rect.width + 'px';
+            document.getElementById('game-container').appendChild(effect); setTimeout(() => effect.remove(), 500);
         }
 
         function updateHealth() {
             const hp = Math.max(0, Math.round(player.hp));
             document.getElementById('hp-text').innerText = hp;
-            const bar = document.getElementById('health-fill');
-            bar.style.width = hp + '%';
+            const bar = document.getElementById('health-fill'); bar.style.width = hp + '%';
             if (hp < 30) bar.style.backgroundColor = '#e74c3c';
         }
 
         function showEndScreen() {
             document.getElementById('battle-scene').style.display = 'none';
             document.getElementById('end-screen').style.display = 'flex';
-            
             sfxBgm.pause(); 
             
             const finalScore = Math.max(0, Math.round(player.hp));
-            
-            if (finalScore > 0) {
-                sfxWin.play(); 
-                document.getElementById('end-title').innerText = "🏆 Victory! Scriptures Obtained!";
-            } else {
-                document.getElementById('end-title').innerText = "💀 Defeat... The journey ends here.";
-            }
+            if (finalScore > 0) { sfxWin.play(); document.getElementById('end-title').innerText = "🏆 Victory! Scriptures Obtained!"; } 
+            else { document.getElementById('end-title').innerText = "💀 Defeat... The journey ends here."; }
             
             document.getElementById('final-score').innerText = finalScore;
-
             const list = document.getElementById('wrong-list');
-            if (wrongRecords.length === 0) {
-                list.innerHTML = "<li>Perfect! You answered everything correctly!</li>";
-            } else {
-                wrongRecords.forEach(rec => { 
-                    let li = document.createElement('li'); 
-                    li.innerText = rec; 
-                    list.appendChild(li); 
-                });
-            }
+            if (wrongRecords.length === 0) { list.innerHTML = "<li>Perfect! You answered everything correctly!</li>"; } 
+            else { wrongRecords.forEach(rec => { let li = document.createElement('li'); li.innerText = rec; list.appendChild(li); }); }
 
-            const user = firebase.auth().currentUser;
-            if (user) {
-                db.collection("users").doc(user.uid).collection("journey_history").add({
-                    characterPlayed: player.id,
-                    score: finalScore,
-                    totalQuestions: TOTAL_ROUNDS,
-                    wrongAnswers: wrongRecords,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    console.log("Game result saved securely to Firebase!");
-                }).catch(error => {
-                    console.error("Error saving result: ", error);
+            if(currentRoomId && livePlayerId) {
+                db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({
+                    status: "done",
+                    hp: finalScore
                 });
             } else {
-                console.log("Player is playing as a guest. Score not saved.");
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    db.collection("users").doc(user.uid).collection("journey_history").add({
+                        characterPlayed: player.id, score: finalScore, totalQuestions: TOTAL_ROUNDS, wrongAnswers: wrongRecords, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
             }
         }
     </script>

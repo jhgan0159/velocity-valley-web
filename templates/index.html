@@ -604,6 +604,12 @@
                 <span class="status-badge" style="background: #9b59b6;">New Game under Development</span>
             </a>
 
+            <a href="/tcadminwest" id="tcadmin-card" class="sim-card" style="display: none; background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('/static/images/journey_bg.png'); border-top-color: #e67e22;">
+                <h2 style="color: #f39c12;">👑 Teacher Admin (Journey)</h2>
+                <p>Create custom question rooms and generate unique links for your students to play!</p>
+                <span class="status-badge" style="background: #e67e22;">Teacher Only</span>
+            </a>
+
         </div>
 
     </div>
@@ -738,11 +744,13 @@
                     const proBox = document.getElementById('pro-user-box');
                     const freeBox = document.getElementById('free-user-box');
                     const promoBox = document.getElementById('promo-popup');
+                    const tcAdminCard = document.getElementById('tcadmin-card');
 
                     if (userData.isPro === true) {
                         // VIP IS PRO: Show Download, Hide Warning
                         if(proBox) proBox.style.display = 'block';
                         if(freeBox) freeBox.style.display = 'none';
+                        if(tcAdminCard) tcAdminCard.style.display = 'flex';
 
                         // --- KOD BARU: AUTO TEMBAK SOALAN UNTUK PRO ---
                         // Tembak soalan selepas 1.5 saat jika belum ditunjuk
