@@ -47,9 +47,20 @@
         th, td { border: 1px solid #ddd; padding: 12px 8px; text-align: center; }
         th { background-color: #34495e; color: white; }
         tr:nth-child(even) { background-color: #f2f2f2; }
+
+        /* Podium Styles */
+        #podium-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .podium-box { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 80%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .podium-list { list-style: none; padding: 0; text-align: left; margin-top: 20px; }
+        .podium-list li { padding: 15px; margin-bottom: 10px; border-radius: 8px; font-weight: bold; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+        .rank-1 { background: #f1c40f; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); font-size: 1.4rem !important; }
+        .rank-2 { background: #bdc3c7; color: #333; }
+        .rank-3 { background: #cd7f32; color: #fff; }
+        .rank-others { background: #ecf0f1; color: #7f8c8d; font-size: 1rem !important; }
     </style>
 </head>
 <body>
+
 <div id="loading-screen" style="text-align: center; margin-top: 20vh; color: #34495e;">
     <h1>🔒 Verifying Pro License...</h1>
     <p>Please wait while we check your credentials.</p>
@@ -57,11 +68,20 @@
 
 <div class="container" id="main-content" style="display: none;">
     <h1>👑 Teacher Admin Dashboard</h1>
-    <h1>👑 Teacher Admin Dashboard</h1>
     
     <div class="top-section">
         <div class="box">
             <h2 style="margin-top:0;">📝 Create New Room</h2>
+            
+            <label style="font-weight:bold; color:#e67e22;">⏱️ Timer per Question:</label>
+            <select id="room-time-limit" style="margin-bottom: 20px; font-weight:bold;">
+                <option value="30">30 Seconds</option>
+                <option value="60">1 Minute</option>
+                <option value="120">2 Minutes</option>
+                <option value="180">3 Minutes</option>
+                <option value="300">5 Minutes</option>
+            </select>
+
             <div id="questions-container"></div>
             <button class="btn-add" onclick="addQuestionBlock()">➕ Add Another Question</button>
             <button class="btn-create" onclick="createRoom()">🚀 Generate Game Link</button>
@@ -77,15 +97,18 @@
 
     <div id="result-box">
         <h2 style="color: #1abc9c; margin-top: 0;">🎉 Room Created!</h2>
-        <p>Copy and share this link with your students (The Live Dashboard has started below):</p>
+        <p>Copy and share this link with your students:</p>
         <div id="room-link"></div>
         <button onclick="copyLink()">📋 Copy Link</button>
     </div>
 
     <div id="dashboard-area">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <h2 style="margin: 0;">Live Dashboard: Room <span id="dash-room" style="color:#e74c3c;"></span></h2>
-            <button onclick="downloadExcel()" style="background:#2ecc71;">📥 Download Excel</button>
+            <div>
+                <button onclick="downloadExcel()" style="background:#2ecc71;">📥 Download Excel</button>
+                <button onclick="endGameAndShowPodium()" style="background:#e74c3c;">🏆 End Game & Podium</button>
+            </div>
         </div>
         <p style="font-size:1.1rem;">Students Joined: <strong id="student-count" style="color:#3498db; font-size:1.5rem;">0</strong></p>
         
@@ -98,59 +121,43 @@
     </div>
 </div>
 
+<div id="podium-overlay">
+    <div class="podium-box">
+        <h1 style="color: #e67e22; margin-top: 0; font-size: 2.5rem;">🏆 Final Podium</h1>
+        <p style="color: #7f8c8d; margin-bottom: 20px;">Ranked by: Correct Answers > HP Left > Time Spent</p>
+        <ul class="podium-list" id="podium-results">
+            </ul>
+        <button onclick="document.getElementById('podium-overlay').style.display='none'" style="margin-top: 20px; width: 100%;">Close</button>
+    </div>
+</div>
+
 <script>
     let qCount = 0;
     let unsubscribe = null;
     let roomQCount = 0;
 
-    // --- 极速保安系统 V3 (增强型) ---
-    console.log("System: Safety check initiated...");
-
+    // Security Check
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-            console.log("Auth: User logged in as " + user.uid);
-            
-            // 访问数据库
             db.collection("users").doc(user.uid).get().then((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    console.log("Firestore: User data found. Pro Status: " + data.isPro);
-                    
-                    if (data.isPro === true) {
-                        // 【成功】
-                        document.getElementById('loading-screen').style.display = 'none';
-                        document.getElementById('main-content').style.display = 'block';
-                        addQuestionBlock(); // 初始化第一道题
-                    } else {
-                        // 【非 Pro】
-                        alert("Access Denied 🛑: This area is for Pro Teachers only.");
-                        window.location.href = "/";
-                    }
+                if (doc.exists && doc.data().isPro === true) {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    addQuestionBlock();
                 } else {
-                    // 【文档不存在】
-                    console.error("Firestore: Document not found in 'users' collection.");
-                    alert("Account Error: Profile not found.");
+                    alert("Access Denied 🛑: This area is for Pro Teachers only.");
                     window.location.href = "/";
                 }
-            }).catch((error) => {
-                console.error("Firestore Error:", error);
-                alert("Database Connection Error. Returning to home.");
-                window.location.href = "/";
-            });
+            }).catch(() => { window.location.href = "/"; });
         } else {
-            // 【未登录】
-            console.log("Auth: No user detected.");
             alert("Please Sign In first to access Teacher Admin!");
             window.location.href = "/login";
         }
     });
 
-    // --- 之后是原本的函数功能 (保持不变但确保逻辑闭环) ---
-
     function addQuestionBlock() {
         qCount++;
         const container = document.getElementById('questions-container');
-        // 这里用了最保险的字符串拼接，防止编辑器报错
         const html = '<div class="q-block" id="qblock-' + qCount + '">' +
             '<button class="btn-remove" onclick="removeQuestion(' + qCount + ')">✖</button>' +
             '<h3>Question ' + qCount + '</h3>' +
@@ -170,14 +177,9 @@
         container.insertAdjacentHTML('beforeend', html);
     }
 
-    function removeQuestion(id) {
-        const el = document.getElementById('qblock-' + id);
-        if (el) el.remove();
-    }
+    function removeQuestion(id) { const el = document.getElementById('qblock-' + id); if (el) el.remove(); }
 
-    function generateRoomCode() {
-        return Math.random().toString(36).substring(2, 8).toUpperCase();
-    }
+    function generateRoomCode() { return Math.random().toString(36).substring(2, 8).toUpperCase(); }
 
     function createRoom() {
         const blocks = document.querySelectorAll('.q-block');
@@ -194,10 +196,8 @@
 
             if (qText && opt0) {
                 customQuestionBank.push({
-                    q: qText,
-                    image: block.querySelector('.input-img').value || "",
-                    options: [opt0, opt1, opt2, opt3],
-                    correct: correctIdx
+                    q: qText, image: block.querySelector('.input-img').value || "",
+                    options: [opt0, opt1, opt2, opt3], correct: correctIdx
                 });
             }
         });
@@ -205,8 +205,12 @@
         if (customQuestionBank.length === 0) return alert("Please fill in the required fields!");
 
         const roomCode = generateRoomCode();
+        const timeLimit = parseInt(document.getElementById('room-time-limit').value); // 读取选择的时间
+
         db.collection("journey_rooms").doc(roomCode).set({
             questions: customQuestionBank,
+            timeLimit: timeLimit,
+            isClosed: false, // 房间开启状态
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             const gameUrl = window.location.origin + '/journey?room=' + roomCode;
@@ -214,15 +218,11 @@
             document.getElementById('result-box').style.display = 'block';
             document.getElementById('existing-room-code').value = roomCode;
             loadDashboard(roomCode);
-        }).catch((err) => {
-            console.error("Room Creation Error:", err);
-            alert("Failed to create room.");
-        });
+        }).catch((err) => { alert("Failed to create room."); });
     }
 
     function copyLink() {
-        const link = document.getElementById('room-link').innerText;
-        navigator.clipboard.writeText(link).then(() => alert("Link copied!"));
+        navigator.clipboard.writeText(document.getElementById('room-link').innerText).then(() => alert("Link copied!"));
     }
 
     function loadDashboard(codeParam) {
@@ -238,7 +238,7 @@
 
             let theadHtml = '<tr><th>Name</th><th>Status</th>';
             for (let i = 1; i <= roomQCount; i++) { theadHtml += '<th>Q' + i + '</th>'; }
-            theadHtml += '<th>Total Correct</th><th>HP Left</th></tr>';
+            theadHtml += '<th>Total Correct</th><th>HP Left</th><th>Time Used</th></tr>';
             document.getElementById('dash-thead').innerHTML = theadHtml;
 
             if (unsubscribe) unsubscribe(); 
@@ -260,7 +260,7 @@
                             let ansColor = ans === "O" ? "#2ecc71" : (ans === "X" ? "#e74c3c" : "#333");
                             rowHtml += '<td style="color:' + ansColor + '; font-weight:bold;">' + ans + '</td>';
                         }
-                        rowHtml += '<td>' + (p.totalCorrect || 0) + ' / ' + roomQCount + '</td><td>' + Math.max(0, p.hp || 0) + '%</td></tr>';
+                        rowHtml += '<td>' + (p.totalCorrect || 0) + '</td><td>' + Math.max(0, p.hp || 0) + '%</td><td>' + (p.totalTimeSpent || 0) + 's</td></tr>';
                         tbodyHtml += rowHtml;
                     });
                     document.getElementById('dash-tbody').innerHTML = tbodyHtml;
@@ -268,23 +268,60 @@
         });
     }
 
+    // 🏆 排行榜和结束游戏逻辑
+    function endGameAndShowPodium() {
+        const roomCode = document.getElementById('dash-room').innerText;
+        if(!confirm("Are you sure you want to end the game? Students won't be able to submit new answers.")) return;
+        
+        // 1. 关闭房间
+        db.collection("journey_rooms").doc(roomCode).update({ isClosed: true });
+
+        // 2. 获取所有玩家数据并排序
+        db.collection("journey_rooms").doc(roomCode).collection("players").get().then(snap => {
+            let players = [];
+            snap.forEach(doc => players.push(doc.data()));
+
+            // 核心排序逻辑：对题数(降序) > HP(降序) > 时间(升序)
+            players.sort((a, b) => {
+                let aCorrect = a.totalCorrect || 0; let bCorrect = b.totalCorrect || 0;
+                if (bCorrect !== aCorrect) return bCorrect - aCorrect;
+                
+                let aHp = a.hp || 0; let bHp = b.hp || 0;
+                if (bHp !== aHp) return bHp - aHp;
+                
+                let aTime = a.totalTimeSpent || 9999; let bTime = b.totalTimeSpent || 9999;
+                return aTime - bTime;
+            });
+
+            // 渲染 UI
+            let listHtml = '';
+            players.forEach((p, index) => {
+                let rankClass = index === 0 ? 'rank-1' : (index === 1 ? 'rank-2' : (index === 2 ? 'rank-3' : 'rank-others'));
+                let medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : '#' + (index+1)));
+                listHtml += '<li class="' + rankClass + '">' +
+                                '<span>' + medal + ' ' + p.name + '</span>' +
+                                '<span style="font-size:0.9rem; font-weight:normal;">' + (p.totalCorrect || 0) + ' Correct | ' + (p.hp || 0) + '% HP | ' + (p.totalTimeSpent || 0) + 's</span>' +
+                            '</li>';
+            });
+
+            if(players.length === 0) listHtml = '<li style="text-align:center; color:#7f8c8d;">No players joined yet.</li>';
+
+            document.getElementById('podium-results').innerHTML = listHtml;
+            document.getElementById('podium-overlay').style.display = 'flex';
+        });
+    }
+
     function downloadExcel() {
-        let csv = [];
-        let rows = document.querySelectorAll("#dash-table tr");
+        let csv = []; let rows = document.querySelectorAll("#dash-table tr");
         for (let i = 0; i < rows.length; i++) {
             let row = [], cols = rows[i].querySelectorAll("td, th");
-            for (let j = 0; j < cols.length; j++) {
-                row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
-            }
+            for (let j = 0; j < cols.length; j++) { row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"'); }
             csv.push(row.join(","));
         }
         let csvString = "\uFEFF" + csv.join("\n"); 
         let blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-        let url = URL.createObjectURL(blob);
-        let a = document.createElement("a");
-        a.href = url;
-        a.download = 'Journey_Room_' + document.getElementById('dash-room').innerText + '.csv';
-        a.click();
+        let url = URL.createObjectURL(blob); let a = document.createElement("a");
+        a.href = url; a.download = 'Journey_Room_' + document.getElementById('dash-room').innerText + '.csv'; a.click();
     }
 </script>
 </body>

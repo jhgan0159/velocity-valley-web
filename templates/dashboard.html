@@ -33,14 +33,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
     <script>
-      // PASTE YOUR EXACT FIREBASE CONFIG HERE:
+      // ✅ 已经替换为你真实的 Firebase Config
       const firebaseConfig = {
         apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
         authDomain: "velocity-valley-edu.firebaseapp.com",
         projectId: "velocity-valley-edu",
-        storageBucket: "velocity-valley-edu.appspot.com",
-        messagingSenderId: "645388489438",
-        appId: "1:645388489438:web:1234567890abcdef"
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
       };
       
       if (!firebase.apps.length) { 
@@ -92,48 +92,36 @@
     </div>
 
     <script>
-        // THE BOUNCER & DATA INJECTOR
-// Initialize Firestore di dalam dashboard
         const db = firebase.firestore();
 
-        // THE BOUNCER & DATA INJECTOR
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-                // 1. Letak data Auth sedia ada
                 document.getElementById('display-email').innerText = user.email;
                 if (user.displayName) { document.getElementById('display-name').innerText = user.displayName; }
                 const rawDate = new Date(user.metadata.lastSignInTime);
                 document.getElementById('display-last-login').innerText = rawDate.toLocaleString(); 
 
-                // 2. BACA DARI BUKU LOG (FIRESTORE) UNTUK DAPATKAN STATISTIK
-// 2. BACA DARI BUKU LOG (FIRESTORE) UNTUK DAPATKAN STATISTIK & LENCANA
                 db.collection("users").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const userData = doc.data();
                         
-                        // Kemas kini Statistik Asal
-                        document.getElementById('display-login-count').innerText = userData.loginCount || 0;
+                        // ✅ 修复：读取 totalLogins，如果找不到再退回去找 loginCount
+                        document.getElementById('display-login-count').innerText = userData.totalLogins || userData.loginCount || 0;
                         document.getElementById('display-sims-explored').innerText = userData.simsExplored || 0;
                         
-                        // ==========================================
-                        // LOGIK LENCANA BARU BERMULA DI SINI
-                        // ==========================================
                         const streak = userData.streakCount || 0;
                         document.getElementById("displayStreak").innerText = streak;
                         
                         let badgeHtml = "";
                         
-                        // Semak jika layak dapat lencana 50 Hari
                         if (streak >= 50 && streak < 100) {
                             badgeHtml += `<img src="/static/images/badge50days.png" alt="50 Hari" style="width: 80px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));">`;
                         } 
-                        // Semak jika layak dapat kedua-dua lencana 50 & 100 Hari
                         if (streak >= 100) {
                             badgeHtml += `<img src="/static/images/badge50days.png" alt="50 Hari" style="width: 80px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));">`;
                             badgeHtml += `<img src="/static/images/badge100days.png" alt="100 Hari" style="width: 80px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));">`;
                         }
 
-                        // Jika ada lencana, masukkan ke dalam HTML. Jika tiada, biarkan teks asal (Belum ada lencana).
                         if (badgeHtml !== "") {
                             document.getElementById("badgeContainer").innerHTML = badgeHtml;
                         }
@@ -145,8 +133,6 @@
             }
         });
         
-
-        // The Sign Out Function for this specific page
         function logoutUser() {
             firebase.auth().signOut().then(() => {
                 window.location.replace('/login');

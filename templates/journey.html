@@ -215,10 +215,7 @@
     </div>
 
     <script>
-const sfxBgm = new Audio('/static/audio/bgmusic.mp3'); 
-        sfxBgm.loop = true; 
-        sfxBgm.volume = 0.3; 
-        
+        const sfxBgm = new Audio('/static/audio/bgmusic.mp3'); sfxBgm.loop = true; sfxBgm.volume = 0.3; 
         const sfxHit = new Audio('/static/audio/hitsound.mp3');
         const sfxScratch = new Audio('/static/audio/scratch.mp3');
         const sfxLaugh = new Audio('/static/audio/demonlaugh.mp3');
@@ -226,9 +223,7 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
 
         const defaultQuestionBank = [
             { q: "What is the formula for Newton's Second Law of Motion?", options: ["F = ma", "F = mv", "F = m/v", "F = v/t"], correct: 0 },
-            { q: "What is the SI unit for Force?", image: "", options: ["kg m s⁻¹", "N", "kg m s⁻²", "J"], correct: 1 },
-            { q: "Inertia of an object is influenced by...", options: ["Temperature", "Mass", "Volume", "Velocity"], correct: 1 },
-            { q: "What does this graph represent?", image: "/static/images/imageS21.jpg", options: ["Constant acceleration", "Constant velocity", "Increasing acceleration", "Constant deceleration"], correct: 0 }
+            { q: "What is the SI unit for Force?", image: "", options: ["kg m s⁻¹", "N", "kg m s⁻²", "J"], correct: 1 }
         ];
         
         let questionBank = [];
@@ -239,13 +234,18 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
         let correctCount = 0; 
         
         let TOTAL_ROUNDS = 0; 
-        let DAMAGE = 0;
+        let DAMAGE = 0; // 这个是 100% 的满额伤害
         let skillUsed = false;
         let tangShieldActive = false;
         let shaDefenseTurns = 0;
 
+        // 【新增】：计时器与房间变量
         let currentRoomId = null;
         let livePlayerId = null;
+        let roomTimeLimit = 30; // 默认 30 秒
+        let timeRemaining = 30;
+        let timerInterval = null;
+        let totalTimeSpent = 0; // 记录玩家总用时
 
         const bgLayer = document.getElementById('bg-layer');
         const playerBox = document.getElementById('player-box');
@@ -253,13 +253,17 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
         const enemiesBox = document.getElementById('enemies-box');
         const qOverlay = document.getElementById('question-overlay');
 
+        // 在 HTML 里动态插入一个计时器条
+        document.querySelector('.scroll-content').insertAdjacentHTML('afterbegin', 
+            '<div style="width:100%; max-width:500px; background:#ddd; height:15px; border-radius:10px; margin-bottom:15px; border:2px solid #555; overflow:hidden;">' +
+                '<div id="q-timer-fill" style="width:100%; height:100%; background:#2ecc71; transition: width 1s linear, background-color 0.5s;"></div>' +
+            '</div>'
+        );
 
         window.onload = function() {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            // 如果是手机，且屏幕宽度小于 900（代表还没有开启 Desktop site）
-            if (isMobile && window.innerWidth < 900) {
-                document.getElementById('desktop-prompt-overlay').style.display = 'flex';
-            }
+            if (isMobile && window.innerWidth < 900) { document.getElementById('desktop-prompt-overlay').style.display = 'flex'; }
+
             const urlParams = new URLSearchParams(window.location.search);
             currentRoomId = urlParams.get('room');
 
@@ -270,32 +274,32 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
                 
                 db.collection("journey_rooms").doc(currentRoomId).get().then((doc) => {
                     if (doc.exists) {
-                        questionBank = doc.data().questions;
+                        const data = doc.data();
+                        if(data.isClosed) {
+                            alert("This room is already closed by the teacher.");
+                            loadDefaultGame();
+                            return;
+                        }
+                        questionBank = data.questions;
+                        roomTimeLimit = data.timeLimit || 30; // 读取老师设定的时间
                         TOTAL_ROUNDS = questionBank.length;
                         DAMAGE = 100 / TOTAL_ROUNDS;
                     } else {
                         alert("Invalid Room Code! Loading Default Game...");
                         loadDefaultGame();
                     }
-                }).catch(err => {
-                    console.log(err); loadDefaultGame();
-                });
+                }).catch(err => { console.log(err); loadDefaultGame(); });
             } else {
                 loadDefaultGame();
                 document.getElementById('intro-screen').style.display = 'flex';
             }
         };
-        
-        function closeDesktopPrompt() {
-            document.getElementById('desktop-prompt-overlay').style.display = 'none';
-        }
 
+        function closeDesktopPrompt() { document.getElementById('desktop-prompt-overlay').style.display = 'none'; }
 
         function loadDefaultGame() {
-            currentRoomId = null;
-            questionBank = [...defaultQuestionBank];
-            TOTAL_ROUNDS = questionBank.length; 
-            DAMAGE = 100 / TOTAL_ROUNDS;
+            currentRoomId = null; questionBank = [...defaultQuestionBank];
+            TOTAL_ROUNDS = questionBank.length; DAMAGE = 100 / TOTAL_ROUNDS; roomTimeLimit = 30;
         }
 
         function submitName() {
@@ -306,34 +310,25 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
             document.getElementById('intro-screen').style.display = 'flex';
             
             db.collection("journey_rooms").doc(currentRoomId).collection("players").add({
-                name: nameInput,
-                status: "not_started",
-                answers: {},
-                totalCorrect: 0,
-                hp: 100,
+                name: nameInput, status: "not_started", answers: {}, totalCorrect: 0, hp: 100, totalTimeSpent: 0,
                 joinedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(docRef => {
-                livePlayerId = docRef.id; 
-            });
+            }).then(docRef => { livePlayerId = docRef.id; });
         }
 
         function goToSelectScreen() {
             document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('select-screen').style.display = 'flex';
-            sfxBgm.play().catch(e => console.log("Audio play prevented: ", e));
+            sfxBgm.play().catch(e => console.log("Audio play prevented"));
 
             if(currentRoomId && livePlayerId) {
-                db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({
-                    status: "playing"
-                });
+                db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({ status: "playing" });
             }
         }
 
         function dashToTarget(mover, target, callback) {
-            const moverRect = mover.getBoundingClientRect(); const targetRect = target.getBoundingClientRect();
-            const moverCenterX = moverRect.left + moverRect.width / 2; const moverCenterY = moverRect.top + moverRect.height / 2;
-            const targetCenterX = targetRect.left + targetRect.width / 2; const targetCenterY = targetRect.top + targetRect.height / 2;
-            const dx = targetCenterX - moverCenterX; const dy = targetCenterY - moverCenterY;
+            const mR = mover.getBoundingClientRect(); const tR = target.getBoundingClientRect();
+            const dx = (tR.left + tR.width/2) - (mR.left + mR.width/2);
+            const dy = (tR.top + tR.height/2) - (mR.top + mR.height/2);
             mover.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
             mover.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
             setTimeout(() => { if(callback) callback(); }, 350);
@@ -364,6 +359,16 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
         function runSequence() {
             if (currentQIndex >= TOTAL_ROUNDS || player.hp <= 0) return showEndScreen();
             
+            // 每回合开始前检查老师是否已经关停房间
+            if(currentRoomId) {
+                db.collection("journey_rooms").doc(currentRoomId).get().then(doc => {
+                    if(doc.exists && doc.data().isClosed) {
+                        alert("Teacher has ended the game!");
+                        showEndScreen(); return;
+                    }
+                });
+            }
+
             document.getElementById('turn-text').innerText = currentQIndex + 1;
             bgLayer.style.animationPlayState = 'running';
             playerImg.style.animationPlayState = 'running';
@@ -402,11 +407,35 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
             }, 1400);
         }
 
+        // --- 启动计时器 ---
+        function startTimer() {
+            timeRemaining = roomTimeLimit;
+            document.getElementById('q-timer-fill').style.width = '100%';
+            document.getElementById('q-timer-fill').style.backgroundColor = '#2ecc71';
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                let pct = (timeRemaining / roomTimeLimit) * 100;
+                document.getElementById('q-timer-fill').style.width = pct + '%';
+                if(pct < 40) document.getElementById('q-timer-fill').style.backgroundColor = '#f1c40f';
+                if(pct < 15) document.getElementById('q-timer-fill').style.backgroundColor = '#e74c3c';
+
+                // 🌟 超时逻辑：强制作为答错处理
+                if(timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up! The demon attacks!");
+                    selectAnswer(-1); // -1 代表超时未作答
+                }
+            }, 1000);
+        }
+
         function showScroll() {
             const qData = selectedQuestions[currentQIndex];
             document.getElementById('q-text').innerText = qData.q;
             const imgEl = document.getElementById('q-image');
             if (qData.image) { imgEl.src = qData.image; imgEl.style.display = 'block'; } else { imgEl.style.display = 'none'; }
+            
             const labels = ['A', 'B', 'C', 'D'];
             for (let i = 0; i < 4; i++) {
                 let btn = document.getElementById('opt-' + i);
@@ -414,32 +443,44 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
                 btn.className = 'q-option-btn'; 
             }
             qOverlay.style.display = 'flex';
+            
+            startTimer(); // 卷轴弹出时开始计时
         }
 
         function selectAnswer(selectedIndex) {
+            clearInterval(timerInterval); // 停止计时
             qOverlay.style.display = 'none'; 
+
+            // 计算时间消耗
+            let timeSpent = roomTimeLimit - Math.max(0, timeRemaining);
+            totalTimeSpent += timeSpent; // 累加总时间
+
             const qData = selectedQuestions[currentQIndex];
             const isCorrect = (selectedIndex === qData.correct);
-            
-            const targetEnemy = document.getElementById('enemy-' + selectedIndex);
             const realEnemy = document.getElementById('enemy-' + qData.correct);
+            
+            // 如果超时 (-1) 就没有 targetEnemy
+            const targetEnemy = selectedIndex >= 0 ? document.getElementById('enemy-' + selectedIndex) : null;
 
             document.querySelectorAll('.enemy-wrapper').forEach(el => el.classList.remove('split-pop'));
 
             if (isCorrect) { sfxHit.currentTime = 0; sfxHit.play(); correctCount++; } 
             else { sfxLaugh.currentTime = 0; sfxLaugh.play(); }
 
+            // 动态伤害计算 (0%时间用完 = 0.8 倍；100%时间用完 = 1.0 倍)
+            let timeRatio = timeSpent / roomTimeLimit;
+            if (timeRatio > 1) timeRatio = 1;
+            let currentDamage = DAMAGE * (0.8 + 0.2 * timeRatio);
+
             if(currentRoomId && livePlayerId) {
-                let updateData = {
-                    totalCorrect: correctCount,
-                    hp: Math.max(0, Math.round(player.hp)) 
-                };
+                let updateData = { totalCorrect: correctCount, totalTimeSpent: totalTimeSpent };
+                // 这里暂时不更新 HP，等撞击动画结束再更新
                 updateData['answers.' + currentQIndex] = isCorrect ? "O" : "X";
                 db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update(updateData);
             }
 
-            dashToTarget(playerBox, targetEnemy, () => {
-                if (isCorrect) {
+            if (isCorrect && targetEnemy) {
+                dashToTarget(playerBox, targetEnemy, () => {
                     showEffect('/static/images/fx_hit.jpg', targetEnemy); targetEnemy.style.opacity = '0'; 
                     returnToOrigin(playerBox, () => {
                         setTimeout(() => {
@@ -447,33 +488,47 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
                             setTimeout(() => { currentQIndex++; runSequence(); }, 600);
                         }, 300); 
                     });
-                } else {
-                    wrongRecords.push('Q: ' + qData.q + ' (Correct: ' + qData.options[qData.correct] + ')');
-                    targetEnemy.style.opacity = '0'; 
-                    returnToOrigin(playerBox, () => {
-                        for(let i=0; i<4; i++){ if(i !== qData.correct && i !== selectedIndex) document.getElementById('enemy-' + i).style.opacity = '0'; }
-                        setTimeout(() => {
-                            setTimeout(() => { sfxScratch.currentTime = 0; sfxScratch.play(); }, 150);
-                            dashToTarget(realEnemy, playerBox, () => {
-                                let dmg = DAMAGE;
-                                if (tangShieldActive) { dmg = 0; tangShieldActive = false; document.getElementById('tang-shield').style.display='none'; }
-                                else if (shaDefenseTurns > 0) { dmg = dmg / 2; }
-                                player.hp -= dmg; updateHealth();
-                                
-                                if(currentRoomId && livePlayerId) {
-                                    db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({ hp: Math.max(0, Math.round(player.hp)) });
-                                }
-
-                                showEffect('/static/images/fx_scratch.jpg', playerBox);
-                                realEnemy.style.transition = 'transform 0.8s ease-in, opacity 0.8s';
-                                realEnemy.style.transform = 'translate(-100vw, -50vh) scale(0.5)';
-                                realEnemy.style.opacity = '0';
-                                setTimeout(() => { if(player.hp <= 0) showEndScreen(); else { currentQIndex++; runSequence(); } }, 1000);
-                            });
-                        }, 200); 
+                });
+            } else {
+                wrongRecords.push('Q: ' + qData.q + ' (Correct: ' + qData.options[qData.correct] + ')');
+                
+                if (targetEnemy) {
+                    dashToTarget(playerBox, targetEnemy, () => {
+                        targetEnemy.style.opacity = '0'; 
+                        returnToOrigin(playerBox, () => executeEnemyAttack(realEnemy, selectedIndex, currentDamage));
                     });
+                } else {
+                    // 超时的情况：玩家不撞，真怪物直接冲过来
+                    for(let i=0; i<4; i++){ if(i !== qData.correct) document.getElementById('enemy-' + i).style.opacity = '0'; }
+                    executeEnemyAttack(realEnemy, -1, currentDamage);
                 }
-            });
+            }
+        }
+
+        // 抽取出来的真妖怪攻击逻辑
+        function executeEnemyAttack(realEnemy, selectedIndex, currentDamage) {
+            for(let i=0; i<4; i++){ if(i !== parseInt(realEnemy.id.split('-')[1]) && i !== selectedIndex) document.getElementById('enemy-' + i).style.opacity = '0'; }
+            
+            setTimeout(() => {
+                setTimeout(() => { sfxScratch.currentTime = 0; sfxScratch.play(); }, 150);
+                dashToTarget(realEnemy, playerBox, () => {
+                    let dmg = currentDamage; // 使用算好的动态伤害
+                    if (tangShieldActive) { dmg = 0; tangShieldActive = false; document.getElementById('tang-shield').style.display='none'; }
+                    else if (shaDefenseTurns > 0) { dmg = dmg / 2; }
+                    
+                    player.hp -= dmg; updateHealth();
+                    
+                    if(currentRoomId && livePlayerId) {
+                        db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({ hp: Math.max(0, Math.round(player.hp)) });
+                    }
+
+                    showEffect('/static/images/fx_scratch.jpg', playerBox);
+                    realEnemy.style.transition = 'transform 0.8s ease-in, opacity 0.8s';
+                    realEnemy.style.transform = 'translate(-100vw, -50vh) scale(0.5)';
+                    realEnemy.style.opacity = '0';
+                    setTimeout(() => { if(player.hp <= 0) showEndScreen(); else { currentQIndex++; runSequence(); } }, 1000);
+                });
+            }, 200);
         }
 
         function useSkill() {
@@ -507,6 +562,7 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
         }
 
         function showEndScreen() {
+            clearInterval(timerInterval); // 确保计时器关闭
             document.getElementById('battle-scene').style.display = 'none';
             document.getElementById('end-screen').style.display = 'flex';
             sfxBgm.pause(); 
@@ -522,8 +578,7 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
 
             if(currentRoomId && livePlayerId) {
                 db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({
-                    status: "done",
-                    hp: finalScore
+                    status: "done", hp: finalScore, totalTimeSpent: totalTimeSpent
                 });
             } else {
                 const user = firebase.auth().currentUser;
@@ -534,6 +589,6 @@ const sfxBgm = new Audio('/static/audio/bgmusic.mp3');
                 }
             }
         }
-    </script>
+</script>
 </body>
 </html>

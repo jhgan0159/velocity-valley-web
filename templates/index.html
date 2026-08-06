@@ -411,7 +411,12 @@
       }
       
       // 4. Turn on Analytics
-      const analytics = firebase.analytics();
+      c// 4. Turn on Analytics (Safe Mode)
+      try {
+          const analytics = firebase.analytics();
+      } catch (error) {
+          console.warn("Analytics blocked, but game continues.");
+      }
     </script>
 </head>
 <body>
@@ -626,7 +631,14 @@
                 🌟 Upgrade to Pro account
             </button>
         </div>
-
+        
+        <div id="pro-user-box" style="display: none; text-align: center; padding: 30px; background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('/static/images/journey_bg.png'); background-size: cover; background-position: center; border: 2px solid #f39c12; border-radius: 8px; box-shadow: 0 8px 15px rgba(0,0,0,0.3);">
+            <h3 style="color: #f39c12; font-size: 1.8rem; margin-top: 0;">👑 Welcome to Teacher Admin! 🔓</h3>
+            <p style="color: white; font-size: 1.1rem; margin-bottom: 20px;">You have access to all premium features. Create custom question rooms, set timers, and track your students' performance on the live dashboard!</p>
+            <a href="/tcadminwest" style="background-color: #f39c12; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; display: inline-block; transition: transform 0.2s;">
+                🚀 Enter Admin Dashboard
+            </a>
+        </div>
     </div> 
     <!-- SECTION E: About Us -->
     <div class="section-container" id="about">

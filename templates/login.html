@@ -73,25 +73,22 @@
         const errorText = document.getElementById('error-message');
 
         // FUNCTION 1: When they click "Log In"
-        // FUNCTION 1: When they click "Log In"
         function loginUser() {
             errorText.innerText = ""; 
             firebase.auth().signInWithEmailAndPassword(emailInput.value, passwordInput.value)
                 .then((userCredential) => {
                     const user = userCredential.user;
                     
-                    // GUNA .set BERSAMA { merge: true } UNTUK ELAK ERROR AKAUN LAMA
+                    // ✅ 修复 1: 统一使用 totalLogins，并加入 lastLogin 时间戳
                     db.collection("users").doc(user.uid).set({
-                        email: user.email, // Pastikan e-mel direkodkan juga
-                        loginCount: firebase.firestore.FieldValue.increment(1)
+                        email: user.email,
+                        totalLogins: firebase.firestore.FieldValue.increment(1), 
+                        lastLogin: new Date().toLocaleString('en-GB') // 记录最新的登录时间
                     }, { merge: true })
                     .then(() => {
-                        // Selepas database berjaya direkod, baru teleport!
                         window.location.replace('/'); 
                     })
                     .catch((dbError) => {
-                        // Sebagai backup keselamatan: Kalau database ada masalah sikit pun, 
-                        // kita tetap bagi student masuk ke main page.
                         console.error("Ralat Buku Log: ", dbError);
                         window.location.replace('/');
                     });
@@ -107,13 +104,16 @@
             firebase.auth().createUserWithEmailAndPassword(emailInput.value, passwordInput.value)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    // Cipta fail profil baru untuk user ini dalam Buku Log
+                    
+                    // ✅ 修复 2: 加上 { merge: true }，统一字段名，默认设为非 Pro 用户
                     db.collection("users").doc(user.uid).set({
                         email: user.email,
-                        loginCount: 1,
-                        simsExplored: 0
-                    }).then(() => {
-                        window.location.replace('/'); // Berjaya! Teleport.
+                        totalLogins: 1,
+                        simsExplored: 0,
+                        isPro: false, // 新注册用户默认不是 Pro
+                        lastLogin: new Date().toLocaleString('en-GB')
+                    }, { merge: true }).then(() => {
+                        window.location.replace('/');
                     });
                 })
                 .catch((error) => { errorText.innerText = error.message; });
