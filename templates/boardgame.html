@@ -11,6 +11,43 @@
            ========================================= */
         @media (max-width: 768px) {
             /* 1. 开场视频按钮调整 */
+            body {
+            /* 关键：取消手机端 body 的强制居中，改为靠左对齐 */
+                align-items: flex-start !important; 
+                justify-content: flex-start !important;
+                overflow-x: hidden;
+            }
+
+            #app-wrapper {
+                width: 100vw !important;
+                display: block !important; /* 取消 flex 居中，防止两边溢出 */
+                padding: 0 !important;
+            }
+
+            .game-container {
+                width: 100vw !important;
+                overflow-x: auto !important; /* 允许手指在棋盘上横向滑动 */
+                overflow-y: hidden !important;
+                display: block !important; 
+                padding-bottom: 20px !important;
+            }
+
+            #game-board {
+            /* 把棋盘缩小一点点，视野更广 */
+                transform: scale(0.85); 
+                /* 关键：必须从左上角开始缩放，保证最左边的格子 (Go/Start) 贴在屏幕边缘 */
+                transform-origin: top left; 
+                margin-bottom: -50px; /* 抵消缩放后留下的空白 */
+            }
+
+            .controls {
+            /* 确保下方的骰子按钮居中且不会被挤到旁边 */
+                width: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                padding-bottom: 40px !important; /* 留出底部安全距离 */
+            }
             #start-intro-btn {
                 padding: 12px 24px !important;
                 font-size: 1.2rem !important;

@@ -113,6 +113,28 @@
    ========================================= */
         @media (max-width: 768px) {
             /* 1. 调整开场故事卷轴里的文字大小与间距 */
+            /* =========================================
+       修复手机底部导航栏遮挡游戏画面的问题
+       ========================================= */
+            #game-container {
+        /* 使用 dvh (Dynamic Viewport Height)，它会自动避开手机的电量栏和底部导航栏 */
+                height: 100dvh !important; 
+                max-height: -webkit-fill-available;
+            }
+
+    /* 把所有人物、怪物稍微往屏幕上方抬高，避免踩在屏幕最底部的死角 */
+            .character-box, .enemy-container {
+                bottom: 25% !important; 
+            }
+    
+            #boss-origin {
+                bottom: 8% !important;
+            }
+
+    /* 优化底部的回合数和血量条，确保不要贴顶 */
+            #battle-ui {
+                padding-top: 25px !important; /* 给顶部的刘海屏/电量栏留出空间 */
+            }
             .intro-content h2 { 
                 font-size: 1.4rem !important; 
                 margin-bottom: 8px !important; 
