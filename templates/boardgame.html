@@ -5,6 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Physics Monopoly: Ultimate Edition</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* =========================================
+           BOARDGAME - 手机端完美适配优化
+           ========================================= */
+        @media (max-width: 768px) {
+            /* 1. 开场视频按钮调整 */
+            #start-intro-btn {
+                padding: 12px 24px !important;
+                font-size: 1.2rem !important;
+            }
+            #skip-intro-btn {
+                padding: 8px 15px !important;
+                font-size: 1rem !important;
+                bottom: 15px !important;
+                right: 15px !important;
+            }
+
+            /* 2. 核心：所有弹窗 (Modal) 调整 - 防止超出屏幕并允许滑动 */
+            .modal-content {
+                width: 95% !important;
+                max-width: 400px !important;
+                padding: 20px !important;
+                max-height: 85vh !important; /* 最高只能占屏幕 85% */
+                overflow-y: auto !important; /* 超出部分自动出现上下滑动条 */
+            }
+            
+            /* 3. 游戏设置页面字体调整 */
+            #game-setup-modal h2 { font-size: 1.5rem !important; margin-top: 0 !important; }
+            #player-count-select, #round-count-input {
+                padding: 8px !important;
+                font-size: 1rem !important;
+            }
+
+            /* 4. 问答弹窗内容调整 */
+            #question-level { font-size: 1.2rem !important; margin-top: 0 !important; }
+            #question-text { font-size: 1rem !important; margin-bottom: 10px !important; }
+            #question-image { max-height: 120px !important; } /* 限制题目图片高度 */
+            #answer-box { padding: 10px !important; font-size: 1rem !important; }
+            
+            /* 5. 游戏控制区和轮盘弹窗调整 */
+            .controls { padding: 10px !important; }
+            #roll-dice-btn { padding: 10px !important; font-size: 1rem !important; }
+            .current-player-info { font-size: 1rem !important; }
+            #wheel-display { font-size: 1.5rem !important; padding: 10px !important; margin: 10px 0 !important; }
+            
+            /* 6. 排行榜和主界面布局 (如果原本是左右排版，强行变上下堆叠) */
+            #app-wrapper {
+                flex-direction: column !important;
+                padding: 10px !important;
+            }
+            #leaderboard-container {
+                width: 100% !important;
+                margin-bottom: 10px !important;
+            }
+            
+            /* 7. 结算画面调整 */
+            #game-over-modal h2 { font-size: 1.8rem !important; }
+            #final-winner { font-size: 1.3rem !important; }
+            #export-btn, #game-over-modal button {
+                padding: 10px !important;
+                font-size: 1rem !important;
+                width: 100% !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="intro-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:black; z-index:9999; display:flex; justify-content:center; align-items:center;">
