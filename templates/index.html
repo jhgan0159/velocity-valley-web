@@ -41,7 +41,7 @@
         /* ADD THIS ENTIRE NEW BLOCK */
         .top-right-logo {
             position: absolute;
-            top: 10%;                 /* Pushes it halfway down the header */
+            top: 10%;                /* Pushes it halfway down the header */
             transform: translateY(-50%); /* Pulls it up perfectly to the center */
             left: 40px;              /* Distance from the left edge */
             height: 120px;            /* Almost the height of your header content */
@@ -96,7 +96,6 @@
         }
 
         /* --- SIMULATION CARDS --- */
-/* --- SIMULATION CARDS --- */
         .sim-card {
             /* Fallback color if image fails to load */
             background-color: #2c3e50; 
@@ -201,8 +200,7 @@
             font-size: 1.05rem;
         }
 
-        /* Grid untuk senarai kelebihan */
-/* --- HORIZONTAL SCROLLING ADVANTAGES --- */
+        /* --- HORIZONTAL SCROLLING ADVANTAGES --- */
         .advantage-grid {
             display: flex;
             overflow-x: auto; /* Membenarkan scroll ke tepi */
@@ -276,29 +274,6 @@
             line-height: 1.5;
         }
 
-        /* Responsif untuk skrin telefon */
-        @media (max-width: 768px) {
-            .about-card, .about-card.reverse {
-                flex-direction: column;
-                text-align: center;
-            }
-    /* --- KOD BARU: KAWALAN LOGO DI TELEFON --- */
-            .top-right-logo {
-                width: 65px;         /* Saiz dikecilkan khas untuk telefon */
-                height: 65px;
-                left: 15px;          /* Rapatkan sedikit ke tepi dinding kiri */
-                top: 25px;           /* Letak elok-elok sebaris dengan butang Sign In */
-                transform: none;     /* Matikan fungsi tarik ke tengah */
-                border-width: 2px;   /* Nipiskan border putih sikit */
-            }
-
-            /* Kecilkan tajuk utama sikit supaya tak berlanggar dengan logo */
-            header h1 {
-                font-size: 1.8rem;
-                margin-top: 15px;
-            }
-        }
-
         .status-badge {
             display: inline-block;
             background: #2ecc71;
@@ -310,6 +285,7 @@
         }
         
         .status-building { background: #f39c12; }
+        
         /* --- PROMO POP-UP STYLES --- */
         .promo-overlay {
             display: none; /* Disorok pada mulanya */
@@ -319,7 +295,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8); /* Gelapkan skrin belakang */
-            z-index: 1000; /* Berada paling atas */
+            z-index: 10000; /* Berada paling atas */
             justify-content: center;
             align-items: center;
             animation: fadeIn 0.3s ease;
@@ -387,10 +363,88 @@
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
+
+        /* =========================================
+           MOBILE ONLY (APP-LIKE) UI
+           ========================================= */
+        /* By default, hide the bottom navigation */
+        .bottom-nav {
+            display: none;
+        }
+
+        /* Responsif untuk skrin telefon */
+        @media (max-width: 768px) {
+            /* Pastikan konten bawah tidak ditutup oleh navbar */
+            body {
+                padding-bottom: 75px;
+            }
+
+            .about-card, .about-card.reverse {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            /* --- KAWALAN LOGO DI TELEFON --- */
+            .top-right-logo {
+                width: 65px;         /* Saiz dikecilkan khas untuk telefon */
+                height: 65px;
+                left: 15px;          /* Rapatkan sedikit ke tepi dinding kiri */
+                top: 25px;           /* Letak elok-elok sebaris dengan butang Sign In */
+                transform: none;     /* Matikan fungsi tarik ke tengah */
+                border-width: 2px;   /* Nipiskan border putih sikit */
+            }
+
+            /* Kecilkan tajuk utama sikit supaya tak berlanggar dengan logo */
+            header h1 {
+                font-size: 1.8rem;
+                margin-top: 15px;
+            }
+
+            /* --- BOTTOM NAVIGATION MENU --- */
+            .bottom-nav {
+                display: flex; /* Aktifkan nav bar pada skrin kecil */
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 65px;
+                background-color: #ffffff;
+                justify-content: space-around;
+                align-items: center;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                z-index: 9999;
+            }
+
+            .nav-item {
+                text-decoration: none;
+                color: #7f8c8d;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 20%;
+                transition: color 0.2s;
+            }
+
+            .nav-icon {
+                font-size: 1.5rem;
+                margin-bottom: 3px;
+            }
+
+            .nav-label {
+                font-size: 0.7rem;
+                font-weight: bold;
+            }
+
+            .nav-item.active {
+                color: #e67e22; /* Warna highlight (oren) untuk tab aktif */
+            }
+            .nav-item.active .nav-label {
+                color: #e67e22;
+            }
+        }
     </style>
-    <!-- Google Analytics Tracking Code -->
-<!-- 1. ALL Firebase Libraries in ONE place -->
-<!-- 1. ALL Firebase Libraries in ONE place -->
+    <!-- 1. ALL Firebase Libraries in ONE place -->
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics-compat.js"></script>
@@ -405,13 +459,12 @@
         appId: "1:340043533038:web:0abf2444b8ac6da07f41ff",
         measurementId: "G-N9LFZVH1YX"  // <-- This is the magic tracker!
       };
-// 3. Initialize Firebase ONCE safely
+      // 3. Initialize Firebase ONCE safely
       if (!firebase.apps.length) {
           firebase.initializeApp(firebaseConfig);
       }
       
-      // 4. Turn on Analytics
-      c// 4. Turn on Analytics (Safe Mode)
+      // 4. Turn on Analytics (Safe Mode)
       try {
           const analytics = firebase.analytics();
       } catch (error) {
@@ -443,7 +496,7 @@
         </div>
     </div>
 
-    <div id="dailyQuestionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000;">
+    <div id="dailyQuestionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:20000;">
         <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:30px; border-radius:15px; width:90%; max-width:500px; text-align:center;">
            <h2 style="color:#e67e22; margin-top:0;">⚡ Challenge of the Day</h2>
            <img id="dailyQuestionImage" src="" alt="Gambar Soalan" style="display:none; width:100%; max-height:200px; object-fit:contain; border-radius:8px; margin-bottom:15px;">
@@ -456,13 +509,13 @@
     <header>
 
         <img src="/static/images/logo.png" alt="Velocity Valley Circle Logo" class="top-right-logo">
-                    <!-- We wrap them in a div and set them to "display: none" so they are invisible until Firebase checks who is looking -->
+        <!-- We wrap them in a div and set them to "display: none" so they are invisible until Firebase checks who is looking -->
         <div id="auth-menu" style="text-align: right; padding: 15px;">
               <!-- If they are NOT logged in, they see this: -->
             <button id="btn-login" style="display: none; padding: 15px; background-color: #008CBA; color: white; border: none; border-radius: 5px; cursor: pointer;" onclick="window.location.href='/login'">
                Sign In
             </button>
-    <!-- If they ARE logged in, they see these two instead: -->
+            <!-- If they ARE logged in, they see these two instead: -->
             <button id="btn-admin" style="display: none; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;" onclick="window.location.href='/dashboard'">
                Dashboard
             </button>
@@ -486,6 +539,7 @@
             🎯 Answer Now
         </button>
     </div>
+
     <!-- SECTION A: Mini Simulation -->
     <div class="section-container">
         <h2 class="section-title">Mini Simulation</h2>
@@ -717,6 +771,30 @@
         </div>
     </div>
 
+    <!-- NEW: BOTTOM NAVIGATION BAR -->
+    <nav class="bottom-nav">
+        <a href="/" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="/boardgame" class="nav-item">
+            <span class="nav-icon">🎮</span>
+            <span class="nav-label">Game</span>
+        </a>
+        <a href="/tcadminwest" class="nav-item">
+            <span class="nav-icon">⭐</span>
+            <span class="nav-label">Pro</span>
+        </a>
+        <a href="#about" class="nav-item">
+            <span class="nav-icon">❓</span>
+            <span class="nav-label">About Us</span>
+        </a>
+        <a href="mailto:velocityvalleysimu@gmail.com" class="nav-item">
+            <span class="nav-icon">📞</span>
+            <span class="nav-label">Contact</span>
+        </a>
+    </nav>
+
 <script>
     // Grab the buttons
     const loginBtn = document.getElementById('btn-login');
@@ -927,7 +1005,7 @@
         },
         {
             id: "q_newton16",
-            question: "Nyatakan faktor yang mempengaruhi pecutan.\nI	Daya\nII	Jisim\nIII	Kuasa\nIV 	Tenaga",
+            question: "Nyatakan faktor yang mempengaruhi pecutan.\nI    Daya\nII   Jisim\nIII  Kuasa\nIV   Tenaga",
             image: "", // Letak nama fail gambar di sini
             options: ["A. I dan II", "B. I dan III", "C. II dan IV", "D. III dan IV"],
             correctAnswer: 0
