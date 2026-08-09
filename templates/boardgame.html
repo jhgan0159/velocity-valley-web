@@ -5,107 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Physics Monopoly: Ultimate Edition</title>
     <link rel="stylesheet" href="/static/style.css">
+
+    <!-- 手机端适配专属 CSS -->
     <style>
-        /* =========================================
-           BOARDGAME - 手机端完美适配优化
-           ========================================= */
         @media (max-width: 768px) {
-            /* 1. 开场视频按钮调整 */
-            body {
-            /* 关键：取消手机端 body 的强制居中，改为靠左对齐 */
-                align-items: flex-start !important; 
-                justify-content: flex-start !important;
-                overflow-x: hidden;
-            }
-
-            #app-wrapper {
-                width: 100vw !important;
-                display: block !important; /* 取消 flex 居中，防止两边溢出 */
-                padding: 0 !important;
-            }
-
-            .game-container {
-                width: 100vw !important;
-                overflow-x: auto !important; /* 允许手指在棋盘上横向滑动 */
-                overflow-y: hidden !important;
-                display: block !important; 
-                padding-bottom: 20px !important;
-            }
-
-            #game-board {
-            /* 把棋盘缩小一点点，视野更广 */
-                transform: scale(0.85); 
-                /* 关键：必须从左上角开始缩放，保证最左边的格子 (Go/Start) 贴在屏幕边缘 */
-                transform-origin: top left; 
-                margin-bottom: -50px; /* 抵消缩放后留下的空白 */
-            }
-
-            .controls {
-            /* 确保下方的骰子按钮居中且不会被挤到旁边 */
-                width: 100% !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                padding-bottom: 40px !important; /* 留出底部安全距离 */
-            }
-            #start-intro-btn {
-                padding: 12px 24px !important;
-                font-size: 1.2rem !important;
-            }
-            #skip-intro-btn {
-                padding: 8px 15px !important;
-                font-size: 1rem !important;
-                bottom: 15px !important;
-                right: 15px !important;
-            }
-
-            /* 2. 核心：所有弹窗 (Modal) 调整 - 防止超出屏幕并允许滑动 */
+            /* 1. 弹窗 (Modal) 安全调整 */
             .modal-content {
                 width: 95% !important;
                 max-width: 400px !important;
                 padding: 20px !important;
-                max-height: 85vh !important; /* 最高只能占屏幕 85% */
-                overflow-y: auto !important; /* 超出部分自动出现上下滑动条 */
+                max-height: 85vh !important;
+                overflow-y: auto !important;
             }
-            
-            /* 3. 游戏设置页面字体调整 */
             #game-setup-modal h2 { font-size: 1.5rem !important; margin-top: 0 !important; }
-            #player-count-select, #round-count-input {
-                padding: 8px !important;
-                font-size: 1rem !important;
+            #question-level { font-size: 1.2rem !important; margin-top: 0 !important; }
+            #question-image { max-height: 120px !important; }
+            
+            /* 2. 排行榜 (Leaderboard) 变成弹窗模式 */
+            #leaderboard-container {
+                display: none !important; /* 手机端默认隐藏，靠 JS 控制显示 */
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                background: white !important;
+                z-index: 10000 !important;
+                width: 90% !important;
+                padding: 20px !important;
+                border-radius: 15px !important;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+            }
+            /* 配合 JS 添加的类名来显示排行榜 */
+            #leaderboard-container.mobile-show {
+                display: block !important;
+                animation: popUp 0.3s ease-out forwards;
             }
 
-            /* 4. 问答弹窗内容调整 */
-            #question-level { font-size: 1.2rem !important; margin-top: 0 !important; }
-            #question-text { font-size: 1rem !important; margin-bottom: 10px !important; }
-            #question-image { max-height: 120px !important; } /* 限制题目图片高度 */
-            #answer-box { padding: 10px !important; font-size: 1rem !important; }
+            /* 3. 手机端专属按钮的样式 */
+            #mobile-leaderboard-btn {
+                display: block !important;
+                background-color: #f1c40f;
+                color: #333;
+                border: 2px solid #f39c12;
+                padding: 12px !important;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+                width: 100%;
+                cursor: pointer;
+            }
+            #close-leaderboard-btn {
+                display: block !important;
+                background-color: #e74c3c;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                cursor: pointer;
+                width: 100%;
+                font-weight: bold;
+            }
+
+            /* 4. 棋盘布局调整 (防切断) */
+            body { align-items: center !important; justify-content: flex-start !important; overflow-x: hidden; }
+            #app-wrapper { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; padding: 0 !important; }
+            .game-container { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; overflow: hidden !important; }
             
-            /* 5. 游戏控制区和轮盘弹窗调整 */
-            .controls { padding: 10px !important; }
-            #roll-dice-btn { padding: 10px !important; font-size: 1rem !important; }
-            .current-player-info { font-size: 1rem !important; }
-            #wheel-display { font-size: 1.5rem !important; padding: 10px !important; margin: 10px 0 !important; }
-            
-            /* 6. 排行榜和主界面布局 (如果原本是左右排版，强行变上下堆叠) */
-            #app-wrapper {
+            /* 控制台居中 */
+            .controls {
+                width: 95% !important;
+                display: flex !important;
                 flex-direction: column !important;
-                padding: 10px !important;
-            }
-            #leaderboard-container {
-                width: 100% !important;
-                margin-bottom: 10px !important;
-            }
-            
-            /* 7. 结算画面调整 */
-            #game-over-modal h2 { font-size: 1.8rem !important; }
-            #final-winner { font-size: 1.3rem !important; }
-            #export-btn, #game-over-modal button {
-                padding: 10px !important;
-                font-size: 1rem !important;
-                width: 100% !important;
+                align-items: center !important;
+                z-index: 10 !important;
+                padding-bottom: 30px !important;
             }
         }
+
+        /* 在电脑端隐藏这些手机专属按钮 */
+        @media (min-width: 769px) {
+            #mobile-leaderboard-btn, #close-leaderboard-btn { display: none !important; }
+        }
+
+        @keyframes popUp { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -114,20 +98,20 @@
             <source src="/static/images/montage.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
-
         <button id="start-intro-btn" style="z-index:10001; padding:20px 40px; font-size:2em; background:#2196F3; color:white; border:none; border-radius:10px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
             Starts The Game
         </button>
-
-        <button id="skip-intro-btn" style="position:absolute; bottom:30px; right:30px; padding:10px 20px; font-size:1.2em; background:rgba(255,255,255,0.8); border:none; cursor:pointer; border-radius:5px; z-index:10001; display:none;">Skip Intro ⏩</button>
+        <button id="skip-intro-btn" style="position:absolute; bottom:30px; right:30px; padding:10px 20px; font-size:1.2em; background:rgba(255,255,255,0.8); border:none; cursor:pointer; border-radius:5px; z-index:10001; display:none;">Skip Intro</button>
     </div>
+
     <video autoplay muted loop id="video-background" style="position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:-1000;">
         <source src="/static/images/background.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
+
     <div id="game-setup-modal">
         <div class="modal-content">
-            <h2>🎮 Game Setup</h2>
+            <h2>Game Setup</h2>
             <label for="player-count-select">Select Number of Players:</label>
             <select id="player-count-select">
                 <option value="1">1 Player</option>
@@ -137,47 +121,48 @@
             </select>
             <label for="round-count-input" style="display:block; margin-top:15px;">Number of Rounds:</label>
             <input type="number" id="round-count-input" value="10" min="1" max="50" style="width: 100%; padding: 10px; font-size: 1.1em; margin-top: 5px; box-sizing: border-box;">
-
             <div id="player-inputs-container"></div>
-
             <button id="start-game-btn">Start Game</button>
         </div>
     </div>
 
     <div id="app-wrapper">
-
         <div id="leaderboard-container" class="hidden">
-            <h2>🏆 Leaderboard</h2>
-            <ol id="score-list">
-            </ol>
+            <!-- 手机端关闭排行榜的按钮 -->
+            <button id="close-leaderboard-btn" onclick="toggleMobileLeaderboard()">❌ Close Leaderboard</button>
+            
+            <h2>Leaderboard</h2>
+            <ol id="score-list"></ol>
             <div id="round-counter">Round: 1 / 20</div>
             <div id="game-timer">Time: 00:00</div>
         </div>
 
         <div class="game-container hidden">
             <div id="game-board">
+                <!-- 棋盘内容由 script.js 生成 -->
             </div>
-
+            
             <div class="controls">
+                <!-- 新增：手机端显示排行榜的按钮 -->
+                <button id="mobile-leaderboard-btn" onclick="toggleMobileLeaderboard()">🏆 Show Leaderboard & Time</button>
+                
                 <div class="current-player-info">
                     Current Player: <span id="current-player-color"></span> <span id="current-player-name"></span>
                 </div>
                 <div class="dice-area">
                     <img id="dice-image" src="/static/images/dice-1.png" alt="Dice">
                 </div>
-                <button id="roll-dice-btn">🎲 Roll Dice</button>
+                <button id="roll-dice-btn">Roll Dice</button>
                 <div id="game-log">Select players to start.</div>
             </div>
         </div>
-
     </div>
 
+    <!-- 各种问答/特效模态框保持原样 -->
     <div id="question-modal" class="hidden">
         <div class="modal-content">
             <h3 id="question-level"></h3>
-            
             <img id="question-image" src="" alt="Question Image" class="hidden">
-            
             <p id="question-text"></p>
             <input type="text" id="answer-box" placeholder="Type your answer here (A, B, C)...">
             <button id="submit-answer-btn">Submit Answer</button>
@@ -195,81 +180,104 @@
 
     <div id="powerup-modal" class="hidden">
         <div class="modal-content" style="text-align: center;">
-            <h2 style="color: #FF9800;">🔥 3-STREAK! POWER UP! 🔥</h2>
+            <h2 style="color: #FF9800;">3-STREAK! POWER UP!</h2>
             <p>You answered 3 in a row! Spin for a reward!</p>
             <div id="wheel-display" style="font-size: 2em; font-weight: bold; margin: 20px 0; padding: 20px; border: 3px dashed #333; border-radius: 10px; background: #fff3e0;">???</div>
-            <button id="spin-btn" style="background-color: #FF9800;">🎰 SPIN THE WHEEL</button>
+            <button id="spin-btn" style="background-color: #FF9800;">SPIN THE WHEEL</button>
             <button id="close-powerup-btn" class="hidden">Continue</button>
         </div>
     </div>
 
     <div id="game-over-modal" class="hidden">
         <div class="modal-content">
-            <h2>🏁 Game Over! 🏁</h2>
+            <h2>Game Over!</h2>
             <h3 id="final-winner"></h3>
             <p id="final-average"></p>
             <p>Thanks for playing!</p>
- 
-            <button id="export-btn" style="background-color: #2196F3; margin-top: 20px;">📂 Export Results to Excel (.xls)</button>
-            <button onclick="location.reload()" style="background-color: #666; margin-top: 10px;">🔄 Play Again</button>
+            <button id="export-btn" style="background-color: #2196F3; margin-top: 20px;">Export Results to Excel (.xls)</button>
+            <button onclick="location.reload()" style="background-color: #666; margin-top: 10px;">Play Again</button>
         </div>
     </div>
 
     <script src="/static/script.js"></script>
-<!-- Firebase Libraries -->
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
-<script>
-    // 2. Kunci Firebase Anda
-    const firebaseConfig = {
-        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-        authDomain: "velocity-valley-edu.firebaseapp.com",
-        projectId: "velocity-valley-edu",
-        storageBucket: "velocity-valley-edu.firebasestorage.app",
-        messagingSenderId: "340043533038",
-        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-    };
-    
-    // 3. Initialize Firebase & Firestore
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    // 4. THE BOUNCER & THE TRACKER (Digabungkan!)
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            // --- BAHAGIAN 1: THE BOUNCER (Dibenarkan Masuk) ---
-            console.log("Student/Teacher logged in: " + user.email);
-            
-            // --- BAHAGIAN 2: THE TRACKER (Tambah Markah Simulasi) ---
-            // NAMA UNIK UNTUK MUKA SURAT INI:
-            const pageID = "visited_boardgame"; 
-
-            // Semak kalau dia dah dapat markah untuk page ini semasa sesi ini
-            if (!sessionStorage.getItem(pageID)) {
-                
-                // Kalau belum, beritahu Buku Log untuk tambah +1 pada simsExplored
-                db.collection("users").doc(user.uid).set({
-                    simsExplored: firebase.firestore.FieldValue.increment(1)
-                }, { merge: true })
-                .then(() => {
-                    console.log("Point added for exploring Board Game!");
-                    // Lekatkan nota supaya kalau dia refresh page, markah tak bertambah lagi
-                    sessionStorage.setItem(pageID, "true"); 
-                })
-                .catch((error) => {
-                    console.error("Gagal tambah markah:", error);
-                });
+    <!-- 手机端交互逻辑 -->
+    <script>
+        // 1. 切换排行榜显示的函数
+        function toggleMobileLeaderboard() {
+            const lb = document.getElementById('leaderboard-container');
+            if (lb) {
+                lb.classList.toggle('mobile-show');
             }
-
-        } else {
-            // NO VIP PASS. Halau mereka ke muka surat login.
-            window.location.replace('/login');
         }
-    });
-</script>
+
+        // 2. 动态检测手机屏幕宽度，强制完美缩放棋盘
+        function resizeBoardForMobile() {
+            if (window.innerWidth <= 768) {
+                const board = document.getElementById('game-board');
+                if (board) {
+                    // 获取当前屏幕的可用宽度
+                    const screenWidth = window.innerWidth;
+                    // 假设你的原版棋盘是 700px 宽（按比例压缩到屏幕的 95%）
+                    const boardOriginalWidth = 700; 
+                    const scaleFactor = (screenWidth * 0.95) / boardOriginalWidth;
+                    
+                    // 只有当屏幕比棋盘小的时候才缩小
+                    if (scaleFactor < 1) {
+                        board.style.transform = `scale(${scaleFactor})`;
+                        board.style.transformOrigin = 'top center';
+                        
+                        // 神奇的代码：因为缩放后会留下巨大的空白高度，我们需要把下面的控件往上拉！
+                        const originalHeight = board.offsetHeight || 700;
+                        const blankSpace = originalHeight * (1 - scaleFactor);
+                        board.style.marginBottom = `-${blankSpace}px`;
+                    }
+                }
+            }
+        }
+
+        // 当页面加载完成，或者学生旋转手机屏幕时，自动计算缩放比例
+        window.addEventListener('load', resizeBoardForMobile);
+        window.addEventListener('resize', resizeBoardForMobile);
+        
+        // 由于你的棋盘可能是被 script.js 延迟生成的，我们需要延时再计算一次确保生效
+        setTimeout(resizeBoardForMobile, 1000);
+        setTimeout(resizeBoardForMobile, 3000);
+    </script>
+
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+            authDomain: "velocity-valley-edu.firebaseapp.com",
+            projectId: "velocity-valley-edu",
+            storageBucket: "velocity-valley-edu.firebasestorage.app",
+            messagingSenderId: "340043533038",
+            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                console.log("Student/Teacher logged in: " + user.email);
+                const pageID = "visited_boardgame";
+                if (!sessionStorage.getItem(pageID)) {
+                    db.collection("users").doc(user.uid).set({
+                        simsExplored: firebase.firestore.FieldValue.increment(1)
+                    }, { merge: true })
+                    .then(() => {
+                        sessionStorage.setItem(pageID, "true");
+                    });
+                }
+            } else {
+                window.location.replace('/login');
+            }
+        });
+    </script>
 </body>
 </html>
