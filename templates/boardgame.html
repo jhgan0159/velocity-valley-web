@@ -71,7 +71,7 @@
                 font-weight: bold;
             }
 
-            /* 4. 棋盘布局调整 - 修改：取消 hidden 防止切断棋子 */
+            /* 4. 棋盘布局调整 */
             body { align-items: center !important; justify-content: flex-start !important; overflow-x: hidden; }
             #app-wrapper { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; padding: 0 !important; overflow: visible !important; }
             .game-container { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; overflow: visible !important; }
@@ -102,7 +102,7 @@
             #app-wrapper {
                 flex-direction: row !important; 
                 height: 100vh !important;
-                overflow: visible !important; /* 允许溢出展示棋子 */
+                overflow: visible !important; 
             }
 
             .game-container {
@@ -117,8 +117,8 @@
             .controls {
                 order: -1 !important; 
                 width: 25% !important; 
-                min-width: 170px !important;
-                max-width: 200px !important;
+                min-width: 160px !important;
+                max-width: 180px !important;
                 height: 100vh !important;
                 justify-content: center !important; 
                 padding: 10px !important;
@@ -253,7 +253,7 @@
 
     <script src="/static/script.js"></script>
 
-    <!-- 手机端交互与【双重限制】智能缩放逻辑 -->
+    <!-- 手机端交互与【长方形拉伸】智能缩放逻辑 -->
     <script>
         function toggleMobileLeaderboard() {
             const lb = document.getElementById('leaderboard-container');
@@ -266,45 +266,38 @@
             if (window.innerWidth <= 950) {
                 const board = document.getElementById('game-board');
                 if (board) {
-                    // 1. 先重置 transform 以获取准确的原尺寸
                     board.style.transform = 'none';
                     
                     const screenWidth = window.innerWidth;
                     const screenHeight = window.innerHeight;
                     
-                    // 动态获取棋盘尺寸 (默认一般为 700x700 左右)
                     const boardOriginalWidth = board.offsetWidth || 700; 
                     const boardOriginalHeight = board.offsetHeight || 700;
 
-                    let scaleFactor = 1;
-
-                    // 判断手机现在是横屏还是竖屏
                     if (screenWidth > screenHeight) {
                         // 【横屏模式 (Landscape)】
-                        // 预留左侧控制台宽度 (最大 200px) 和 上下安全边距
-                        const leftControlsWidth = Math.max(screenWidth * 0.25, 170); 
+                        const leftControlsWidth = Math.max(screenWidth * 0.25, 160); 
                         const availableWidth = screenWidth - leftControlsWidth - 30; // 宽度预留安全距离
                         const availableHeight = screenHeight - 20; // 高度预留安全距离
                         
-                        // 核心修复：分别计算宽度和高度的缩放率，取【最小的那个】，确保整个棋盘高度不被切断
                         const scaleW = availableWidth / boardOriginalWidth;
                         const scaleH = availableHeight / boardOriginalHeight;
-                        scaleFactor = Math.min(scaleW, scaleH);
                         
-                        if (scaleFactor < 1) {
-                            board.style.transform = `scale(${scaleFactor})`;
-                            board.style.transformOrigin = 'center left'; 
-                            board.style.marginBottom = '0px'; 
-                        }
+                        // 让棋盘变身“长方形”！宽度和高度各自放缩填满空间
+                        // 加入最高 1.6 倍的防文字过度变形机制
+                        const finalScaleW = Math.min(scaleW, scaleH * 1.6);
+                        
+                        board.style.transform = `scale(${finalScaleW}, ${scaleH})`;
+                        board.style.transformOrigin = 'center left'; 
+                        board.style.marginBottom = '0px'; 
                     } else {
                         // 【竖屏模式 (Portrait)】
-                        scaleFactor = (screenWidth * 0.95) / boardOriginalWidth;
+                        const scaleFactor = (screenWidth * 0.95) / boardOriginalWidth;
                         
                         if (scaleFactor < 1) {
                             board.style.transform = `scale(${scaleFactor})`;
                             board.style.transformOrigin = 'top center'; 
                             
-                            // 抵消缩放后留下的空白，把下方的按钮拉上来
                             const blankSpace = boardOriginalHeight * (1 - scaleFactor);
                             board.style.marginBottom = `-${blankSpace}px`;
                         } else {
