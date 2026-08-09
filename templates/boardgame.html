@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Physics Monopoly: Ultimate Edition</title>
     <link rel="stylesheet" href="/static/style.css">
 
     <!-- 手机端适配专属 CSS -->
     <style>
-        @media (max-width: 768px) {
+        /* =========================================
+           BOARDGAME - 手机竖屏 (Portrait) & 通用优化
+           ========================================= */
+        @media (max-width: 950px) {
             /* 1. 弹窗 (Modal) 安全调整 */
             .modal-content {
                 width: 95% !important;
@@ -31,6 +34,7 @@
                 background: white !important;
                 z-index: 10000 !important;
                 width: 90% !important;
+                max-width: 350px !important;
                 padding: 20px !important;
                 border-radius: 15px !important;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
@@ -82,10 +86,62 @@
                 z-index: 10 !important;
                 padding-bottom: 30px !important;
             }
+
+            /* 视频跳过按钮调整 */
+            #skip-intro-btn {
+                padding: 8px 15px !important;
+                font-size: 1rem !important;
+                bottom: 15px !important;
+                right: 15px !important;
+            }
         }
 
-        /* 在电脑端隐藏这些手机专属按钮 */
-        @media (min-width: 769px) {
+        /* =========================================
+           BOARDGAME - 手机横屏 (Landscape) 专属优化
+           ========================================= */
+        @media (max-width: 950px) and (orientation: landscape) {
+            #app-wrapper {
+                flex-direction: row !important; /* 横屏时强制主容器左右排版 */
+                height: 100vh !important;
+                overflow: hidden !important;
+            }
+
+            .game-container {
+                flex-direction: row !important; /* 强制左右排版 */
+                align-items: center !important;
+                justify-content: flex-start !important;
+                height: 100vh !important;
+                padding: 0 !important;
+            }
+
+            .controls {
+                order: -1 !important; /* 强制把控制台排在棋盘的左边 */
+                width: 25% !important; /* 占据左边空间 */
+                min-width: 170px !important;
+                max-width: 200px !important;
+                height: 100vh !important;
+                justify-content: center !important; /* 垂直居中按钮和骰子 */
+                padding: 10px !important;
+                background: rgba(255, 255, 255, 0.9) !important; /* 半透明背景防遮挡 */
+                border-right: 3px solid #3498db;
+                margin-bottom: 0 !important;
+                box-sizing: border-box !important;
+                overflow-y: auto !important; /* 内容过多可滑动 */
+            }
+
+            #game-board {
+                margin-bottom: 0 !important; /* 横屏不需要底部留白补偿 */
+                margin-left: 10px !important; /* 和左边的控制台拉开一点距离 */
+            }
+            
+            #mobile-leaderboard-btn {
+                font-size: 0.85rem !important; /* 横屏时按钮稍微缩细一点 */
+                padding: 8px !important;
+            }
+        }
+
+        /* 在电脑端隐藏手机专属按钮 */
+        @media (min-width: 951px) {
             #mobile-leaderboard-btn, #close-leaderboard-btn { display: none !important; }
         }
 
@@ -138,13 +194,9 @@
         </div>
 
         <div class="game-container hidden">
-            <div id="game-board">
-                <!-- 棋盘内容由 script.js 生成 -->
-            </div>
-            
+            <!-- 新增：手机端显示排行榜的按钮 (移到控制台上方，方便点击) -->
             <div class="controls">
-                <!-- 新增：手机端显示排行榜的按钮 -->
-                <button id="mobile-leaderboard-btn" onclick="toggleMobileLeaderboard()">🏆 Show Leaderboard & Time</button>
+                <button id="mobile-leaderboard-btn" onclick="toggleMobileLeaderboard()">🏆 Show Leaderboard</button>
                 
                 <div class="current-player-info">
                     Current Player: <span id="current-player-color"></span> <span id="current-player-name"></span>
@@ -154,6 +206,10 @@
                 </div>
                 <button id="roll-dice-btn">Roll Dice</button>
                 <div id="game-log">Select players to start.</div>
+            </div>
+
+            <div id="game-board">
+                <!-- 棋盘内容由 script.js 生成 -->
             </div>
         </div>
     </div>
@@ -201,7 +257,7 @@
 
     <script src="/static/script.js"></script>
 
-    <!-- 手机端交互逻辑 -->
+    <!-- 手机端交互与智能缩放逻辑 -->
     <script>
         // 1. 切换排行榜显示的函数
         function toggleMobileLeaderboard() {
@@ -211,27 +267,57 @@
             }
         }
 
-        // 2. 动态检测手机屏幕宽度，强制完美缩放棋盘
+        // 2. 动态检测手机屏幕宽度与方向，强制完美缩放棋盘
         function resizeBoardForMobile() {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 950) {
                 const board = document.getElementById('game-board');
                 if (board) {
-                    // 获取当前屏幕的可用宽度
                     const screenWidth = window.innerWidth;
-                    // 假设你的原版棋盘是 700px 宽（按比例压缩到屏幕的 95%）
-                    const boardOriginalWidth = 700; 
-                    const scaleFactor = (screenWidth * 0.95) / boardOriginalWidth;
-                    
-                    // 只有当屏幕比棋盘小的时候才缩小
-                    if (scaleFactor < 1) {
-                        board.style.transform = `scale(${scaleFactor})`;
-                        board.style.transformOrigin = 'top center';
+                    const screenHeight = window.innerHeight;
+                    const boardOriginalWidth = 700; // 假设原版棋盘是 700px 宽
+
+                    let scaleFactor = 1;
+
+                    // 判断手机现在是横屏还是直屏
+                    if (screenWidth > screenHeight) {
+                        // 【横屏模式 (Landscape)】
+                        // 左边留出给骰子和按钮的空间，剩下的宽度给棋盘
+                        const leftControlsWidth = Math.max(screenWidth * 0.25, 170); 
+                        const availableWidth = screenWidth - leftControlsWidth - 20; // 减去间距
+                        scaleFactor = availableWidth / boardOriginalWidth;
                         
-                        // 神奇的代码：因为缩放后会留下巨大的空白高度，我们需要把下面的控件往上拉！
-                        const originalHeight = board.offsetHeight || 700;
-                        const blankSpace = originalHeight * (1 - scaleFactor);
-                        board.style.marginBottom = `-${blankSpace}px`;
+                        if (scaleFactor < 1) {
+                            board.style.transform = `scale(${scaleFactor})`;
+                            board.style.transformOrigin = 'center left'; // 横屏时靠左缩放
+                            board.style.marginBottom = '0px'; // 横屏不需要拉伸底部
+                        } else {
+                            board.style.transform = 'none';
+                        }
+                    } else {
+                        // 【竖屏模式 (Portrait)】
+                        // 上下排版
+                        scaleFactor = (screenWidth * 0.95) / boardOriginalWidth;
+                        
+                        if (scaleFactor < 1) {
+                            board.style.transform = `scale(${scaleFactor})`;
+                            board.style.transformOrigin = 'top center'; // 直屏时靠上居中缩放
+                            
+                            // 抵消缩放后留下的空白，把下方的按钮拉上来
+                            const originalHeight = board.offsetHeight || 700;
+                            const blankSpace = originalHeight * (1 - scaleFactor);
+                            board.style.marginBottom = `-${blankSpace}px`;
+                        } else {
+                            board.style.transform = 'none';
+                            board.style.marginBottom = '0px';
+                        }
                     }
+                }
+            } else {
+                // 电脑端重置样式
+                const board = document.getElementById('game-board');
+                if(board) {
+                    board.style.transform = 'none';
+                    board.style.marginBottom = '0px';
                 }
             }
         }
@@ -240,7 +326,7 @@
         window.addEventListener('load', resizeBoardForMobile);
         window.addEventListener('resize', resizeBoardForMobile);
         
-        // 由于你的棋盘可能是被 script.js 延迟生成的，我们需要延时再计算一次确保生效
+        // 由于棋盘是被 script.js 延迟生成的，延时计算确保生效
         setTimeout(resizeBoardForMobile, 1000);
         setTimeout(resizeBoardForMobile, 3000);
     </script>
