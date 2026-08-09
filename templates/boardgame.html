@@ -71,7 +71,7 @@
                 font-weight: bold;
             }
 
-            /* 4. 棋盘布局调整 - 允许溢出展示棋子 */
+            /* 4. 棋盘布局调整 - 允许溢出展示棋子，Flex 居中 */
             body { align-items: center !important; justify-content: flex-start !important; overflow-x: hidden; }
             #app-wrapper { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; padding: 0 !important; overflow: visible !important; }
             .game-container { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; overflow: visible !important; }
@@ -102,16 +102,17 @@
             #app-wrapper {
                 flex-direction: row !important; 
                 height: 100vh !important;
-                overflow: visible !important;
+                overflow: visible !important; 
             }
 
             .game-container {
                 flex-direction: row !important; 
                 align-items: center !important;
-                justify-content: flex-start !important;
+                justify-content: center !important; /* 横屏时，利用 Flexbox 让右侧棋盘完美居中 */
                 height: 100vh !important;
                 padding: 0 !important;
                 overflow: visible !important;
+                width: 100% !important;
             }
 
             .controls {
@@ -130,8 +131,7 @@
             }
 
             #game-board {
-                margin-bottom: 0 !important; 
-                /* marginLeft 交给底部的 JS 动态计算，以实现完美居中 */
+                margin: 0 auto !important; /* 配合 flex center 实现居中 */
             }
             
             #mobile-leaderboard-btn {
@@ -253,7 +253,7 @@
 
     <script src="/static/script.js"></script>
 
-    <!-- 手机端交互与【等比居中】智能缩放逻辑 -->
+    <!-- 手机端交互与【ZOOM 无损缩放】智能逻辑 -->
     <script>
         function toggleMobileLeaderboard() {
             const lb = document.getElementById('leaderboard-container');
@@ -267,57 +267,47 @@
             if (!board) return;
 
             if (window.innerWidth <= 950) {
-                // 先清除之前的缩放影响，以便获取真实的初始尺寸
+                // 清除之前的 transform，改用 zoom 魔法！
                 board.style.transform = 'none';
-                board.style.marginLeft = '0px';
+                board.style.zoom = '1';
                 
                 const screenWidth = window.innerWidth;
                 const screenHeight = window.innerHeight;
                 
-                const boardOriginalWidth = board.offsetWidth || 700; 
-                const boardOriginalHeight = board.offsetHeight || 700;
+                // 预设原本的棋盘宽高大约是 700px
+                const boardOriginalWidth = 700; 
+                const boardOriginalHeight = 700;
 
                 if (screenWidth > screenHeight) {
                     // 【横屏模式 (Landscape)】
                     const leftControlsWidth = Math.max(screenWidth * 0.25, 170); 
-                    const availableWidth = screenWidth - leftControlsWidth; 
-                    const availableHeight = screenHeight; 
+                    const availableWidth = screenWidth - leftControlsWidth - 20; 
+                    const availableHeight = screenHeight - 20; 
                     
-                    const scaleW = (availableWidth - 20) / boardOriginalWidth;
-                    const scaleH = (availableHeight - 20) / boardOriginalHeight;
+                    const scaleW = availableWidth / boardOriginalWidth;
+                    const scaleH = availableHeight / boardOriginalHeight;
                     
-                    // 核心修复：强制等比缩放，保持完美正方形，否则棋子 JS 坐标会错乱！
+                    // 取最小的比例，确保棋盘维持完美的正方形
                     const scaleFactor = Math.min(scaleW, scaleH);
                     
-                    board.style.transform = `scale(${scaleFactor})`;
-                    board.style.transformOrigin = 'center left'; 
-                    
-                    // 完美居中魔法：计算缩放后剩下的空白宽度，然后把棋盘往右推一半
-                    const scaledWidth = boardOriginalWidth * scaleFactor;
-                    const emptySpace = availableWidth - scaledWidth;
-                    const extraMargin = emptySpace / 2;
-
-                    board.style.marginLeft = `${extraMargin}px`;
-                    board.style.marginBottom = '0px'; 
+                    // 核心修复：使用 zoom 属性。它不仅缩小画面，连带 JS 坐标系一并等比缩小，彻底解决棋子走错格的问题！
+                    board.style.zoom = scaleFactor;
+                    board.style.margin = '0 auto'; 
                 } else {
                     // 【竖屏模式 (Portrait)】
                     const scaleFactor = (screenWidth * 0.95) / boardOriginalWidth;
                     
                     if (scaleFactor < 1) {
-                        board.style.transform = `scale(${scaleFactor})`;
-                        board.style.transformOrigin = 'top center'; 
-                        
-                        const blankSpace = boardOriginalHeight * (1 - scaleFactor);
-                        board.style.marginBottom = `-${blankSpace}px`;
+                        board.style.zoom = scaleFactor;
                     } else {
-                        board.style.marginBottom = '0px';
+                        board.style.zoom = '1';
                     }
-                    board.style.marginLeft = '0px';
+                    board.style.margin = '0 auto';
                 }
             } else {
                 board.style.transform = 'none';
-                board.style.marginBottom = '0px';
-                board.style.marginLeft = '0px';
+                board.style.zoom = '1';
+                board.style.margin = '0';
             }
         }
 
