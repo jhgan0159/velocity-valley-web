@@ -26,7 +26,7 @@
             
             /* 2. 排行榜 (Leaderboard) 变成弹窗模式 */
             #leaderboard-container {
-                display: none !important; /* 手机端默认隐藏，靠 JS 控制显示 */
+                display: none !important;
                 position: fixed !important;
                 top: 50% !important;
                 left: 50% !important;
@@ -39,7 +39,6 @@
                 border-radius: 15px !important;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
             }
-            /* 配合 JS 添加的类名来显示排行榜 */
             #leaderboard-container.mobile-show {
                 display: block !important;
                 animation: popUp 0.3s ease-out forwards;
@@ -72,10 +71,10 @@
                 font-weight: bold;
             }
 
-            /* 4. 棋盘布局调整 (防切断) */
+            /* 4. 棋盘布局调整 - 修改：取消 hidden 防止切断棋子 */
             body { align-items: center !important; justify-content: flex-start !important; overflow-x: hidden; }
-            #app-wrapper { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; padding: 0 !important; }
-            .game-container { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; overflow: hidden !important; }
+            #app-wrapper { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; padding: 0 !important; overflow: visible !important; }
+            .game-container { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; overflow: visible !important; }
             
             /* 控制台居中 */
             .controls {
@@ -101,46 +100,46 @@
            ========================================= */
         @media (max-width: 950px) and (orientation: landscape) {
             #app-wrapper {
-                flex-direction: row !important; /* 横屏时强制主容器左右排版 */
+                flex-direction: row !important; 
                 height: 100vh !important;
-                overflow: hidden !important;
+                overflow: visible !important; /* 允许溢出展示棋子 */
             }
 
             .game-container {
-                flex-direction: row !important; /* 强制左右排版 */
+                flex-direction: row !important; 
                 align-items: center !important;
                 justify-content: flex-start !important;
                 height: 100vh !important;
                 padding: 0 !important;
+                overflow: visible !important;
             }
 
             .controls {
-                order: -1 !important; /* 强制把控制台排在棋盘的左边 */
-                width: 25% !important; /* 占据左边空间 */
+                order: -1 !important; 
+                width: 25% !important; 
                 min-width: 170px !important;
                 max-width: 200px !important;
                 height: 100vh !important;
-                justify-content: center !important; /* 垂直居中按钮和骰子 */
+                justify-content: center !important; 
                 padding: 10px !important;
-                background: rgba(255, 255, 255, 0.9) !important; /* 半透明背景防遮挡 */
+                background: rgba(255, 255, 255, 0.9) !important; 
                 border-right: 3px solid #3498db;
                 margin-bottom: 0 !important;
                 box-sizing: border-box !important;
-                overflow-y: auto !important; /* 内容过多可滑动 */
+                overflow-y: auto !important; 
             }
 
             #game-board {
-                margin-bottom: 0 !important; /* 横屏不需要底部留白补偿 */
-                margin-left: 10px !important; /* 和左边的控制台拉开一点距离 */
+                margin-bottom: 0 !important; 
+                margin-left: 20px !important; 
             }
             
             #mobile-leaderboard-btn {
-                font-size: 0.85rem !important; /* 横屏时按钮稍微缩细一点 */
+                font-size: 0.85rem !important; 
                 padding: 8px !important;
             }
         }
 
-        /* 在电脑端隐藏手机专属按钮 */
         @media (min-width: 951px) {
             #mobile-leaderboard-btn, #close-leaderboard-btn { display: none !important; }
         }
@@ -184,7 +183,6 @@
 
     <div id="app-wrapper">
         <div id="leaderboard-container" class="hidden">
-            <!-- 手机端关闭排行榜的按钮 -->
             <button id="close-leaderboard-btn" onclick="toggleMobileLeaderboard()">❌ Close Leaderboard</button>
             
             <h2>Leaderboard</h2>
@@ -194,7 +192,6 @@
         </div>
 
         <div class="game-container hidden">
-            <!-- 新增：手机端显示排行榜的按钮 (移到控制台上方，方便点击) -->
             <div class="controls">
                 <button id="mobile-leaderboard-btn" onclick="toggleMobileLeaderboard()">🏆 Show Leaderboard</button>
                 
@@ -214,7 +211,6 @@
         </div>
     </div>
 
-    <!-- 各种问答/特效模态框保持原样 -->
     <div id="question-modal" class="hidden">
         <div class="modal-content">
             <h3 id="question-level"></h3>
@@ -257,9 +253,8 @@
 
     <script src="/static/script.js"></script>
 
-    <!-- 手机端交互与智能缩放逻辑 -->
+    <!-- 手机端交互与【双重限制】智能缩放逻辑 -->
     <script>
-        // 1. 切换排行榜显示的函数
         function toggleMobileLeaderboard() {
             const lb = document.getElementById('leaderboard-container');
             if (lb) {
@@ -267,53 +262,57 @@
             }
         }
 
-        // 2. 动态检测手机屏幕宽度与方向，强制完美缩放棋盘
         function resizeBoardForMobile() {
             if (window.innerWidth <= 950) {
                 const board = document.getElementById('game-board');
                 if (board) {
+                    // 1. 先重置 transform 以获取准确的原尺寸
+                    board.style.transform = 'none';
+                    
                     const screenWidth = window.innerWidth;
                     const screenHeight = window.innerHeight;
-                    const boardOriginalWidth = 700; // 假设原版棋盘是 700px 宽
+                    
+                    // 动态获取棋盘尺寸 (默认一般为 700x700 左右)
+                    const boardOriginalWidth = board.offsetWidth || 700; 
+                    const boardOriginalHeight = board.offsetHeight || 700;
 
                     let scaleFactor = 1;
 
-                    // 判断手机现在是横屏还是直屏
+                    // 判断手机现在是横屏还是竖屏
                     if (screenWidth > screenHeight) {
                         // 【横屏模式 (Landscape)】
-                        // 左边留出给骰子和按钮的空间，剩下的宽度给棋盘
+                        // 预留左侧控制台宽度 (最大 200px) 和 上下安全边距
                         const leftControlsWidth = Math.max(screenWidth * 0.25, 170); 
-                        const availableWidth = screenWidth - leftControlsWidth - 20; // 减去间距
-                        scaleFactor = availableWidth / boardOriginalWidth;
+                        const availableWidth = screenWidth - leftControlsWidth - 30; // 宽度预留安全距离
+                        const availableHeight = screenHeight - 20; // 高度预留安全距离
+                        
+                        // 核心修复：分别计算宽度和高度的缩放率，取【最小的那个】，确保整个棋盘高度不被切断
+                        const scaleW = availableWidth / boardOriginalWidth;
+                        const scaleH = availableHeight / boardOriginalHeight;
+                        scaleFactor = Math.min(scaleW, scaleH);
                         
                         if (scaleFactor < 1) {
                             board.style.transform = `scale(${scaleFactor})`;
-                            board.style.transformOrigin = 'center left'; // 横屏时靠左缩放
-                            board.style.marginBottom = '0px'; // 横屏不需要拉伸底部
-                        } else {
-                            board.style.transform = 'none';
+                            board.style.transformOrigin = 'center left'; 
+                            board.style.marginBottom = '0px'; 
                         }
                     } else {
                         // 【竖屏模式 (Portrait)】
-                        // 上下排版
                         scaleFactor = (screenWidth * 0.95) / boardOriginalWidth;
                         
                         if (scaleFactor < 1) {
                             board.style.transform = `scale(${scaleFactor})`;
-                            board.style.transformOrigin = 'top center'; // 直屏时靠上居中缩放
+                            board.style.transformOrigin = 'top center'; 
                             
                             // 抵消缩放后留下的空白，把下方的按钮拉上来
-                            const originalHeight = board.offsetHeight || 700;
-                            const blankSpace = originalHeight * (1 - scaleFactor);
+                            const blankSpace = boardOriginalHeight * (1 - scaleFactor);
                             board.style.marginBottom = `-${blankSpace}px`;
                         } else {
-                            board.style.transform = 'none';
                             board.style.marginBottom = '0px';
                         }
                     }
                 }
             } else {
-                // 电脑端重置样式
                 const board = document.getElementById('game-board');
                 if(board) {
                     board.style.transform = 'none';
@@ -322,11 +321,8 @@
             }
         }
 
-        // 当页面加载完成，或者学生旋转手机屏幕时，自动计算缩放比例
         window.addEventListener('load', resizeBoardForMobile);
         window.addEventListener('resize', resizeBoardForMobile);
-        
-        // 由于棋盘是被 script.js 延迟生成的，延时计算确保生效
         setTimeout(resizeBoardForMobile, 1000);
         setTimeout(resizeBoardForMobile, 3000);
     </script>
