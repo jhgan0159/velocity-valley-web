@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimen 4.6: Hukum Gay-Lussac</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; padding: 20px; margin: 0; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 24px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .top-nav-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .btn-back-menu { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(30,60,114,0.25); }
+        .principle-box { background: linear-gradient(135deg, #fff7ed, #ffedd5); border-left: 5px solid #ea580c; padding: 14px 18px; border-radius: 8px; margin-bottom: 18px; font-size: 0.94rem; line-height: 1.5; }
+        h2 { color: #2c3e50; border-bottom: 2px solid #e67e22; padding-bottom: 10px; }
+        .apparatus-box { display: flex; justify-content: center; align-items: center; background: #eef2f3; padding: 24px; border-radius: 8px; margin-bottom: 20px; }
+        .apparatus-box svg { max-width: 100%; height: auto; }
+        .label { font-size: 12px; font-weight: bold; fill: #333; }
+        .controls { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .status-box { background: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #ffeeba; display: none; font-weight: bold; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 5px; color: white; font-weight: bold; transition: 0.3s; }
+        .btn-heat { background-color: #e74c3c; }
+        .btn-record { background-color: #27ae60; }
+        .btn-reset { background-color: #7f8c8d; }
+        .btn-download { background-color: #3498db; }
+        .table-scroll { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #e67e22; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 16px; }
+            .apparatus-box { padding: 10px; }
+            .controls .btn { width: 100%; margin: 5px 0; }
+            .btn-download { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-nav-row">
+        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 4.6</span>
+    </div>
+    <h2>Eksperimen 4.6: Hubungan Suhu dan Tekanan Gas (Hukum Gay-Lussac)</h2>
+    <div class="principle-box">
+        <strong>📘 Prinsip Fizik (Hukum Gay-Lussac):</strong> Bagi suatu gas berjisim tetap pada isi padu malar, tekanan gas (<em>P</em>) adalah berkadar terus dengan suhu mutlaknya (<em>T</em> dalam Kelvin): <strong>P ∝ T</strong> atau <strong>P₁ / T₁ = P₂ / T₂</strong>.
+    </div>
+    <div id="statusMessage" class="status-box">Suhu telah mencapai tahap sasaran! Sila klik "Catat Data".</div>
+    <div class="apparatus-box">
+        <svg width="600" height="350" viewBox="0 0 600 350">
+            <rect x="235" y="290" width="30" height="40" fill="#7f8c8d" />
+            <rect x="220" y="330" width="60" height="10" fill="#2c3e50" />
+            <path id="flame" d="M 250 290 Q 235 260 250 240 Q 265 260 250 290" fill="red" opacity="0" />
+            <text x="160" y="320" class="label">Pemanas</text>
+            <line x1="190" y1="240" x2="310" y2="240" stroke="#555" stroke-width="4" />
+            <line x1="200" y1="240" x2="180" y2="340" stroke="#555" stroke-width="4" />
+            <line x1="300" y1="240" x2="320" y2="340" stroke="#555" stroke-width="4" />
+            <rect x="190" y="120" width="120" height="120" stroke="#333" stroke-width="3" fill="none" />
+            <rect x="193" y="140" width="114" height="98" fill="rgba(52, 152, 219, 0.4)" />
+            <circle cx="250" cy="180" r="40" stroke="#333" stroke-width="3" fill="rgba(255, 255, 255, 0.8)" />
+            <rect x="235" y="70" width="30" height="80" stroke="#333" stroke-width="3" fill="rgba(255, 255, 255, 0.8)" />
+            <rect x="235" y="60" width="30" height="15" fill="#e67e22" />
+            <rect x="200" y="50" width="8" height="180" stroke="#333" stroke-width="2" fill="#fff" />
+            <circle cx="204" cy="230" r="8" fill="red" />
+            <rect id="thermoBar" x="202" y="190" width="4" height="40" fill="red" />
+            <path d="M 250 60 Q 250 20 350 40 T 450 140" stroke="#333" stroke-width="6" fill="none" />
+            <circle cx="450" cy="160" r="45" stroke="#333" stroke-width="4" fill="#fff" />
+            <circle cx="450" cy="160" r="4" fill="#000" />
+            <path id="gaugeNeedle" d="M 450 160 L 420 130" stroke="red" stroke-width="3" />
+            <rect x="420" y="205" width="60" height="135" fill="#f1c40f" />
+            <text x="20" y="30" font-weight="bold" fill="#2c3e50">Suhu Semasa: <tspan id="svgTemp">25.0</tspan> °C</text>
+            <text x="20" y="50" font-weight="bold" fill="#2c3e50">Tekanan: <tspan id="svgPressure">98.35</tspan> kPa</text>
+        </svg>
+    </div>
+    <div class="controls">
+        <button class="btn btn-heat" id="btnHeat" onclick="toggleHeat()">🔥 Panaskan</button>
+        <button class="btn btn-record" onclick="recordData()">➕ Catat Data</button>
+        <button class="btn btn-reset" onclick="resetExperiment()">🔄 Semula</button>
+    </div>
+    <h3>Jadual 4.13: Keputusan Eksperimen</h3>
+    <div class="table-scroll">
+        <table id="resultTable">
+            <thead><tr><th>Suhu, <em>&theta;</em> / &deg;C</th><th>Tekanan udara, <em>P</em> / kPa</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div style="text-align: right; margin-top: 12px;">
+        <button class="btn btn-download" onclick="downloadExcel()">⬇ Muat Turun Data (CSV)</button>
+    </div>
+</div>
+<script>
+    let temperature = 25.0, isHeating = false, heatInterval, recordedTargets = [];
+    const targetTemps = [30, 40, 50, 60, 70, 80], k = 0.33003;
+    const btnHeat = document.getElementById("btnHeat"), flame = document.getElementById("flame"), thermoBar = document.getElementById("thermoBar"), gaugeNeedle = document.getElementById("gaugeNeedle"), svgTemp = document.getElementById("svgTemp"), svgPressure = document.getElementById("svgPressure"), statusMessage = document.getElementById("statusMessage");
+    function getPressure(t) { return (k * (t + 273.15)).toFixed(2); }
+    function toggleHeat() { isHeating ? pauseHeat() : startHeat(); }
+    function startHeat() {
+        isHeating = true; btnHeat.innerText = "⏸ Berhenti Panaskan"; flame.setAttribute("opacity", "1"); statusMessage.style.display = "none";
+        heatInterval = setInterval(() => {
+            if (temperature >= 85) return pauseHeat();
+            temperature += 0.2; updateVisuals();
+            let currentInt = Math.floor(temperature);
+            if (targetTemps.includes(currentInt) && !recordedTargets.includes(currentInt)) {
+                pauseHeat(); temperature = currentInt; updateVisuals();
+                statusMessage.innerText = `Suhu mencapai ${currentInt}°C! Sila klik "Catat Data".`; statusMessage.style.display = "block";
+            }
+        }, 100);
+    }
+    function pauseHeat() { isHeating = false; clearInterval(heatInterval); btnHeat.innerText = "🔥 Panaskan"; flame.setAttribute("opacity", "0"); }
+    function updateVisuals() {
+        let currentP = getPressure(temperature); svgTemp.textContent = temperature.toFixed(1); svgPressure.textContent = currentP;
+        let newHeight = 40 + ((temperature - 25) * 2.16); thermoBar.setAttribute("height", newHeight); thermoBar.setAttribute("y", 230 - newHeight);
+        gaugeNeedle.setAttribute("transform", `rotate(${(currentP - 90) * 4}, 450, 160)`);
+    }
+    function recordData() {
+        let currentTemp = Math.round(temperature);
+        if (targetTemps.includes(currentTemp) && !recordedTargets.includes(currentTemp)) recordedTargets.push(currentTemp);
+        let newRow = document.getElementById("resultTable").getElementsByTagName('tbody')[0].insertRow();
+        newRow.innerHTML = `<td>${currentTemp}</td><td>${getPressure(currentTemp)}</td>`;
+        statusMessage.style.display = "none";
+    }
+    function resetExperiment() { pauseHeat(); temperature = 25.0; recordedTargets = []; document.querySelector("#resultTable tbody").innerHTML = ""; statusMessage.style.display = "none"; updateVisuals(); }
+    function downloadExcel() {
+        let rows = Array.from(document.getElementById("resultTable").rows);
+        let csvContent = "\uFEFF" + rows.map(r => Array.from(r.cells).map(c => `"${c.innerText}"`).join(",")).join("\n");
+        let link = document.createElement("a"); link.setAttribute("href", "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent)); link.setAttribute("download", "data_eksperimen_hukum_gay_lussac.csv");
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+    updateVisuals();
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo", authDomain: "velocity-valley-edu.firebaseapp.com", projectId: "velocity-valley-edu", storageBucket: "velocity-valley-edu.firebasestorage.app", messagingSenderId: "340043533038", appId: "1:340043533038:web:0abf2444b8ac6da07f41ff" };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const stationItem = { id: "exp4_6", title: "Experiment 4.6: Gay-Lussac's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment8", fileUrl: "form4eksperimen8.html", timestamp: new Date().toLocaleString('en-GB') };
+            try {
+                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+                localStorage.setItem('vv_recent_activities', JSON.stringify([stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5)));
+            } catch (e) {}
+            const pageID = "visited_Gay_Lussac_eksperimen4_6";
+            const isFirst = !sessionStorage.getItem(pageID);
+            sessionStorage.setItem(pageID, "true");
+            db.collection("users").doc(user.uid).get().then(doc => {
+                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+                let payload = { recentActivities: [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5) };
+                if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+                db.collection("users").doc(user.uid).set(payload, { merge: true });
+            });
+        } else {
+            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+        }
+    });
+</script>
+</body>
+</html>

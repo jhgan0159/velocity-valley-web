@@ -17,27 +17,27 @@ body {
     min-height: 100%;
     width: auto;
     height: auto;
-    z-index: -1000; 
+    z-index: -1000;
     background-size: cover;
-    object-fit: cover; 
+    object-fit: cover;
 }
-.container { 
-    max-width: 800px; 
+.container {
+    max-width: 800px;
     width: 100%;
-    margin: 0 auto; 
-    background: white; 
-    padding: 20px; 
-    border-radius: 8px; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     max-height: 90vh;
     overflow-y: auto;
 }
 .category-section { margin-bottom: 40px; }
-.question-group { 
-    margin-bottom: 15px; 
-    border: 1px solid #e0e0e0; 
-    padding: 15px; 
-    border-radius: 8px; 
+.question-group {
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    border-radius: 8px;
     background-color: #fafafa;
 }
 .question-group:hover { border-color: #bbb; }
@@ -45,15 +45,14 @@ body {
 .btn-add:hover { background-color: #1976D2; }
 .btn-delete { background-color: #ff9800; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
 .btn-delete:hover { background-color: #f57c00; }
-input[type="text"], textarea { 
-    width: 100%; 
-    padding: 8px; 
-    margin-top: 5px; 
-    box-sizing: border-box; 
-    border: 1px solid #ccc; 
+input[type="text"], textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
     border-radius: 4px;
 }
-
 #player-inputs-container {
     margin-top: 15px;
     display: flex;
@@ -72,15 +71,12 @@ input[type="text"], textarea {
     background-color: #fff;
     outline: none;
 }
-
-
 #app-wrapper {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     gap: 20px;
 }
-
 #leaderboard-container {
     width: 250px;
     background: #fff;
@@ -115,9 +111,7 @@ input[type="text"], textarea {
 }
 #round-counter { margin-top: 20px; font-size: 1.2em; font-weight: bold; text-align: center; color: #333; }
 #game-timer { margin-top: 10px; font-size: 1.1em; font-weight: bold; text-align: center; color: #555; }
-
 .game-container { width: 100%; max-width: 960px; text-align: center; }
-
 #game-board {
     width: 960px;
     height: 600px;
@@ -125,10 +119,9 @@ input[type="text"], textarea {
     border-radius: 10px;
     background-image: url('/static/images/1(2).png');
     background-size: 100% 100%;
-    position: relative; 
+    position: relative;
     margin: 0 auto;
 }
-
 .player-token {
     position: absolute;
     width: 30px;
@@ -136,11 +129,10 @@ input[type="text"], textarea {
     border-radius: 50%;
     border: 3px solid #fff;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-    transition: all 0.5s ease-in-out; 
+    transition: all 0.5s ease-in-out;
     z-index: 10;
     transform: translate(-50%, -50%);
 }
-
 .controls {
     margin-top: 20px;
     background: #fff;
@@ -151,12 +143,10 @@ input[type="text"], textarea {
     justify-content: space-around;
     align-items: center;
 }
-
 .current-player-info { font-size: 1.2em; font-weight: bold; display: flex; align-items: center; }
 #current-player-color { width: 20px; height: 20px; border-radius: 50%; margin: 0 10px; border: 2px solid #333; }
 .dice-area { width: 100px; height: 100px; }
 #dice-image { width: 100%; height: 100%; }
-
 #roll-dice-btn {
     font-size: 1.2em;
     padding: 20px 30px;
@@ -168,9 +158,7 @@ input[type="text"], textarea {
     transition: background-color 0.2s;
 }
 #roll-dice-btn:disabled { background-color: #aaa; cursor: not-allowed; }
-
 #game-log { font-style: italic; color: #555; font-size: 1.1em; width: 250px; text-align: left; }
-
 #game-setup-modal, #question-modal, #explanation-modal, #powerup-modal, #game-over-modal {
     position: fixed;
     top: 0; left: 0;
@@ -181,7 +169,6 @@ input[type="text"], textarea {
     align-items: center;
     z-index: 100;
 }
-
 .modal-content {
     background-color: #fff;
     padding: 30px;
@@ -193,25 +180,22 @@ input[type="text"], textarea {
     position: relative;
 }
 .modal-content h2, .modal-content h3 { margin-top: 0; text-align: center; }
-
 #question-image {
     display: block;
     max-width: 100%;
-    max-height: 250px; 
+    max-height: 250px;
     width: auto;
-    margin: 0 auto 15px auto; 
+    margin: 0 auto 15px auto;
     object-fit: contain;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
-
 #question-text {
     white-space: pre-wrap;
     line-height: 1.6;
     text-align: left;
     font-size: 1.1em;
 }
-
 .modal-content button {
     margin-top: 20px;
     padding: 10px 20px;
@@ -225,30 +209,25 @@ input[type="text"], textarea {
 .btn { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; font-size: 1em; margin-top: 20px; }
 .btn:hover { background-color: #45a049; }
 .btn-clear { background-color: #f44336; }
-
 #player-count-select { width: 100%; padding: 10px; font-size: 1.1em; margin-top: 10px; }
 #start-game-btn { background-color: #4CAF50; }
 #submit-answer-btn { background-color: #1976d2; }
 #answer-box { width: 100%; padding: 10px; font-size: 1em; margin-top: 15px; box-sizing: border-box; }
 #continue-game-btn { background-color: #4CAF50; }
-
 .powerup-active {
     animation: pulse 0.2s infinite alternate;
     color: #FF5722;
     border-color: #FF5722 !important;
 }
 @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
-
 #final-winner { color: #D32F2F; font-size: 1.5em; }
 #final-average { font-weight: bold; }
-
 .hidden { display: none !important; }
-
 #explanation-text {
-    white-space: pre-wrap;  
-    line-height: 1.6;       
-    text-align: left;      
-    font-size: 1.1em;       
+    white-space: pre-wrap;
+    line-height: 1.6;
+    text-align: left;
+    font-size: 1.1em;
 }
 #intro-overlay {
     position: fixed;
@@ -259,17 +238,15 @@ input[type="text"], textarea {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column; 
+    flex-direction: column;
 }
-
 #intro-video {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    object-fit: contain; 
+    object-fit: contain;
     z-index: 0;
 }
-
 #start-intro-btn {
     z-index: 10001;
     padding: 20px 40px;
@@ -280,21 +257,16 @@ input[type="text"], textarea {
     border-radius: 10px;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    
-    
     position: absolute;
-    bottom: 15%;        
+    bottom: 15%;
     left: 52%;
-    transform: translateX(-50%); 
-    
+    transform: translateX(-50%);
     transition: transform 0.2s ease, background-color 0.2s;
 }
-
 #start-intro-btn:hover {
-    background-color: #45a049; 
-    transform: translateX(-50%) scale(1.05); 
+    background-color: #45a049;
+    transform: translateX(-50%) scale(1.05);
 }
-
 #skip-intro-btn {
     position: absolute;
     bottom: 30px; right: 30px;
@@ -305,5 +277,5 @@ input[type="text"], textarea {
     border-radius: 5px;
     cursor: pointer;
     z-index: 10001;
-    display: none; 
+    display: none;
 }

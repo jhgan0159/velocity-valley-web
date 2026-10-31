@@ -5,21 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulasi Eksperimen 6.2: Dalam Nyata & Dalam Ketara</title>
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f0f4f8;
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
+        .top-bar-wrapper {
+            width: 100%;
+            max-width: 1320px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
+        .btn-back-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
+        }
+        .principle-banner {
+            width: 100%;
+            max-width: 1320px;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border-left: 5px solid #0284c7;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            color: #0f172a;
+            font-size: 0.94rem;
+            line-height: 1.5;
+        }
+        h1 { text-align: center; color: #2c3e50; margin-top: 0; }
         .container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
             justify-content: center;
+            width: 100%;
+            max-width: 1320px;
         }
         .panel {
             background: white;
@@ -36,6 +74,8 @@
             display: block;
             margin: 0 auto 15px auto;
             border-radius: 5px;
+            max-width: 100%;
+            height: auto;
         }
         .controls {
             display: flex;
@@ -49,11 +89,10 @@
             background: #ecf0f1;
             padding: 15px;
             border-radius: 5px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        input[type="range"] {
-            width: 50%;
-            padding: 5px;
-        }
+        input[type="range"] { width: 50%; padding: 5px; }
         button {
             background-color: #3498db;
             color: white;
@@ -65,17 +104,13 @@
             font-weight: bold;
             transition: 0.3s;
         }
-        button:hover {
-            background-color: #2980b9;
-        }
+        button:hover { background-color: #2980b9; }
         .btn-excel {
             background-color: #27ae60;
             margin-top: 15px;
             width: 100%;
         }
-        .btn-excel:hover {
-            background-color: #2ecc71;
-        }
+        .btn-excel:hover { background-color: #2ecc71; }
         .reminder {
             font-weight: bold;
             text-align: center;
@@ -93,27 +128,35 @@
             color: #27ae60;
             border: 1px solid #27ae60;
         }
+        .table-scroll { width: 100%; overflow-x: auto; }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
         }
-        table, th, td {
-            border: 1px solid #95a5a6;
-        }
-        th, td {
-            padding: 12px;
-            text-align: center;
-        }
-        th {
-            background-color: #ecf0f1;
-            color: #2c3e50;
+        table, th, td { border: 1px solid #95a5a6; }
+        th, td { padding: 12px; text-align: center; }
+        th { background-color: #ecf0f1; color: #2c3e50; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .panel { min-width: 100%; padding: 15px; }
+            input[type="range"] { width: 100%; }
         }
     </style>
 </head>
 <body>
 
+    <div class="top-bar-wrapper">
+        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 6.2</span>
+    </div>
+
     <h1>Simulasi Kaedah Tanpa Paralaks (Indeks Biasan Air)</h1>
+
+    <div class="principle-banner">
+        <strong>📘 Prinsip Fizik (Dalam Nyata <em>H</em> & Dalam Ketara <em>h</em>):</strong> Sinar cahaya daripada pin objek <em>P<sub>o</sub></em> di dasar bikar terbias menjauhi normal apabila keluar dari air ke udara, menyebabkan imej maya terbentuk pada kedalaman ketara <em>h</em> yang lebih cetek. Indeks biasan air ditentukan melalui rumus <strong>n = H / h</strong> (≈ 1.33).
+    </div>
 
     <div class="container">
         <div class="panel">
@@ -124,26 +167,27 @@
                     <label for="dalamNyata"><strong>Dalam Nyata, <i>H</i> : <span id="nilaiH">6.0</span> cm</strong></label>
                     <input type="range" id="dalamNyata" min="6.0" max="10.0" value="6.0" step="1.0">
                 </div>
-                <button id="btnRekod" onclick="rekodData()">Rekod Data ke Jadual</button>
+                <button id="btnRekod" onclick="rekodData()">➕ Rekod Data ke Jadual</button>
                 <div id="reminderText" class="reminder warning">⚠️ Sila rekodkan data untuk kedalaman air H = 6.0 cm!</div>
             </div>
         </div>
 
         <div class="panel">
-            <h3>Jadual 6.3 Keputusan</h3>
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th>Dalam nyata, <i>H</i> / cm</th>
-                        <th>Jarak pin <i>P<sub>i</sub></i> dari dasar, <i>y</i> / cm</th>
-                        <th>Dalam ketara, <i>h</i> / cm<br><small>(h = H - y)</small></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
+            <h3 style="margin-top:0;">Jadual 6.3 Keputusan</h3>
+            <div class="table-scroll">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Dalam nyata, <i>H</i> / cm</th>
+                            <th>Jarak pin <i>P<sub>i</sub></i> dari dasar, <i>y</i> / cm</th>
+                            <th>Dalam ketara, <i>h</i> / cm<br><small>(h = H - y)</small></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             
-            <button class="btn-excel" onclick="muatTurunExcel()">Muat Turun Jadual (Excel / CSV)</button>
+            <button class="btn-excel" onclick="muatTurunExcel()">⬇ Muat Turun Jadual (Excel / CSV)</button>
         </div>
     </div>
 
@@ -155,66 +199,65 @@
         const reminderText = document.getElementById('reminderText');
         const jadualBody = document.querySelector('#dataTable tbody');
 
-        // Pemalar Eksperimen
         const indeksBiasanAir = 1.33;
-        const skalaGrapik = 25; // 1 cm = 25 pixel
+        const skalaGrapik = 25;
         let H_semasa = 6.0;
         let h_semasa = 0;
         let y_semasa = 0;
         let dataSet = new Set();
 
         function kiraNilai() {
-            // Formula: n = H / h  =>  h = H / n
             h_semasa = H_semasa / indeksBiasanAir;
-            // Formula jarak dari dasar: y = H - h
             y_semasa = H_semasa - h_semasa;
         }
 
         function lukisSimulasi() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             kiraNilai();
-            
+
             const dasarY = 350;
             const pusatBikarX = 150;
             const lebarBikar = 140;
-            
-            // 1. Lukis Kaki Retort & Pembaris
-            ctx.fillStyle = "#7f8c8d"; 
-            ctx.fillRect(350, dasarY, 150, 15); // Tapak
-            ctx.fillStyle = "#bdc3c7"; 
-            ctx.fillRect(420, 50, 10, dasarY - 50); // Tiang
-            
-            ctx.fillStyle = "#f39c12"; 
-            ctx.fillRect(320, 50, 25, 300); // Pembaris Kayu
+
+            // 1. Lukis Kaki Retort & Pembaris Kayu
+            ctx.fillStyle = "#7f8c8d";
+            ctx.fillRect(350, dasarY, 150, 15);
+            ctx.fillStyle = "#bdc3c7";
+            ctx.fillRect(420, 50, 10, dasarY - 50);
+
+            ctx.fillStyle = "#f39c12";
+            ctx.fillRect(320, 50, 25, 300);
             ctx.fillStyle = "black";
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1;
             ctx.font = "12px Arial";
-            for(let i=0; i<=11; i++) {
+            for (let i = 0; i <= 11; i++) {
                 let yPos = dasarY - (i * skalaGrapik);
                 ctx.beginPath();
                 ctx.moveTo(320, yPos);
                 ctx.lineTo(330, yPos);
                 ctx.stroke();
-                if(i % 2 === 0 && i !== 0) ctx.fillText(i, 332, yPos + 4);
+                if (i % 2 === 0 && i !== 0) ctx.fillText(i, 332, yPos + 4);
             }
 
             // 2. Lukis Bikar dan Air
             let tinggiAirPx = H_semasa * skalaGrapik;
             let parasAirY = dasarY - tinggiAirPx;
-            
-            ctx.fillStyle = "rgba(52, 152, 219, 0.4)"; // Air
+
+            ctx.fillStyle = "rgba(52, 152, 219, 0.4)";
             ctx.fillRect(pusatBikarX - lebarBikar/2, parasAirY, lebarBikar, tinggiAirPx);
-            
-            ctx.strokeStyle = "#2c3e50"; // Bikar Kaca
+
+            ctx.strokeStyle = "#2c3e50";
             ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.moveTo(pusatBikarX - lebarBikar/2, 60); // Bikar mula dari ketinggian 60px
+            ctx.moveTo(pusatBikarX - lebarBikar/2, 60);
             ctx.lineTo(pusatBikarX - lebarBikar/2, dasarY);
             ctx.lineTo(pusatBikarX + lebarBikar/2, dasarY);
             ctx.lineTo(pusatBikarX + lebarBikar/2, 60);
             ctx.stroke();
 
             // 3. Lukis Pin Po (Di dasar bikar)
-            ctx.fillStyle = "#c0392b"; 
+            ctx.fillStyle = "#c0392b";
             ctx.beginPath();
             ctx.arc(pusatBikarX, dasarY - 5, 5, 0, Math.PI*2);
             ctx.fill();
@@ -224,7 +267,7 @@
 
             // 4. Lukis Imej Pin Po (Dalam ketara)
             let parasImejY = parasAirY + (h_semasa * skalaGrapik);
-            ctx.fillStyle = "rgba(192, 57, 43, 0.4)"; // Merah pudar (Maya)
+            ctx.fillStyle = "rgba(192, 57, 43, 0.45)";
             ctx.beginPath();
             ctx.arc(pusatBikarX, parasImejY - 5, 5, 0, Math.PI*2);
             ctx.fill();
@@ -235,19 +278,21 @@
             // 5. Lukis Pin Pi (Pencari / Gabus luar bikar)
             let ySemasaPx = y_semasa * skalaGrapik;
             let pinPiY = dasarY - ySemasaPx;
-            
-            ctx.fillStyle = "#8e44ad"; 
+
+            ctx.fillStyle = "#8e44ad";
             ctx.beginPath();
             ctx.moveTo(pusatBikarX + lebarBikar/2 + 10, pinPiY);
             ctx.lineTo(310, pinPiY - 5);
             ctx.lineTo(310, pinPiY + 5);
             ctx.fill();
-            ctx.fillStyle = "#d35400"; // Pemegang Gabus
+            ctx.fillStyle = "#d35400";
             ctx.fillRect(310, pinPiY - 8, 30, 16);
             ctx.fillStyle = "black";
             ctx.fillText("Pin Pi (y = " + y_semasa.toFixed(1) + " cm)", 190, pinPiY + 20);
 
             // 6. Label H dan h
+            ctx.strokeStyle = "#7f8c8d";
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.setLineDash([5, 5]);
             ctx.moveTo(80, parasAirY); ctx.lineTo(150, parasAirY);
@@ -255,27 +300,30 @@
             ctx.moveTo(110, parasImejY); ctx.lineTo(150, parasImejY);
             ctx.stroke();
             ctx.setLineDash([]);
-            
+
             ctx.strokeStyle = "blue";
-            ctx.beginPath(); 
+            ctx.lineWidth = 2;
+            ctx.beginPath();
             ctx.moveTo(60, parasAirY); ctx.lineTo(60, dasarY);
             ctx.stroke();
             ctx.fillStyle = "blue";
-            ctx.fillText("H = " + H_semasa.toFixed(1) + " cm", 10, (parasAirY + dasarY)/2);
-            
+            ctx.fillText("H = " + H_semasa.toFixed(1) + " cm", 5, (parasAirY + dasarY)/2);
+
             ctx.strokeStyle = "green";
-            ctx.beginPath(); 
+            ctx.lineWidth = 2;
+            ctx.beginPath();
             ctx.moveTo(90, parasAirY); ctx.lineTo(90, parasImejY);
             ctx.stroke();
             ctx.fillStyle = "green";
-            ctx.fillText("h", 95, (parasAirY + parasImejY)/2 + 5);
-            
+            ctx.fillText("h = " + h_semasa.toFixed(1) + " cm", 85, (parasAirY + parasImejY)/2 - 6);
+
+            // 7. Mata Pemerhati di atas bikar
             ctx.font = "30px Arial";
-            ctx.fillText("👁️", pusatBikarX - 15, 45); // Mata pemerhati
+            ctx.fillText("👁️", pusatBikarX - 18, 45);
         }
 
         function kemaskiniPeringatan() {
-            if(dataSet.has(H_semasa)) {
+            if (dataSet.has(H_semasa)) {
                 reminderText.className = "reminder success";
                 reminderText.innerText = "✓ Data untuk H = " + H_semasa.toFixed(1) + " cm telah direkodkan.";
             } else {
@@ -284,7 +332,6 @@
             }
         }
 
-        // Event Listeners
         sliderH.addEventListener('input', function() {
             H_semasa = parseFloat(this.value);
             labelH.innerText = H_semasa.toFixed(1);
@@ -292,117 +339,104 @@
             lukisSimulasi();
         });
 
-        // Fungsi Merekod Data
         function rekodData() {
             if (dataSet.has(H_semasa)) {
                 alert("Data untuk H = " + H_semasa.toFixed(1) + " cm telah pun direkodkan.");
                 return;
             }
-
             let H_str = H_semasa.toFixed(1);
             let y_str = y_semasa.toFixed(1);
             let h_str = (H_semasa - y_semasa).toFixed(1);
 
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${H_str}</td>
-                <td>${y_str}</td>
-                <td>${h_str}</td>
-            `;
+            row.innerHTML = `<td>${H_str}</td><td>${y_str}</td><td>${h_str}</td>`;
             jadualBody.appendChild(row);
-
             dataSet.add(H_semasa);
             kemaskiniPeringatan();
         }
 
-        // Fungsi Muat Turun Data ke Excel (CSV)
         function muatTurunExcel() {
-            if(dataSet.size === 0) {
+            if (dataSet.size === 0) {
                 alert("Jadual masih kosong. Sila rekodkan sekurang-kurangnya satu data.");
                 return;
             }
-
             let csvContent = "Dalam nyata H (cm),Jarak pin Pi dari dasar y (cm),Dalam ketara h (cm)\n";
             let rows = jadualBody.querySelectorAll("tr");
-            
             rows.forEach(function(row) {
                 let cols = row.querySelectorAll("td");
                 let rowData = [];
-                cols.forEach(function(col) {
-                    rowData.push(col.innerText);
-                });
+                cols.forEach(function(col) { rowData.push(col.innerText); });
                 csvContent += rowData.join(",") + "\n";
             });
-
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute("href", url);
+            link.setAttribute("href", URL.createObjectURL(blob));
             link.setAttribute("download", "Data_Eksperimen_Tanpa_Paralaks.csv");
-            link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
-        // Mula simulasi
         lukisSimulasi();
     </script>
-<!-- Firebase Libraries -->
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
-<script>
-    // 2. Kunci Firebase Anda
-    const firebaseConfig = {
-        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-        authDomain: "velocity-valley-edu.firebaseapp.com",
-        projectId: "velocity-valley-edu",
-        storageBucket: "velocity-valley-edu.firebasestorage.app",
-        messagingSenderId: "340043533038",
-        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-    };
-    
-    // 3. Initialize Firebase & Firestore
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
-    // 4. THE BOUNCER & THE TRACKER (Digabungkan!)
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            // --- BAHAGIAN 1: THE BOUNCER (Dibenarkan Masuk) ---
-            console.log("Student/Teacher logged in: " + user.email);
-            
-            // --- BAHAGIAN 2: THE TRACKER (Tambah Markah Simulasi) ---
-            // NAMA UNIK UNTUK MUKA SURAT INI:
-            const pageID = "visited_index_air_eksperimen6_2"; 
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+            authDomain: "velocity-valley-edu.firebaseapp.com",
+            projectId: "velocity-valley-edu",
+            storageBucket: "velocity-valley-edu.firebasestorage.app",
+            messagingSenderId: "340043533038",
+            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+        };
 
-            // Semak kalau dia dah dapat markah untuk page ini semasa sesi ini
-            if (!sessionStorage.getItem(pageID)) {
-                
-                // Kalau belum, beritahu Buku Log untuk tambah +1 pada simsExplored
-                db.collection("users").doc(user.uid).set({
-                    simsExplored: firebase.firestore.FieldValue.increment(1)
-                }, { merge: true })
-                .then(() => {
-                    console.log("Point added for exploring Index of Water Refraction Simulation!");
-                    // Lekatkan nota supaya kalau dia refresh page, markah tak bertambah lagi
-                    sessionStorage.setItem(pageID, "true"); 
-                })
-                .catch((error) => {
-                    console.error("Gagal tambah markah:", error);
-                });
-            }
-
-        } else {
-            // NO VIP PASS. Halau mereka ke muka surat login.
-            window.location.replace('/login');
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-    });
-</script>
+        const db = firebase.firestore();
+
+        function recordStationVisit(user) {
+            const stationItem = {
+                id: "exp6_2",
+                title: "Experiment 6.2: Real & Apparent Depth (Water)",
+                category: "Form 4 • Chapter 6",
+                webUrl: "/form4experiment10",
+                fileUrl: "form4eksperimen10.html",
+                timestamp: new Date().toLocaleString('en-GB')
+            };
+            try {
+                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
+            } catch (e) {}
+
+            const pageID = "visited_index_air_eksperimen6_2";
+            const isFirstInSession = !sessionStorage.getItem(pageID);
+            sessionStorage.setItem(pageID, "true");
+
+            db.collection("users").doc(user.uid).get().then(doc => {
+                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                let payload = { recentActivities: updated };
+                if (isFirstInSession) {
+                    payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+                }
+                db.collection("users").doc(user.uid).set(payload, { merge: true });
+            });
+        }
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                recordStationVisit(user);
+            } else {
+                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+            }
+        });
+    </script>
 </body>
 </html>

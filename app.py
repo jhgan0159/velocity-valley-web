@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -7,7 +7,16 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
-# NEW: Route for the Newton's Law Simulation
+# Alias for Capacitor/static links that point to index.html or login.html
+@app.route('/index.html')
+def home_html():
+    return redirect(url_for('home'))
+
+@app.route('/login.html')
+def login_html():
+    return redirect(url_for('login_page'))
+
+# Route for the Newton's Law Simulation
 @app.route('/newton')
 def newton():
     return render_template('newton.html')
@@ -60,7 +69,7 @@ def form4experiment11():
 def dashboard():
     return render_template('dashboard.html')
 
-# The address for your Board Game
+# The address for the Board Game
 @app.route('/boardgame')
 def play_game():
     return render_template('boardgame.html')
@@ -76,15 +85,11 @@ def login_page():
 
 @app.route('/journey')
 def journey():
-    # 确保最上方有 from flask import render_template
     return render_template('journey.html')
 
 @app.route('/tcadminwest')
 def tcadminwest():
-    # 以后你可以在这里加逻辑，比如只有 Pro User (老师) 才能访问这个页面
     return render_template('tcadminwest.html')
-
-from flask import Flask, render_template, send_from_directory, request
 
 # Tambah route ini supaya Google boleh baca sitemap
 @app.route('/sitemap.xml')

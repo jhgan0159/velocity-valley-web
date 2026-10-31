@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Monopoly - Question Manager</title>
+    <link rel="stylesheet" href="./static/style.css">
+    <style>
+        .top-nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .btn-back-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(30, 60, 114, 0.25);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-back-menu:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(30, 60, 114, 0.35);
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; overflow-y: auto; align-items: flex-start; }
+            .container { padding: 15px; max-height: none; }
+            .top-nav-bar { flex-direction: column; align-items: stretch; text-align: center; }
+            .btn-back-menu { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav-bar">
+        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <div style="display:flex; gap:10px;">
+            <a href="/boardgame" onclick="if(window.location.protocol==='file:'){this.href='boardgame.html';}" style="padding: 10px 16px; background: #2ecc71; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">🎲 Go to Board Game</a>
+            <button onclick="firebase.auth().signOut()" style="padding: 10px 16px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 0; width: auto;">
+                Sign Out
+            </button>
+        </div>
+    </div>
+
+    <h1>👨‍🏫 Teacher's Question Manager</h1>
+    <p>Enter your custom questions below. These will replace the default board game questions on this device.</p>
+
+    <div id="forms-container"></div>
+
+    <button class="btn" id="save-btn">💾 Save Questions</button>
+    <button class="btn btn-clear" id="clear-btn">🗑️ Clear Custom Questions (Reset to Default)</button>
+    <div id="status-msg" style="margin-top: 10px; font-weight: bold;"></div>
+</div>
+
+<script src="./static/admin.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+        authDomain: "velocity-valley-edu.firebaseapp.com",
+        projectId: "velocity-valley-edu",
+        storageBucket: "velocity-valley-edu.firebasestorage.app",
+        messagingSenderId: "340043533038",
+        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            console.log("Teacher logged in: " + user.email);
+        } else {
+            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+        }
+    });
+</script>
+</body>
+</html>

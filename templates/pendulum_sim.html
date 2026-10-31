@@ -6,14 +6,55 @@
     <title>Eksperimen 1.1: Pendulum Simulation</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f4f4f9;
             margin: 0;
             padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
+        .top-bar-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .btn-back-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
+            transition: transform 0.2s;
+        }
+        .btn-back-menu:hover { transform: translateY(-2px); }
+
+        .principle-banner {
+            width: 100%;
+            max-width: 1000px;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border-left: 5px solid #0284c7;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            color: #0f172a;
+            font-size: 0.94rem;
+            line-height: 1.5;
+        }
+
         .container {
             display: flex;
             flex-wrap: wrap;
@@ -35,14 +76,14 @@
             border-radius: 4px;
             display: block;
             margin: 0 auto 15px auto;
+            max-width: 100%;
+            height: auto;
         }
         .controls {
             text-align: center;
             margin-bottom: 15px;
         }
-        input[type="range"] {
-            width: 80%;
-        }
+        input[type="range"] { width: 80%; }
         button {
             background-color: #007bff;
             color: white;
@@ -54,21 +95,11 @@
             font-size: 14px;
             font-weight: bold;
         }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #releaseBtn {
-            background-color: #28a745;
-        }
-        #releaseBtn:hover {
-            background-color: #218838;
-        }
-        #stopTimerBtn {
-            background-color: #dc3545;
-        }
-        #stopTimerBtn:hover {
-            background-color: #c82333;
-        }
+        button:hover { background-color: #0056b3; }
+        #releaseBtn { background-color: #28a745; }
+        #releaseBtn:hover { background-color: #218838; }
+        #stopTimerBtn { background-color: #dc3545; }
+        #stopTimerBtn:hover { background-color: #c82333; }
         #exportExcelBtn {
             background-color: #198754;
             width: 100%;
@@ -76,9 +107,7 @@
             margin-top: 15px;
             font-size: 16px;
         }
-        #exportExcelBtn:hover {
-            background-color: #157347;
-        }
+        #exportExcelBtn:hover { background-color: #157347; }
         .display-box {
             font-size: 28px;
             font-weight: bold;
@@ -95,6 +124,10 @@
             color: #555;
             text-transform: uppercase;
         }
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -106,9 +139,7 @@
             padding: 8px;
             text-align: center;
         }
-        th {
-            background-color: #d1e7dd;
-        }
+        th { background-color: #d1e7dd; }
         input[type="number"] {
             width: 60px;
             padding: 4px;
@@ -121,13 +152,31 @@
             margin-bottom: 15px;
             font-size: 14px;
         }
+
+        /* Mobile Layout Adaptation (Desktop remains 2-column side-by-side) */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .container { flex-direction: column; }
+            .panel { min-width: 100%; padding: 15px; }
+            input[type="range"] { width: 100%; }
+            .controls button { width: 100%; margin: 5px 0; padding: 12px; }
+        }
     </style>
 </head>
 <body>
 
+<div class="top-bar-wrapper">
+    <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+    <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Form 4 • Experiment 1.1</span>
+</div>
+
+<div class="principle-banner">
+    <strong>📘 Prinsip Fizik (Ayunan Bandul Ringkas):</strong> Tempoh ayunan lengkap bandul ringkas diberi oleh rumus <strong>T = 2π√(l / g)</strong> atau <strong>T² = (4π² / g) l</strong>. Semakin bertambah panjang bandul (<em>l</em>), semakin bertambah tempoh ayunan (<em>T</em>). Graf <em>T²</em> melawan <em>l</em> menghasilkan garis lurus melalui asalan dengan kecerunan <em>4π² / g</em>.
+</div>
+
 <div class="container">
     <div class="panel">
-        <h2 style="text-align: center;">Experiment 1.1: Pendulum Simulator</h2>
+        <h2 style="text-align: center; margin-top: 0;">Experiment 1.1: Pendulum Simulator</h2>
         <canvas id="pendulumCanvas" width="300" height="350"></canvas>
         
         <div class="controls">
@@ -141,13 +190,13 @@
         </div>
 
         <div class="controls">
-            <button id="releaseBtn">Release Pendulum (Auto-Start Timer)</button>
-            <button id="stopSimBtn">Reset Pendulum</button>
+            <button id="releaseBtn">▶ Release Pendulum (Auto-Start Timer)</button>
+            <button id="stopSimBtn">🔄 Reset Pendulum</button>
         </div>
     </div>
 
     <div class="panel">
-        <h2>Stopwatch & Data</h2>
+        <h2 style="margin-top: 0;">Stopwatch & Data</h2>
         <div class="instructions">
             <strong>Prosedur:</strong> Tetapkan panjang dan sudut. Tekan <em>Release</em>. Perhatikan kiraan ayunan dan tekan <em>Stop Timer</em> tepat pada <strong>20 ayunan lengkap</strong>. Masukkan data ke dalam jadual.
         </div>
@@ -163,40 +212,39 @@
         </div>
 
         <div class="controls">
-            <button id="stopTimerBtn">Stop Timer</button>
-            <button id="resetTimerBtn">Reset Timer</button>
+            <button id="stopTimerBtn">⏹ Stop Timer</button>
+            <button id="resetTimerBtn">🔄 Reset Timer</button>
         </div>
 
-        <table id="dataTable">
-            <tr>
-                <th rowspan="2">l / cm</th>
-                <th colspan="3">Masa untuk 20 ayunan, t / s</th>
-                <th rowspan="2">T / s</th>
-                <th rowspan="2">T² / s²</th>
-            </tr>
-            <tr>
-                <th>t₁</th>
-                <th>t₂</th>
-                <th>t_purata</th>
-            </tr>
+        <div class="table-scroll">
+            <table id="dataTable">
+                <tr>
+                    <th rowspan="2">l / cm</th>
+                    <th colspan="3">Masa untuk 20 ayunan, t / s</th>
+                    <th rowspan="2">T / s</th>
+                    <th rowspan="2">T² / s²</th>
+                </tr>
+                <tr>
+                    <th>t₁</th>
+                    <th>t₂</th>
+                    <th>t_purata</th>
+                </tr>
             </table>
+        </div>
 
         <button id="exportExcelBtn">⬇ Download Data as Excel (.xlsx)</button>
     </div>
 </div>
 
 <script>
-    // --- Physics & Canvas Logic ---
     const canvas = document.getElementById('pendulumCanvas');
     const ctx = canvas.getContext('2d');
-    
-    const G = 9.81; // Earth's gravity in m/s^2
-    const dampingFactor = 0.012; // Controls how fast the pendulum slows down
-    
+    const G = 9.81;
+    const dampingFactor = 0.012;
+
     let lengthCm = 20;
     let selectedAngleDeg = 10;
     let maxAngleRad = selectedAngleDeg * (Math.PI / 180);
-    
     let isSwinging = false;
     let angle = maxAngleRad;
     let simTime = 0;
@@ -227,14 +275,11 @@
         if (!isSwinging) {
             isSwinging = true;
             lastTime = performance.now();
-            
-            // Auto-start timer on release
             if (!timerRunning) {
                 timerStartTime = performance.now() - elapsedTime;
                 timerInterval = setInterval(updateTimer, 10);
                 timerRunning = true;
             }
-            
             animate(lastTime);
         }
     });
@@ -245,7 +290,7 @@
         isSwinging = false;
         cancelAnimationFrame(animationReq);
         maxAngleRad = selectedAngleDeg * (Math.PI / 180);
-        angle = maxAngleRad; 
+        angle = maxAngleRad;
         simTime = 0;
         swingCountDisplay.innerText = "0";
         drawPendulum();
@@ -253,19 +298,15 @@
 
     function drawPendulum() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
         const pivotX = canvas.width / 2;
         const pivotY = 30;
-        const visualLength = lengthCm * 4; // visual scaling
-
+        const visualLength = lengthCm * 4;
         const bobX = pivotX + visualLength * Math.sin(angle);
         const bobY = pivotY + visualLength * Math.cos(angle);
 
-        // Draw Support
         ctx.fillStyle = '#666';
         ctx.fillRect(pivotX - 25, pivotY - 10, 50, 10);
 
-        // Draw String
         ctx.beginPath();
         ctx.moveTo(pivotX, pivotY);
         ctx.lineTo(bobX, bobY);
@@ -273,14 +314,11 @@
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Draw Bob
         ctx.beginPath();
         ctx.arc(bobX, bobY, 14, 0, 2 * Math.PI);
-        
-        const gradient = ctx.createRadialGradient(bobX-4, bobY-4, 2, bobX, bobY, 14);
+        const gradient = ctx.createRadialGradient(bobX - 4, bobY - 4, 2, bobX, bobY, 14);
         gradient.addColorStop(0, '#ccc');
         gradient.addColorStop(1, '#555');
-        
         ctx.fillStyle = gradient;
         ctx.fill();
         ctx.stroke();
@@ -288,18 +326,14 @@
 
     function animate(currentTime) {
         if (!isSwinging) return;
-
-        const deltaTime = (currentTime - lastTime) / 1000; // in seconds
+        const deltaTime = (currentTime - lastTime) / 1000;
         lastTime = currentTime;
         simTime += deltaTime;
 
         const lengthMeters = lengthCm / 100;
         const angularFrequency = Math.sqrt(G / lengthMeters);
-        
-        // Calculate damped amplitude
         const currentAmplitude = maxAngleRad * Math.exp(-dampingFactor * simTime);
         const phase = angularFrequency * simTime;
-        
         angle = currentAmplitude * Math.cos(phase);
 
         const swingsCompleted = Math.floor(phase / (2 * Math.PI));
@@ -311,7 +345,6 @@
 
     drawPendulum();
 
-    // --- Stopwatch Logic ---
     let timerRunning = false;
     let timerStartTime = 0;
     let elapsedTime = 0;
@@ -340,7 +373,6 @@
         timeDisplay.innerText = (elapsedTime / 1000).toFixed(2) + " s";
     }
 
-    // --- Table Generation Logic ---
     const table = document.getElementById('dataTable');
     const lengths = [20, 30, 40, 50, 60, 70];
 
@@ -367,9 +399,8 @@
             const t2 = parseFloat(t2Input.value);
             if (!isNaN(t1) && !isNaN(t2)) {
                 const tAvg = (t1 + t2) / 2;
-                const T = tAvg / 20; 
+                const T = tAvg / 20;
                 const T2 = Math.pow(T, 2);
-
                 tAvgDisplay.innerText = tAvg.toFixed(2);
                 TDisplay.innerText = T.toFixed(3);
                 T2Display.innerText = T2.toFixed(3);
@@ -384,53 +415,33 @@
         t2Input.addEventListener('input', calculateRow);
     });
 
-    // --- Excel Export Logic ---
     document.getElementById('exportExcelBtn').addEventListener('click', () => {
-        // Prepare data array
         let excelData = [];
-        
-        // Add Headers
         excelData.push(["Panjang bandul (l / cm)", "Masa t1 (s)", "Masa t2 (s)", "Masa purata (t / s)", "Tempoh (T / s)", "T^2 (s^2)"]);
-        
-        // Loop through table rows (skipping the 2 header rows)
         for (let i = 2; i < table.rows.length; i++) {
             let row = table.rows[i];
-            
-            // Extract values, making sure to get the value from the input fields
             let l = row.cells[0].innerText;
             let t1 = row.querySelector('.t1').value || "";
             let t2 = row.querySelector('.t2').value || "";
             let tAvg = row.querySelector('.t_avg').innerText;
             let T = row.querySelector('.T_val').innerText;
             let T2 = row.querySelector('.T2_val').innerText;
-            
-            // Push to array
             excelData.push([l, t1, t2, tAvg, T, T2]);
         }
-
-        // Convert data array to worksheet
         let worksheet = XLSX.utils.aoa_to_sheet(excelData);
-        
-        // Adjust column widths for better readability in Excel
-        worksheet['!cols'] = [
-            {wch: 22}, {wch: 12}, {wch: 12}, {wch: 20}, {wch: 15}, {wch: 15}
-        ];
-
-        // Create a new workbook and add the worksheet
+        worksheet['!cols'] = [{wch: 22}, {wch: 12}, {wch: 12}, {wch: 20}, {wch: 15}, {wch: 15}];
         let workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Data Eksperimen 1.1");
-        
-        // Trigger download
         XLSX.writeFile(workbook, "Data_Eksperimen_Pendulum.xlsx");
     });
 </script>
+
 <!-- Firebase Libraries -->
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // 2. Kunci Firebase Anda
     const firebaseConfig = {
         apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
         authDomain: "velocity-valley-edu.firebaseapp.com",
@@ -439,43 +450,47 @@
         messagingSenderId: "340043533038",
         appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
     };
-    
-    // 3. Initialize Firebase & Firestore
+
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const db = firebase.firestore();
 
-    // 4. THE BOUNCER & THE TRACKER (Digabungkan!)
+    function recordStationVisit(user) {
+        const stationItem = {
+            id: "pendulum",
+            title: "Experiment 1.1: Simple Pendulum",
+            category: "Form 4 • Chapter 1",
+            webUrl: "/pendulum",
+            fileUrl: "pendulum_sim.html",
+            timestamp: new Date().toLocaleString('en-GB')
+        };
+        try {
+            let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+            localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
+            localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
+        } catch (e) {}
+
+        const pageID = "visited_pendulum_eksperimen1_1";
+        const isFirstInSession = !sessionStorage.getItem(pageID);
+        sessionStorage.setItem(pageID, "true");
+
+        db.collection("users").doc(user.uid).get().then(doc => {
+            let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+            let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
+            let payload = { recentActivities: updated };
+            if (isFirstInSession) {
+                payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+            }
+            db.collection("users").doc(user.uid).set(payload, { merge: true });
+        });
+    }
+
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-            // --- BAHAGIAN 1: THE BOUNCER (Dibenarkan Masuk) ---
-            console.log("Student/Teacher logged in: " + user.email);
-            
-            // --- BAHAGIAN 2: THE TRACKER (Tambah Markah Simulasi) ---
-            // NAMA UNIK UNTUK MUKA SURAT INI:
-            const pageID = "visited_pendulum_eksperimen1_1"; 
-
-            // Semak kalau dia dah dapat markah untuk page ini semasa sesi ini
-            if (!sessionStorage.getItem(pageID)) {
-                
-                // Kalau belum, beritahu Buku Log untuk tambah +1 pada simsExplored
-                db.collection("users").doc(user.uid).set({
-                    simsExplored: firebase.firestore.FieldValue.increment(1)
-                }, { merge: true })
-                .then(() => {
-                    console.log("Point added for exploring Pendulum Simulation!");
-                    // Lekatkan nota supaya kalau dia refresh page, markah tak bertambah lagi
-                    sessionStorage.setItem(pageID, "true"); 
-                })
-                .catch((error) => {
-                    console.error("Gagal tambah markah:", error);
-                });
-            }
-
+            recordStationVisit(user);
         } else {
-            // NO VIP PASS. Halau mereka ke muka surat login.
-            window.location.replace('/login');
+            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
         }
     });
 </script>

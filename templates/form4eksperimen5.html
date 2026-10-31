@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulasi Eksperimen 4.3: Haba Pendam Tentu</title>
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f4f4f9;
             margin: 0;
             padding: 20px;
@@ -16,18 +17,47 @@
             max-width: 900px;
             margin: auto;
             background: white;
-            padding: 20px;
+            padding: 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .top-nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .btn-back-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
         }
-        h1, h2, h3 {
-            text-align: center;
+        .principle-box {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border-left: 5px solid #0284c7;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.94rem;
+            line-height: 1.5;
         }
+        h1, h2, h3 { text-align: center; }
         .menu {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         button {
             padding: 10px 20px;
@@ -38,19 +68,11 @@
             border: none;
             border-radius: 5px;
             transition: background 0.3s;
+            font-weight: bold;
         }
-        button:hover {
-            background-color: #0056b3;
-        }
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .hidden {
-            display: none !important;
-        }
-        
-        /* Control Panel */
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .hidden { display: none !important; }
         .controls {
             background: #e9ecef;
             padding: 15px;
@@ -60,22 +82,23 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 12px;
         }
         .speed-control {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
-        /* Apparatus CSS Drawing */
         .lab-bench {
             display: flex;
             justify-content: space-around;
             align-items: flex-end;
-            min-height: 250px;
+            min-height: 270px;
             margin: 30px 0;
             border-bottom: 4px solid #555;
             padding-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 30px;
         }
         .setup {
             display: flex;
@@ -86,7 +109,7 @@
         .stand {
             position: absolute;
             width: 4px;
-            height: 200px;
+            height: 210px;
             background: #7f8c8d;
             left: -30px;
             bottom: 20px;
@@ -99,28 +122,84 @@
             left: -30px;
             top: 50px;
         }
+        .funnel-wrapper {
+            position: relative;
+            width: 100px;
+            height: 95px;
+            margin-bottom: 8px;
+        }
         .funnel {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 90px;
             border: 2px solid #333;
             border-top: none;
-            clip-path: polygon(0% 0%, 100% 0%, 60% 100%, 40% 100%);
-            background: #e0f7fa;
+            clip-path: polygon(0% 0%, 100% 0%, 58% 100%, 42% 100%);
+            background: rgba(224, 247, 250, 0.45);
             position: relative;
-            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            padding: 6px 12px;
+            gap: 3px;
+            overflow: hidden;
+        }
+        .ice-cube {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #bae6fd 0%, #7dd3fc 60%, #38bdf8 100%);
+            border: 1.5px solid #ffffff;
+            border-radius: 3px;
+            box-shadow: inset 0 0 4px rgba(255,255,255,0.9), 0 1px 2px rgba(2,132,199,0.3);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform-origin: center center;
+        }
+        .ice-cube:nth-child(odd) { transform: rotate(8deg); }
+        .ice-cube:nth-child(even) { transform: rotate(-10deg); }
+        .funnel-label-tag {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: bold;
+            color: #0369a1;
+            white-space: nowrap;
+            background: rgba(224, 242, 254, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
         }
         .heater-stick {
-            width: 10px;
-            height: 60px;
-            background: #e74c3c;
+            width: 12px;
+            height: 68px;
+            background: linear-gradient(180deg, #7f8c8d 0%, #e74c3c 35%, #c0392b 100%);
             position: absolute;
-            top: -20px;
-            left: 35px;
+            top: -12px;
+            left: 44px;
             border-radius: 5px;
+            z-index: 5;
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+        }
+        .water-drop {
+            position: absolute;
+            bottom: -6px;
+            left: 47px;
+            width: 6px;
+            height: 8px;
+            background: #3498db;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        .water-drop.dripping {
+            animation: dripFall 0.6s linear infinite;
+        }
+        @keyframes dripFall {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(18px); opacity: 0; }
         }
         .beaker {
-            width: 60px;
-            height: 70px;
+            width: 66px;
+            height: 72px;
             border: 2px solid #333;
             border-top: none;
             border-radius: 0 0 5px 5px;
@@ -148,12 +227,8 @@
             line-height: 25px;
             color: #2c3e50;
         }
-        .setup-label {
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        /* Table */
+        .setup-label { margin-top: 10px; font-weight: bold; }
+        .table-scroll { width: 100%; overflow-x: auto; }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -164,29 +239,47 @@
             padding: 8px;
             text-align: center;
         }
-        th {
-            background-color: #007bff;
-            color: white;
+        th { background-color: #007bff; color: white; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 16px; }
+            .menu { flex-direction: column; gap: 10px; }
+            .menu button { width: 100%; }
+            .controls { flex-direction: column; align-items: stretch; text-align: center; }
+            .controls button { width: 100%; margin: 4px 0; }
+            .speed-control { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Simulasi Eksperimen 4.3</h1>
-    <div class="menu">
-        <button onclick="showPart('A')">Bahagian A: Pelakuran Ais</button>
-        <button onclick="showPart('B')">Bahagian B: Pengewapan Air</button>
+    <div class="top-nav-row">
+        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 4.3</span>
     </div>
 
-    <div id="partA" class="hidden">
+    <h1>Simulasi Eksperimen 4.3: Haba Pendam Tentu</h1>
+
+    <div class="principle-box">
+        <strong>📘 Prinsip Fizik (Haba Pendam Tentu, <em>l</em>):</strong> Haba pendam tentu ialah kuantiti haba yang diserap atau dibebaskan semasa perubahan fasa 1 kg bahan tanpa perubahan suhu (<strong>Q = ml = Pt</strong>).<br>
+        • <strong>Bahagian A (Pelakuran Ais):</strong> Set kawalan digunakan untuk menolak jisim ais yang melebur akibat haba persekitaran: <strong>l_f = Pt / (m₁ - m₂)</strong>.<br>
+        • <strong>Bahagian B (Pengewapan Air):</strong> <strong>l_v = Pt / Δm</strong>.
+    </div>
+
+    <div class="menu">
+        <button onclick="showPart('A')">🧊 Bahagian A: Pelakuran Ais</button>
+        <button onclick="showPart('B')">💨 Bahagian B: Pengewapan Air</button>
+    </div>
+
+    <div id="partA">
         <h2>Bahagian A: Menentukan Haba Pendam Tentu Pelakuran Ais</h2>
-        
         <div class="controls">
             <div>
-                <button id="btnStartA" onclick="startSim('A')">Mula Pemanas & Jam</button>
-                <button id="btnStopA" onclick="stopSim('A')" disabled>Henti</button>
-                <button onclick="resetSim('A')">Reset</button>
+                <button id="btnStartA" onclick="startSim('A')">▶ Mula Pemanas & Jam</button>
+                <button id="btnStopA" onclick="stopSim('A')" disabled>⏹ Henti</button>
+                <button onclick="resetSim('A')">🔄 Reset</button>
             </div>
             <div class="speed-control">
                 <label for="speedA">Kelajuan Masa:</label>
@@ -202,7 +295,11 @@
             <div class="setup">
                 <div class="stand"></div>
                 <div class="clamp"></div>
-                <div class="funnel">Ais Hancur</div>
+                <div class="funnel-wrapper">
+                    <span class="funnel-label-tag">🧊 Ais Hancur</span>
+                    <div class="funnel" id="iceFunnelControl"></div>
+                    <div class="water-drop" id="dropControl"></div>
+                </div>
                 <div class="beaker"><div class="water" id="waterControlA" style="height: 0%;"></div></div>
                 <div class="balance" id="balanceControlA">0.00 g</div>
                 <div class="setup-label">Set Kawalan (m₂)</div>
@@ -211,37 +308,44 @@
             <div class="setup">
                 <div class="stand"></div>
                 <div class="clamp"></div>
-                <div class="funnel">Ais Hancur<div class="heater-stick"></div></div>
+                <div class="funnel-wrapper">
+                    <span class="funnel-label-tag">🧊 Ais Hancur + Pemanas</span>
+                    <div class="heater-stick"></div>
+                    <div class="funnel" id="iceFunnelExp"></div>
+                    <div class="water-drop" id="dropExp"></div>
+                </div>
                 <div class="beaker"><div class="water" id="waterExpA" style="height: 0%;"></div></div>
                 <div class="balance" id="balanceExpA">0.00 g</div>
                 <div class="setup-label">Set Eksperimen (m₁)</div>
             </div>
         </div>
 
-        <button onclick="recordData('A')" style="background-color: #28a745;">Catat Bacaan ke Jadual</button>
-        <button onclick="downloadCSV('A')" style="background-color: #17a2b8;">Muat Turun Excel (CSV)</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button onclick="recordData('A')" style="background-color: #28a745; flex:1;">➕ Catat Bacaan ke Jadual</button>
+            <button onclick="downloadCSV('A')" style="background-color: #17a2b8; flex:1;">⬇ Muat Turun Excel (CSV)</button>
+        </div>
 
-        <table id="tableA">
-            <thead>
-                <tr>
-                    <th>Masa, t (s)</th>
-                    <th>Jisim Set Eksperimen, m₁ (g)</th>
-                    <th>Jisim Set Kawalan, m₂ (g)</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
+        <div class="table-scroll">
+            <table id="tableA">
+                <thead>
+                    <tr>
+                        <th>Masa, t (s)</th>
+                        <th>Jisim Set Eksperimen, m₁ (g)</th>
+                        <th>Jisim Set Kawalan, m₂ (g)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <div id="partB" class="hidden">
         <h2>Bahagian B: Menentukan Haba Pendam Tentu Pengewapan Air</h2>
-        
         <div class="controls">
             <div>
-                <button id="btnStartB" onclick="startSim('B')">Mula Pemanas & Jam</button>
-                <button id="btnStopB" onclick="stopSim('B')" disabled>Henti</button>
-                <button onclick="resetSim('B')">Reset</button>
+                <button id="btnStartB" onclick="startSim('B')">▶ Mula Pemanas & Jam</button>
+                <button id="btnStopB" onclick="stopSim('B')" disabled>⏹ Henti</button>
+                <button onclick="resetSim('B')">🔄 Reset</button>
             </div>
             <div class="speed-control">
                 <label for="speedB">Kelajuan Masa:</label>
@@ -264,42 +368,59 @@
             </div>
         </div>
 
-        <button onclick="recordData('B')" style="background-color: #28a745;">Catat Bacaan ke Jadual</button>
-        <button onclick="downloadCSV('B')" style="background-color: #17a2b8;">Muat Turun Excel (CSV)</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button onclick="recordData('B')" style="background-color: #28a745; flex:1;">➕ Catat Bacaan ke Jadual</button>
+            <button onclick="downloadCSV('B')" style="background-color: #17a2b8; flex:1;">⬇ Muat Turun Excel (CSV)</button>
+        </div>
 
-        <table id="tableB">
-            <thead>
-                <tr>
-                    <th>Masa, t (s)</th>
-                    <th>Bacaan Neraca Elektronik, m (g)</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
+        <div class="table-scroll">
+            <table id="tableB">
+                <thead>
+                    <tr>
+                        <th>Masa, t (s)</th>
+                        <th>Bacaan Neraca Elektronik, m (g)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
-
 </div>
 
 <script>
-    // Variables for Simulation State
     let timerInterval = null;
     let timeA = 0, timeB = 0;
     let speedA = 1, speedB = 1;
     let isRunningA = false, isRunningB = false;
 
-    // Physics parameters for realistic simulation
-    // Part A: Room temp melting rate vs Heater melting rate
-    let massControlA = 0; // g
-    let massExpA = 0;     // g
-    const rateControlMelting = 0.05; // g/s (room temperature)
-    const rateHeaterMelting = 0.075; // g/s (heater power contribution)
+    let massControlA = 0;
+    let massExpA = 0;
+    const rateControlMelting = 0.05;
+    const rateHeaterMelting = 0.075;
 
-    // Part B: Boiling water
-    let massExpB = 450; // initial mass of beaker + water (g)
-    const rateBoiling = 0.22; // g/s (decrease in mass due to 500W heater)
+    let massExpB = 450;
+    const rateBoiling = 0.22;
+
+    function populateIceCubes() {
+        const ctrlFunnel = document.getElementById('iceFunnelControl');
+        const expFunnel = document.getElementById('iceFunnelExp');
+        ctrlFunnel.innerHTML = '';
+        expFunnel.innerHTML = '';
+        for (let i = 0; i < 14; i++) {
+            const cube1 = document.createElement('div');
+            cube1.className = 'ice-cube ice-ctrl';
+            ctrlFunnel.appendChild(cube1);
+
+            const cube2 = document.createElement('div');
+            cube2.className = 'ice-cube ice-exp';
+            expFunnel.appendChild(cube2);
+        }
+    }
+    populateIceCubes();
 
     function showPart(part) {
+        stopSim('A');
+        stopSim('B');
         document.getElementById('partA').classList.add('hidden');
         document.getElementById('partB').classList.add('hidden');
         document.getElementById('part' + part).classList.remove('hidden');
@@ -309,21 +430,22 @@
         if (part === 'A') {
             speedA = document.getElementById('speedA').value;
             document.getElementById('speedDisplayA').innerText = speedA + 'x';
-            if(isRunningA) { stopSim('A'); startSim('A'); } // Restart with new speed
+            if (isRunningA) { stopSim('A'); startSim('A'); }
         } else {
             speedB = document.getElementById('speedB').value;
             document.getElementById('speedDisplayB').innerText = speedB + 'x';
-            if(isRunningB) { stopSim('B'); startSim('B'); }
+            if (isRunningB) { stopSim('B'); startSim('B'); }
         }
     }
 
     function startSim(part) {
+        clearInterval(timerInterval);
         if (part === 'A') {
             isRunningA = true;
             document.getElementById('btnStartA').disabled = true;
             document.getElementById('btnStopA').disabled = false;
-            // The interval handles the real-time equivalent 
-            // 1000ms divided by speed multiplier makes it run faster visually
+            document.getElementById('dropControl').classList.add('dripping');
+            document.getElementById('dropExp').classList.add('dripping');
             timerInterval = setInterval(() => tick('A'), 1000 / speedA);
         } else {
             isRunningB = true;
@@ -339,6 +461,8 @@
             isRunningA = false;
             document.getElementById('btnStartA').disabled = false;
             document.getElementById('btnStopA').disabled = true;
+            document.getElementById('dropControl').classList.remove('dripping');
+            document.getElementById('dropExp').classList.remove('dripping');
         } else {
             isRunningB = false;
             document.getElementById('btnStartB').disabled = false;
@@ -353,6 +477,7 @@
             massControlA = 0;
             massExpA = 0;
             document.getElementById('timeDisplayA').innerText = timeA;
+            populateIceCubes();
             updateVisualsA();
             document.querySelector('#tableA tbody').innerHTML = '';
         } else {
@@ -374,7 +499,7 @@
         } else {
             timeB++;
             massExpB -= rateBoiling;
-            if (massExpB < 150) massExpB = 150; // Prevent beaker from going empty/negative
+            if (massExpB < 150) massExpB = 150;
             document.getElementById('timeDisplayB').innerText = timeB;
             updateVisualsB();
         }
@@ -383,28 +508,36 @@
     function updateVisualsA() {
         document.getElementById('balanceControlA').innerText = massControlA.toFixed(2) + " g";
         document.getElementById('balanceExpA').innerText = massExpA.toFixed(2) + " g";
-        
-        // Max capacity for visuals is roughly 100g = 100%
-        let heightCtrl = Math.min((massControlA / 100) * 100, 100);
-        let heightExp = Math.min((massExpA / 100) * 100, 100);
-        
+        let heightCtrl = Math.min((massControlA / 60) * 100, 100);
+        let heightExp = Math.min((massExpA / 60) * 100, 100);
         document.getElementById('waterControlA').style.height = heightCtrl + "%";
         document.getElementById('waterExpA').style.height = heightExp + "%";
+
+        const scaleCtrl = Math.max(0.18, 1 - (massControlA / 45));
+        const scaleExp = Math.max(0.12, 1 - (massExpA / 45));
+
+        document.querySelectorAll('.ice-ctrl').forEach((cube, idx) => {
+            const rot = idx % 2 === 0 ? 8 : -10;
+            cube.style.transform = `scale(${scaleCtrl.toFixed(2)}) rotate(${rot}deg)`;
+            cube.style.opacity = Math.max(0.3, scaleCtrl).toFixed(2);
+        });
+        document.querySelectorAll('.ice-exp').forEach((cube, idx) => {
+            const rot = idx % 2 === 0 ? -8 : 10;
+            cube.style.transform = `scale(${scaleExp.toFixed(2)}) rotate(${rot}deg)`;
+            cube.style.opacity = Math.max(0.25, scaleExp).toFixed(2);
+        });
     }
 
     function updateVisualsB() {
         document.getElementById('balanceExpB').innerText = massExpB.toFixed(2) + " g";
-        
-        // Start mass 450. Base beaker mass ~150. Water max 300.
         let waterMass = massExpB - 150;
-        let height = Math.min((waterMass / 300) * 90, 90); 
+        let height = Math.min((waterMass / 300) * 90, 90);
         document.getElementById('waterExpB').style.height = height + "%";
     }
 
     function recordData(part) {
         let tbody = document.querySelector(`#table${part} tbody`);
         let row = document.createElement('tr');
-        
         if (part === 'A') {
             row.innerHTML = `<td>${timeA}</td><td>${massExpA.toFixed(2)}</td><td>${massControlA.toFixed(2)}</td>`;
         } else {
@@ -417,19 +550,15 @@
         let table = document.getElementById(`table${part}`);
         let rows = table.querySelectorAll('tr');
         let csvContent = "";
-
         rows.forEach(row => {
             let rowData = [];
             let cols = row.querySelectorAll('th, td');
             cols.forEach(col => {
-                // Fix: Wrap the text in double quotes so commas inside the text don't split the columns
-                let text = col.innerText.replace(/"/g, '""'); // Escape any existing quotes
+                let text = col.innerText.replace(/"/g, '""');
                 rowData.push(`"${text}"`);
             });
             csvContent += rowData.join(",") + "\n";
         });
-
-        // Create a downloadable link
         let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         let url = URL.createObjectURL(blob);
         let link = document.createElement("a");
@@ -440,13 +569,13 @@
         document.body.removeChild(link);
     }
 </script>
+
 <!-- Firebase Libraries -->
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // 2. Kunci Firebase Anda
     const firebaseConfig = {
         apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
         authDomain: "velocity-valley-edu.firebaseapp.com",
@@ -455,43 +584,47 @@
         messagingSenderId: "340043533038",
         appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
     };
-    
-    // 3. Initialize Firebase & Firestore
+
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const db = firebase.firestore();
 
-    // 4. THE BOUNCER & THE TRACKER (Digabungkan!)
+    function recordStationVisit(user) {
+        const stationItem = {
+            id: "exp4_3",
+            title: "Experiment 4.3: Specific Latent Heat",
+            category: "Form 4 • Chapter 4",
+            webUrl: "/form4experiment5",
+            fileUrl: "form4eksperimen5.html",
+            timestamp: new Date().toLocaleString('en-GB')
+        };
+        try {
+            let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+            localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
+            localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
+        } catch (e) {}
+
+        const pageID = "visited_haba_pendam_tentu_eksperimen4_3";
+        const isFirstInSession = !sessionStorage.getItem(pageID);
+        sessionStorage.setItem(pageID, "true");
+
+        db.collection("users").doc(user.uid).get().then(doc => {
+            let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+            let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
+            let payload = { recentActivities: updated };
+            if (isFirstInSession) {
+                payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+            }
+            db.collection("users").doc(user.uid).set(payload, { merge: true });
+        });
+    }
+
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-            // --- BAHAGIAN 1: THE BOUNCER (Dibenarkan Masuk) ---
-            console.log("Student/Teacher logged in: " + user.email);
-            
-            // --- BAHAGIAN 2: THE TRACKER (Tambah Markah Simulasi) ---
-            // NAMA UNIK UNTUK MUKA SURAT INI:
-            const pageID = "visited_haba_pendam_tentu_eksperimen4_3"; 
-
-            // Semak kalau dia dah dapat markah untuk page ini semasa sesi ini
-            if (!sessionStorage.getItem(pageID)) {
-                
-                // Kalau belum, beritahu Buku Log untuk tambah +1 pada simsExplored
-                db.collection("users").doc(user.uid).set({
-                    simsExplored: firebase.firestore.FieldValue.increment(1)
-                }, { merge: true })
-                .then(() => {
-                    console.log("Point added for exploring Haba Pendam Tentu Simulation!");
-                    // Lekatkan nota supaya kalau dia refresh page, markah tak bertambah lagi
-                    sessionStorage.setItem(pageID, "true"); 
-                })
-                .catch((error) => {
-                    console.error("Gagal tambah markah:", error);
-                });
-            }
-
+            recordStationVisit(user);
         } else {
-            // NO VIP PASS. Halau mereka ke muka surat login.
-            window.location.replace('/login');
+            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
         }
     });
 </script>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity Valley | My Rocket Profile</title>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+            authDomain: "velocity-valley-edu.firebaseapp.com",
+            projectId: "velocity-valley-edu",
+            storageBucket: "velocity-valley-edu.firebasestorage.app",
+            messagingSenderId: "340043533038",
+            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+    </script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at 20% 10%, #1e293b 0%, #0f172a 70%, #090d16 100%);
+            color: #f8fafc;
+            margin: 0;
+            padding: 24px 16px 50px 16px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .dashboard-wrapper {
+            width: 100%;
+            max-width: 840px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        /* Top Nav Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .btn-back-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .btn-back-menu:hover {
+            background: #0ea5e9;
+            border-color: #38bdf8;
+            transform: translateX(-3px);
+        }
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.92rem;
+        }
+
+        /* ===================================================
+           PROFILE HERO CARD WITH BOY / GIRL AI AVATAR PICKER
+           =================================================== */
+        .profile-hero {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 18px;
+            padding: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+        }
+        .profile-identity {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .avatar-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .avatar-circle-img {
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #38bdf8;
+            box-shadow: 0 0 22px rgba(14, 165, 233, 0.55);
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .avatar-switcher {
+            display: flex;
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 5px 8px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.14);
+        }
+        .avatar-choice-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: transparent;
+            color: #94a3b8;
+            border: 1.5px solid transparent;
+            border-radius: 14px;
+            padding: 4px 10px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .avatar-choice-btn img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .avatar-choice-btn.active-avatar {
+            background: rgba(14, 165, 233, 0.22);
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+        }
+
+        .profile-meta h1 {
+            margin: 0 0 4px 0;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+        .profile-meta p {
+            margin: 3px 0;
+            color: #94a3b8;
+            font-size: 0.92rem;
+        }
+        .account-pill {
+            background: rgba(14, 165, 233, 0.18);
+            border: 1px solid #38bdf8;
+            color: #7dd3fc;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* ===================================================
+           TOP-TO-BOTTOM ROCKET PROGRESS TRACK (LAST 5 LABS)
+           =================================================== */
+        .transit-card {
+            background: rgba(30, 41, 59, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+        }
+        .transit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 14px;
+        }
+        .transit-header h2 {
+            margin: 0;
+            font-size: 1.35rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .transit-line-badge {
+            background: #f59e0b;
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Vertical Flight Track & Stations (Top to Bottom) */
+        .station-timeline {
+            position: relative;
+            padding-left: 54px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        /* Vertical Trajectory Track Line */
+        .station-timeline::before {
+            content: '';
+            position: absolute;
+            left: 21px;
+            top: 16px;
+            bottom: 16px;
+            width: 6px;
+            background: repeating-linear-gradient(
+                to bottom,
+                #38bdf8 0px,
+                #38bdf8 10px,
+                #1e293b 10px,
+                #1e293b 16px
+            );
+            border-left: 2px solid #0284c7;
+            border-right: 2px solid #0284c7;
+            border-radius: 4px;
+        }
+
+        .station-stop {
+            position: relative;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .station-stop:hover {
+            transform: translateX(4px);
+            border-color: #38bdf8;
+        }
+        .station-stop.latest-stop {
+            border: 2px solid #f59e0b;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.14), rgba(15, 23, 42, 0.92));
+        }
+
+        /* Station Circular Node on the Track */
+        .station-node {
+            position: absolute;
+            left: -44px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #0f172a;
+            border: 4px solid #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+            z-index: 2;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+        }
+        /* Downward Rocket Ship Image Node */
+        .station-stop.latest-stop .station-node {
+            width: 46px;
+            height: 46px;
+            left: -53px;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            animation: rocketDescend 1.5s ease-in-out infinite alternate;
+        }
+        .rocket-node-img {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2.5px solid #f59e0b;
+            box-shadow: 0 0 18px rgba(245, 158, 11, 0.9);
+        }
+        @keyframes rocketDescend {
+            0% { transform: translateY(-56%); }
+            100% { transform: translateY(-42%); }
+        }
+
+        .station-info { flex: 1; }
+        .station-code {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .station-stop.latest-stop .station-code { color: #fbbf24; }
+        .station-name {
+            margin: 4px 0;
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .station-time {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .btn-review-station {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+            transition: transform 0.15s, opacity 0.2s;
+        }
+        .btn-review-station:hover {
+            transform: scale(1.04);
+            opacity: 0.95;
+        }
+
+        /* ===================================================
+           CUSTOM SHOWCASE BADGES (SIMS EXPLORED & STREAK)
+           =================================================== */
+        .badges-showcase-card {
+            background: rgba(30, 41, 59, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+        }
+        .badges-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 18px;
+        }
+        .custom-badge-card {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(56, 189, 248, 0.35);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .custom-badge-card.streak-theme {
+            border-color: rgba(245, 158, 11, 0.45);
+        }
+        .badge-crest {
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 14px auto;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.45);
+            background: radial-gradient(circle, #0284c7 0%, #1e3a8a 100%);
+            border: 4px solid #7dd3fc;
+        }
+        .custom-badge-card.streak-theme .badge-crest {
+            background: radial-gradient(circle, #f59e0b 0%, #b45309 100%);
+            border-color: #fde68a;
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
+        }
+        .crest-number {
+            font-size: 1.9rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1;
+        }
+        .crest-unit {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #e0f2fe;
+            margin-top: 2px;
+        }
+        .badge-rank-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #f8fafc;
+            margin: 0 0 6px 0;
+        }
+        .badge-desc {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin: 0 0 14px 0;
+        }
+        .badge-progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #0f172a;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .badge-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #2ecc71);
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+        .streak-theme .badge-progress-fill {
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+        }
+
+        @media (max-width: 768px) {
+            .profile-hero { flex-direction: column; align-items: flex-start; padding: 20px; }
+            .transit-card, .badges-showcase-card { padding: 20px 16px; }
+            .station-stop { flex-direction: column; align-items: flex-start; }
+            .btn-review-station { width: 100%; justify-content: center; }
+            .badges-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <!-- Top Navigation -->
+        <div class="top-bar">
+            <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+            <button class="btn-logout" onclick="logoutUser()">Sign Out</button>
+        </div>
+
+        <!-- User Identity Card with Boy / Girl AI Avatar Selector -->
+        <div class="profile-hero">
+            <div class="profile-identity">
+                <div class="avatar-column">
+                    <img id="profile-avatar-img" src="./static/images/avatar_boy.jpg" alt="Student Avatar" class="avatar-circle-img" onerror="this.src='./static/images/logo.png'">
+                    <div class="avatar-switcher" aria-label="Choose Profile Picture">
+                        <button type="button" id="btn-avatar-boy" class="avatar-choice-btn active-avatar" onclick="selectAvatar('boy')">
+                            <img src="./static/images/avatar_boy.jpg" alt="Boy" onerror="this.style.display='none'"> 👦 Boy
+                        </button>
+                        <button type="button" id="btn-avatar-girl" class="avatar-choice-btn" onclick="selectAvatar('girl')">
+                            <img src="./static/images/avatar_girl.jpg" alt="Girl" onerror="this.style.display='none'"> 👧 Girl
+                        </button>
+                    </div>
+                </div>
+                <div class="profile-meta">
+                    <h1>Welcome back, <span id="display-name" style="color: #38bdf8;">Explorer</span>!</h1>
+                    <p><strong>Email:</strong> <span id="display-email">Loading...</span></p>
+                    <p><strong>Last Login:</strong> <span id="display-last-login">Loading...</span> • <strong>Total Logins:</strong> <span id="display-login-count">0</span></p>
+                    <p style="font-size: 0.8rem; color: #38bdf8; margin-top: 6px;">✨ Tap <strong>Boy</strong> or <strong>Girl</strong> under your photo to switch your AI Cadet Avatar!</p>
+                </div>
+            </div>
+            <div class="account-pill" id="account-tier-pill">🎓 KSSM Physics Cadet</div>
+        </div>
+
+        <!-- ROCKET TRAJECTORY PROGRESS MAP (TOP TO BOTTOM - LAST 5 SIMULATIONS) -->
+        <div class="transit-card">
+            <div class="transit-header">
+                <h2>🚀 Velocity Rocket Trajectory: Recent 5 Stations</h2>
+                <span class="transit-line-badge">⬇️ TOP-TO-BOTTOM FLIGHT LOG</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 0.92rem; margin-top: 0; margin-bottom: 20px;">
+                Your downward-flying rocket marks your latest physics mission, followed by your previous 4 stops below. Click <strong>Review Simulation</strong> beside any station to revisit!
+            </p>
+
+            <div class="station-timeline" id="station-timeline-container">
+                <!-- Populated dynamically by JS -->
+            </div>
+        </div>
+
+        <!-- CUSTOM SHOWCASE BADGES BELOW PROGRESS TRACK -->
+        <div class="badges-showcase-card">
+            <div class="transit-header" style="margin-bottom: 8px;">
+                <h2>🏅 Physics Mastery & Momentum Badges</h2>
+            </div>
+
+            <div class="badges-grid">
+                <!-- BADGE 1: SIMULATIONS EXPLORED -->
+                <div class="custom-badge-card">
+                    <div class="badge-crest">
+                        <span class="crest-number" id="display-sims-explored">0</span>
+                        <span class="crest-unit">SIMS DONE</span>
+                    </div>
+                    <h3 class="badge-rank-title" id="sim-badge-rank">🔬 Lab Explorer Badge</h3>
+                    <p class="badge-desc" id="sim-badge-sub">Complete simulations to level up your KSSM Lab Rank!</p>
+                    <div class="badge-progress-bar">
+                        <div class="badge-progress-fill" id="sim-progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- BADGE 2: LOGIN & DAILY CHALLENGE STREAK -->
+                <div class="custom-badge-card streak-theme">
+                    <div class="badge-crest">
+                        <span class="crest-number" id="displayStreak">0</span>
+                        <span class="crest-unit">DAY STREAK</span>
+                    </div>
+                    <h3 class="badge-rank-title" id="streak-badge-rank">🔥 Momentum Streak Badge</h3>
+                    <p class="badge-desc" id="streak-badge-sub">Total Logins: <strong id="badge-login-total">0</strong> • Answer daily questions to build your streak!</p>
+                    <div class="badge-progress-bar">
+                        <div class="badge-progress-fill" id="streak-progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special 50-Day & 100-Day Milestone Trophy Shelf -->
+            <div id="badgeContainer" style="display: flex; justify-content: center; gap: 18px; margin-top: 20px; align-items: center; flex-wrap: wrap;"></div>
+        </div>
+    </div>
+
+    <script>
+        const db = firebase.firestore();
+
+        function getStaticPrefix() {
+            return window.location.protocol === 'file:' ? './static/images/' : './static/images/';
+        }
+
+        // Boy / Girl AI Avatar Switcher Logic
+        function applyAvatarVisual(gender) {
+            const prefix = getStaticPrefix();
+            const imgEl = document.getElementById('profile-avatar-img');
+            const boyBtn = document.getElementById('btn-avatar-boy');
+            const girlBtn = document.getElementById('btn-avatar-girl');
+
+            if (gender === 'girl') {
+                imgEl.src = prefix + 'avatar_girl.jpg';
+                girlBtn.classList.add('active-avatar');
+                boyBtn.classList.remove('active-avatar');
+            } else {
+                imgEl.src = prefix + 'avatar_boy.jpg';
+                boyBtn.classList.add('active-avatar');
+                girlBtn.classList.remove('active-avatar');
+            }
+        }
+
+        function selectAvatar(gender) {
+            applyAvatarVisual(gender);
+            try {
+                localStorage.setItem('vv_avatar_choice', gender);
+            } catch (e) {}
+
+            const user = firebase.auth().currentUser;
+            if (user) {
+                db.collection("users").doc(user.uid).set({
+                    avatarChoice: gender
+                }, { merge: true });
+            }
+        }
+
+        // Initialize avatar from localStorage immediately on load
+        (function initSavedAvatar() {
+            try {
+                const saved = localStorage.getItem('vv_avatar_choice') || 'boy';
+                applyAvatarVisual(saved);
+            } catch (e) {}
+        })();
+
+        const simulationCatalog = {
+            newton: { title: "Mini Simulation: Newton's Second Law (F = ma)", category: "Mini Simulation", webUrl: "/newton", fileUrl: "newton.html" },
+            pendulum: { title: "Experiment 1.1: Simple Pendulum", category: "Form 4 • Chapter 1", webUrl: "/pendulum", fileUrl: "pendulum_sim.html" },
+            exp2_1: { title: "Experiment 2.1: Gravitational Acceleration (g)", category: "Form 4 • Chapter 2", webUrl: "/tingkatan4experiment2", fileUrl: "Tingkatan4eksperimen2.html" },
+            exp2_2: { title: "Experiment 2.2: Mass & Inertia", category: "Form 4 • Chapter 2", webUrl: "/form4experiment3", fileUrl: "form4eksperimen3.html" },
+            exp4_1: { title: "Experiment 4.1 & 4.2: Specific Heat Capacity", category: "Form 4 • Chapter 4", webUrl: "/form4experiment4", fileUrl: "form4eksperimen4.html" },
+            exp4_3: { title: "Experiment 4.3: Specific Latent Heat", category: "Form 4 • Chapter 4", webUrl: "/form4experiment5", fileUrl: "form4eksperimen5.html" },
+            exp4_4: { title: "Experiment 4.4: Boyle's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment6", fileUrl: "form4eksperimen6.html" },
+            exp4_5: { title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment7", fileUrl: "form4eksperimen7.html" },
+            exp4_6: { title: "Experiment 4.6: Gay-Lussac's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment8", fileUrl: "form4eksperimen8.html" },
+            exp6_1: { title: "Experiment 6.1: Snell's Law (Glass Block)", category: "Form 4 • Chapter 6", webUrl: "/form4experiment9", fileUrl: "form4eksperimen9.html" },
+            exp6_2: { title: "Experiment 6.2: Real & Apparent Depth (Water)", category: "Form 4 • Chapter 6", webUrl: "/form4experiment10", fileUrl: "form4eksperimen10.html" },
+            exp6_3: { title: "Experiment 6.3: Convex Lens Formula", category: "Form 4 • Chapter 6", webUrl: "/form4experiment11", fileUrl: "form4eksperimen11.html" },
+            boardgame: { title: "Physics Monopoly: Ultimate Edition", category: "Educational Game", webUrl: "/boardgame", fileUrl: "boardgame.html" },
+            journey: { title: "Journey to the West: Physics Quiz RPG", category: "Educational Game", webUrl: "/journey", fileUrl: "journey.html" }
+        };
+
+        function resolveLink(webUrl, fileUrl) {
+            return window.location.protocol === 'file:' ? fileUrl : webUrl;
+        }
+
+        function renderRocketStations(activitiesList) {
+            const container = document.getElementById('station-timeline-container');
+            container.innerHTML = '';
+            const rocketImgPath = getStaticPrefix() + 'rocket_down.jpg';
+
+            let stations = Array.isArray(activitiesList) ? [...activitiesList] : [];
+            if (stations.length === 0) {
+                try {
+                    const localRaw = localStorage.getItem('vv_recent_activities');
+                    if (localRaw) stations = JSON.parse(localRaw);
+                } catch (e) {}
+            }
+
+            stations = stations.slice(0, 5);
+
+            if (stations.length === 0) {
+                const starterKeys = ['pendulum', 'exp2_1', 'exp4_4', 'exp6_1', 'newton'];
+                starterKeys.forEach((key, idx) => {
+                    const item = simulationCatalog[key];
+                    const href = resolveLink(item.webUrl, item.fileUrl);
+                    const stopEl = document.createElement('div');
+                    stopEl.className = 'station-stop' + (idx === 0 ? ' latest-stop' : '');
+                    const nodeHtml = idx === 0
+                        ? `<img src="${rocketImgPath}" alt="Rocket" class="rocket-node-img">`
+                        : `${idx + 1}`;
+                    stopEl.innerHTML = `
+                        <div class="station-node">${nodeHtml}</div>
+                        <div class="station-info">
+                            <div class="station-code">STATION 0${idx + 1} • ${item.category} (Recommended Stop)</div>
+                            <div class="station-name">${item.title}</div>
+                            <div class="station-time">Not visited yet — tap Review to launch!</div>
+                        </div>
+                        <a href="${href}" class="btn-review-station">🔄 Start / Review</a>
+                    `;
+                    container.appendChild(stopEl);
+                });
+                return;
+            }
+
+            stations.forEach((st, idx) => {
+                const catInfo = simulationCatalog[st.id] || {};
+                const title = st.title || catInfo.title || 'Physics Simulation';
+                const category = st.category || catInfo.category || 'KSSM Physics Lab';
+                const href = resolveLink(st.webUrl || catInfo.webUrl || '/', st.fileUrl || catInfo.fileUrl || 'index.html');
+                const timeStr = st.timestamp || 'Recently Visited';
+
+                const stopEl = document.createElement('div');
+                stopEl.className = 'station-stop' + (idx === 0 ? ' latest-stop' : '');
+                const nodeHtml = idx === 0
+                    ? `<img src="${rocketImgPath}" alt="Rocket" class="rocket-node-img">`
+                    : `${idx + 1}`;
+                stopEl.innerHTML = `
+                    <div class="station-node">${nodeHtml}</div>
+                    <div class="station-info">
+                        <div class="station-code">${idx === 0 ? '⬇️ CURRENT ROCKET POSITION (LATEST)' : 'STATION 0' + (idx + 1)} • ${category}</div>
+                        <div class="station-name">${title}</div>
+                        <div class="station-time">🕒 Visited: ${timeStr}</div>
+                    </div>
+                    <a href="${href}" class="btn-review-station">🔄 Review Simulation</a>
+                `;
+                container.appendChild(stopEl);
+            });
+        }
+
+        function updateBadgesUI(simsCount, streakCount, totalLogins) {
+            document.getElementById('display-sims-explored').innerText = simsCount;
+            document.getElementById('displayStreak').innerText = streakCount;
+            document.getElementById('display-login-count').innerText = totalLogins;
+            document.getElementById('badge-login-total').innerText = totalLogins;
+
+            let simRank = "🔬 Lab Novice Badge";
+            if (simsCount >= 12) simRank = "🏆 Grand Physics Master Badge";
+            else if (simsCount >= 6) simRank = "⚡ Senior KSSM Researcher Badge";
+            else if (simsCount >= 1) simRank = "🔬 Active Lab Explorer Badge";
+            document.getElementById('sim-badge-rank').innerText = simRank;
+            document.getElementById('sim-badge-sub').innerText = `${simsCount} Simulations Explored • Keep experimenting to master all 12 labs!`;
+            document.getElementById('sim-progress-fill').style.width = Math.min(100, Math.round((simsCount / 12) * 100)) + '%';
+
+            let streakRank = "🔥 Momentum Starter Badge";
+            if (streakCount >= 100) streakRank = "👑 100-Day Physics Legend Badge";
+            else if (streakCount >= 50) streakRank = "🌟 50-Day Gold Momentum Badge";
+            else if (streakCount >= 7) streakRank = "🔥 7-Day Superconductor Badge";
+            document.getElementById('streak-badge-rank').innerText = streakRank;
+            document.getElementById('streak-progress-fill').style.width = Math.min(100, Math.max(10, streakCount * 2)) + '%';
+
+            let badgeHtml = "";
+            if (streakCount >= 50) {
+                badgeHtml += `<img src="./static/images/badge50days.png" alt="50 Days Badge" style="width: 76px; filter: drop-shadow(0px 4px 10px rgba(245,158,11,0.5));">`;
+            }
+            if (streakCount >= 100) {
+                badgeHtml += `<img src="./static/images/badge100days.png" alt="100 Days Badge" style="width: 76px; filter: drop-shadow(0px 4px 10px rgba(245,158,11,0.5));">`;
+            }
+            document.getElementById("badgeContainer").innerHTML = badgeHtml;
+        }
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                document.getElementById('display-email').innerText = user.email;
+                const namePart = user.displayName || user.email.split('@')[0];
+                document.getElementById('display-name').innerText = namePart;
+                const rawDate = new Date(user.metadata.lastSignInTime);
+                document.getElementById('display-last-login').innerText = rawDate.toLocaleString();
+
+                db.collection("users").doc(user.uid).get().then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        const logins = userData.totalLogins || userData.loginCount || 1;
+                        const sims = userData.simsExplored || 0;
+                        const streak = userData.streakCount || 0;
+
+                        if (userData.avatarChoice) {
+                            applyAvatarVisual(userData.avatarChoice);
+                            try { localStorage.setItem('vv_avatar_choice', userData.avatarChoice); } catch (e) {}
+                        }
+
+                        if (userData.isPro) {
+                            document.getElementById('account-tier-pill').innerText = "👑 Pro Teacher Account";
+                        }
+
+                        updateBadgesUI(sims, streak, logins);
+                        renderRocketStations(userData.recentActivities || []);
+                    } else {
+                        updateBadgesUI(0, 0, 1);
+                        renderRocketStations([]);
+                    }
+                }).catch(() => {
+                    updateBadgesUI(0, 0, 1);
+                    renderRocketStations([]);
+                });
+            } else {
+                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+            }
+        });
+
+        function logoutUser() {
+            firebase.auth().signOut().then(() => {
+                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+            });
+        }
+    </script>
+</body>
+</html>

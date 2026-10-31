@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Velocity Valley | Journey to the West</title>
-    
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
@@ -20,23 +19,36 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
     </script>
-
     <style>
         body { margin: 0; padding: 0; background-color: #2c3e50; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; }
         #game-container { width: 100vw; max-width: 1000px; aspect-ratio: 16 / 9; background-color: #87CEEB; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         @media (max-aspect-ratio: 16/9) { #game-container { width: 100vw; height: 56.25vw; } }
 
+        #floating-back-menu {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 95000;
+            background: rgba(30, 60, 114, 0.92);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
         .scrolling-bg { position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url('/static/images/bg_mountain.png'); background-size: 50% 100%; background-repeat: repeat-x; animation: scrollBg 10s linear infinite; animation-play-state: paused; z-index: 1; }
         @keyframes scrollBg { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* 新增：输入名字界面 */
         #name-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
         #name-screen input { padding: 15px; font-size: 1.5rem; border-radius: 8px; border: 2px solid #e67e22; margin-bottom: 20px; width: 80%; max-width: 300px; text-align: center; }
 
         #intro-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('/static/images/journey_bg.png'); background-size: cover; background-position: center; background-color: rgba(0,0,0,0.8); background-blend-mode: overlay; z-index: 150; display: none; justify-content: center; align-items: center; }
         #intro-scroll { width: 90%; height: 85%; max-width: 800px; background-image: url('/static/images/ui_scroll.jpg'); background-size: 100% 100%; padding: 8% 12%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #2c3e50; }
         .intro-content { width: 100%; height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-right: 10px; }
-        .intro-content::-webkit-scrollbar { width: 5px; } .intro-content::-webkit-scrollbar-thumb { background: #d35400; border-radius: 10px; }
         .intro-content h2 { font-size: 2.2rem; color: #d35400; margin-bottom: 15px; margin-top: 0; }
         .intro-content p { font-size: 1.1rem; line-height: 1.5; font-weight: bold; margin-bottom: 15px; }
         .rules-box { text-align: left; width: 100%; max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.4); padding: 15px; border-radius: 10px; font-size: 1rem; line-height: 1.4; }
@@ -77,7 +89,6 @@
         #question-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 80; display: none; justify-content: center; align-items: center; }
         #question-scroll { width: 95%; height: 90%; background-image: url('/static/images/ui_scroll.jpg'); background-size: 100% 100%; padding: 8% 12%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; animation: popUp 0.3s ease-out forwards; }
         .scroll-content { width: 100%; height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-right: 10px; }
-        .scroll-content::-webkit-scrollbar { width: 5px; } .scroll-content::-webkit-scrollbar-thumb { background: #d35400; border-radius: 10px; }
         @keyframes popUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         #q-text { font-size: 1.3rem; font-weight: bold; color: #2c3e50; text-align: center; margin-bottom: 10px; width: 100%; }
@@ -90,9 +101,7 @@
         @keyframes flashText { 0% { transform: scale(0.5); opacity: 0; } 30% { transform: scale(1.2); opacity: 1; } 70% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
 
         .effect-img { position: absolute; z-index: 50; pointer-events: none; mix-blend-mode: multiply; }
-                /* ================= MOBILE OPTIMIZATION & ROTATE OVERLAY ================= */
-        /* 1. 竖屏提示的遮罩层 */
-/* ================= DESKTOP SITE PROMPT ================= */
+
         #desktop-prompt-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(44, 62, 80, 0.95); z-index: 99999;
@@ -108,121 +117,43 @@
             background: #2ecc71; color: white; border: none; padding: 12px 20px;
             font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;
         }
-        /* =========================================
-   JOURNEY TO THE WEST - 手机端完美适配优化
-   ========================================= */
+
         @media (max-width: 768px) {
-            /* 1. 调整开场故事卷轴里的文字大小与间距 */
-            /* =========================================
-       修复手机底部导航栏遮挡游戏画面的问题
-       ========================================= */
-            #game-container {
-        /* 使用 dvh (Dynamic Viewport Height)，它会自动避开手机的电量栏和底部导航栏 */
-                height: 100dvh !important; 
-                max-height: -webkit-fill-available;
-            }
-
-    /* 把所有人物、怪物稍微往屏幕上方抬高，避免踩在屏幕最底部的死角 */
-            .character-box, .enemy-container {
-                bottom: 25% !important; 
-            }
-    
-            #boss-origin {
-                bottom: 8% !important;
-            }
-
-    /* 优化底部的回合数和血量条，确保不要贴顶 */
-            #battle-ui {
-                padding-top: 25px !important; /* 给顶部的刘海屏/电量栏留出空间 */
-            }
-            .intro-content h2 { 
-                font-size: 1.4rem !important; 
-                margin-bottom: 8px !important; 
-            }
-            .intro-content p, .rules-box { 
-                font-size: 0.8rem !important; 
-                line-height: 1.3 !important; 
-                margin-bottom: 8px !important;
-            }
-            .rules-box {
-                padding: 8px !important;
-            }
-            .start-btn { 
-                padding: 8px 20px !important; 
-                font-size: 1rem !important; 
-                margin-top: 8px !important; 
-            }
-
-    /* 2. 调整选英雄界面的卡片大小（避免太大放不下） */
-            #select-screen h1 { 
-                font-size: 1.8rem !important; 
-                margin-bottom: 0 !important;
-            }
-            #select-screen p { 
-                font-size: 1rem !important; 
-                margin: 5px 0 !important;
-            }
-            .char-grid { 
-                gap: 10px !important; 
-                margin-top: 10px !important; 
-            }
-            .char-card { 
-                width: 105px !important; 
-                padding: 8px !important; 
-            }
-            .char-card img { 
-                width: 50px !important; 
-                height: 50px !important; 
-                margin-bottom: 5px !important;
-            }
-            .char-card button { 
-                font-size: 0.75rem !important; 
-                padding: 4px !important; 
-            }
-
-    /* 3. 调整答题卷轴的文字与选项按钮大小 */
-            #q-text { 
-                font-size: 0.95rem !important; 
-                margin-bottom: 8px !important; 
-            }
-            #q-image { 
-                max-height: 100px !important; 
-                margin-bottom: 5px !important; 
-            }
-            .q-option-btn { 
-                font-size: 0.85rem !important; 
-                padding: 6px 10px !important; 
-                margin: 3px 0 !important; 
-            }
-
-    /* 4. 调整结算/胜利/失败画面的文字 */
-            #end-screen h1 { 
-                font-size: 1.5rem !important; 
-            }
-            #end-screen h2 { 
-                font-size: 1.1rem !important; 
-            }
-            #end-screen h3 { 
-                font-size: 0.9rem !important; 
-            }
-            #wrong-list { 
-                max-height: 120px !important; 
-                font-size: 0.85rem !important; 
-            }
+            #game-container { height: 100dvh !important; max-height: -webkit-fill-available; }
+            .character-box, .enemy-container { bottom: 25% !important; }
+            #boss-origin { bottom: 8% !important; }
+            #battle-ui { padding-top: 48px !important; }
+            .intro-content h2 { font-size: 1.4rem !important; margin-bottom: 8px !important; }
+            .intro-content p, .rules-box { font-size: 0.8rem !important; line-height: 1.3 !important; margin-bottom: 8px !important; }
+            .rules-box { padding: 8px !important; }
+            .start-btn { padding: 8px 20px !important; font-size: 1rem !important; margin-top: 8px !important; }
+            #select-screen h1 { font-size: 1.8rem !important; margin-bottom: 0 !important; }
+            #select-screen p { font-size: 1rem !important; margin: 5px 0 !important; }
+            .char-grid { gap: 10px !important; margin-top: 10px !important; }
+            .char-card { width: 105px !important; padding: 8px !important; }
+            .char-card img { width: 50px !important; height: 50px !important; margin-bottom: 5px !important; }
+            .char-card button { font-size: 0.75rem !important; padding: 4px !important; }
+            #q-text { font-size: 0.95rem !important; margin-bottom: 8px !important; }
+            #q-image { max-height: 100px !important; margin-bottom: 5px !important; }
+            .q-option-btn { font-size: 0.85rem !important; padding: 6px 10px !important; margin: 3px 0 !important; }
+            #end-screen h1 { font-size: 1.5rem !important; }
+            #end-screen h2 { font-size: 1.1rem !important; }
+            #end-screen h3 { font-size: 0.9rem !important; }
+            #wrong-list { max-height: 120px !important; font-size: 0.85rem !important; }
         }
-
     </style>
 </head>
 <body>
-<!-- Desktop Site 提示遮罩 -->
+    <a id="floating-back-menu" href="/" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+
     <div id="desktop-prompt-overlay">
         <div class="prompt-box">
             <h2>📱 Mobile Device Detected</h2>
-            <p>For the best gaming experience, please click your browser's menu (<b>⋮</b>) and enable <strong>"Desktop site"</strong>.</p>
-            <img src="https://cdn-icons-png.flaticon.com/512/3232/3232822.png" style="width: 50px; margin-bottom: 15px; opacity: 0.7;">
-            <button onclick="closeDesktopPrompt()">I've done it (Close)</button>
+            <p>For the best gaming experience, rotate your phone horizontally or enable <strong>"Desktop site"</strong> in your browser menu (<b>⋮</b>).</p>
+            <button onclick="closeDesktopPrompt()">Continue to Game</button>
         </div>
     </div>
+
     <div id="game-container">
         <div class="scrolling-bg" id="bg-layer"></div>
 
@@ -255,7 +186,7 @@
             <div class="char-grid">
                 <div class="char-card" onclick="startGame('wukong')">
                     <img src="/static/images/char_wukong.png" alt="Wukong">
-                    <button>Sun Wukong<br>(Fire Eye 👁️‍🗨️)</button>
+                    <button>Sun Wukong<br>(Fire Eye 👁️)</button>
                 </div>
                 <div class="char-card" onclick="startGame('tang')">
                     <img src="/static/images/char_tang.png" alt="Tang Seng">
@@ -274,7 +205,7 @@
 
         <div id="battle-scene" style="display: none;">
             <div id="battle-ui">
-                <div style="width: 100%;">
+                <div style="width: 100%; padding-left: 140px;">
                     <div style="color: white; font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px #000; font-size: 1.1rem;">
                         HP: <span id="hp-text">100</span>% | Round: <span id="turn-text">1</span>/<span id="total-turn-text"></span>
                     </div>
@@ -307,18 +238,21 @@
         </div>
 
         <div id="end-screen" style="display: none;">
-            <div style="background: rgba(0,0,0,0.7); padding: 30px; border-radius: 15px; text-align: center; max-width: 80%;">
-                <h1 id="end-title" style="font-size: 2.5rem; color: #f1c40f;"></h1>
+            <div style="background: rgba(0,0,0,0.78); padding: 30px; border-radius: 15px; text-align: center; max-width: 85%;">
+                <h1 id="end-title" style="font-size: 2.5rem; color: #f1c40f; margin-top: 0;"></h1>
                 <h2>Final Score: <span id="final-score"></span>%</h2>
                 <h3 style="color: #e74c3c;">Review Mistakes:</h3>
-                <ul id="wrong-list" style="text-align: left; max-height: 200px; overflow-y: auto; padding-left: 20px; color: #ecf0f1;"></ul>
-                <button onclick="location.reload()" style="background: #f39c12; color: white; border: none; padding: 10px 20px; font-size: 1.2rem; border-radius: 8px; margin-top: 15px; cursor: pointer;">Play Again</button>
+                <ul id="wrong-list" style="text-align: left; max-height: 180px; overflow-y: auto; padding-left: 20px; color: #ecf0f1;"></ul>
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:15px;">
+                    <button onclick="location.reload()" style="background: #f39c12; color: white; border: none; padding: 10px 20px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight:bold;">Play Again</button>
+                    <button onclick="window.location.href=(window.location.protocol==='file:'?'index.html':'/')" style="background: #3498db; color: white; border: none; padding: 10px 20px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight:bold;">← Main Menu</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const sfxBgm = new Audio('/static/audio/bgmusic.mp3'); sfxBgm.loop = true; sfxBgm.volume = 0.3; 
+        const sfxBgm = new Audio('/static/audio/bgmusic.mp3'); sfxBgm.loop = true; sfxBgm.volume = 0.3;
         const sfxHit = new Audio('/static/audio/hitsound.mp3');
         const sfxScratch = new Audio('/static/audio/scratch.mp3');
         const sfxLaugh = new Audio('/static/audio/demonlaugh.mp3');
@@ -329,29 +263,28 @@
             { q: "What is the SI unit for Force?", image: "", options: ["kg m s⁻¹", "N", "kg m s⁻²", "J"], correct: 1 },
             { q: "What is the value of gravitational acceleration on Earth?", image: "", options: ["9.72 m/s²", "10.00 m/s²", "9.81 m/s²", "10.80 m/s²"], correct: 2 },
             { q: "If the mass of an object is constant, the relationship between force, F and acceleration, a is …", image: "", options: ["F is directly proportional to a", "F is inversely proportional to a", "F does not depend on a", "F is directly proportional to mass"], correct: 0 },
-            { q: "A trolley X with a mass of 6 kg moving at a speed of 3 m/s collides elastically with another trolley Y with a mass of 3 kg moving at 2 m/s. \nIf trolley X stops immediately after the collision, calculate the final speed of trolley Y.", image: "", options: ["3 m/s", "8 m/s", "5 m/s", "6 m/s"], correct: 1 }
+            { q: "A trolley X with a mass of 6 kg moving at a speed of 3 m/s collides elastically with another trolley Y with a mass of 3 kg moving at 2 m/s. If trolley X stops immediately after the collision, calculate the final speed of trolley Y.", image: "", options: ["3 m/s", "8 m/s", "5 m/s", "6 m/s"], correct: 1 }
         ];
-        
+
         let questionBank = [];
         let player = { id: '', hp: 100 };
         let currentQIndex = 0;
         let selectedQuestions = [];
         let wrongRecords = [];
-        let correctCount = 0; 
-        
-        let TOTAL_ROUNDS = 0; 
-        let DAMAGE = 0; // 这个是 100% 的满额伤害
+        let correctCount = 0;
+
+        let TOTAL_ROUNDS = 0;
+        let DAMAGE = 0;
         let skillUsed = false;
         let tangShieldActive = false;
         let shaDefenseTurns = 0;
 
-        // 【新增】：计时器与房间变量
         let currentRoomId = null;
         let livePlayerId = null;
-        let roomTimeLimit = 30; // 默认 30 秒
+        let roomTimeLimit = 30;
         let timeRemaining = 30;
         let timerInterval = null;
-        let totalTimeSpent = 0; // 记录玩家总用时
+        let totalTimeSpent = 0;
 
         const bgLayer = document.getElementById('bg-layer');
         const playerBox = document.getElementById('player-box');
@@ -359,12 +292,41 @@
         const enemiesBox = document.getElementById('enemies-box');
         const qOverlay = document.getElementById('question-overlay');
 
-        // 在 HTML 里动态插入一个计时器条
-        document.querySelector('.scroll-content').insertAdjacentHTML('afterbegin', 
+        document.querySelector('.scroll-content').insertAdjacentHTML('afterbegin',
             '<div style="width:100%; max-width:500px; background:#ddd; height:15px; border-radius:10px; margin-bottom:15px; border:2px solid #555; overflow:hidden;">' +
-                '<div id="q-timer-fill" style="width:100%; height:100%; background:#2ecc71; transition: width 1s linear, background-color 0.5s;"></div>' +
+            '<div id="q-timer-fill" style="width:100%; height:100%; background:#2ecc71; transition: width 1s linear, background-color 0.5s;"></div>' +
             '</div>'
         );
+
+        // Record Journey visit to Train Station Profile
+        firebase.auth().onAuthStateChanged(function(user) {
+            const stationItem = {
+                id: "journey",
+                title: "Journey to the West: Physics Quiz RPG",
+                category: "Educational Game",
+                webUrl: "/journey",
+                fileUrl: "journey.html",
+                timestamp: new Date().toLocaleString('en-GB')
+            };
+            try {
+                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
+            } catch (e) {}
+
+            if (user) {
+                const pageID = "visited_journey_game";
+                const isFirst = !sessionStorage.getItem(pageID);
+                sessionStorage.setItem(pageID, "true");
+                db.collection("users").doc(user.uid).get().then(doc => {
+                    let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+                    let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                    let payload = { recentActivities: updated };
+                    if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+                    db.collection("users").doc(user.uid).set(payload, { merge: true });
+                });
+            }
+        });
 
         window.onload = function() {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -377,17 +339,17 @@
                 document.getElementById('display-room-id').innerText = currentRoomId;
                 document.getElementById('name-screen').style.display = 'flex';
                 document.getElementById('intro-title').innerText = "Teacher's Challenge";
-                
+
                 db.collection("journey_rooms").doc(currentRoomId).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if(data.isClosed) {
+                        if (data.isClosed) {
                             alert("This room is already closed by the teacher.");
                             loadDefaultGame();
                             return;
                         }
                         questionBank = data.questions;
-                        roomTimeLimit = data.timeLimit || 30; // 读取老师设定的时间
+                        roomTimeLimit = data.timeLimit || 30;
                         TOTAL_ROUNDS = questionBank.length;
                         DAMAGE = 100 / TOTAL_ROUNDS;
                     } else {
@@ -404,17 +366,19 @@
         function closeDesktopPrompt() { document.getElementById('desktop-prompt-overlay').style.display = 'none'; }
 
         function loadDefaultGame() {
-            currentRoomId = null; questionBank = [...defaultQuestionBank];
-            TOTAL_ROUNDS = questionBank.length; DAMAGE = 100 / TOTAL_ROUNDS; roomTimeLimit = 30;
+            currentRoomId = null;
+            questionBank = [...defaultQuestionBank];
+            TOTAL_ROUNDS = questionBank.length;
+            DAMAGE = 100 / TOTAL_ROUNDS;
+            roomTimeLimit = 30;
         }
 
         function submitName() {
             const nameInput = document.getElementById('player-name-input').value.trim();
-            if(!nameInput) return alert("Please enter your name!");
-
+            if (!nameInput) return alert("Please enter your name!");
             document.getElementById('name-screen').style.display = 'none';
             document.getElementById('intro-screen').style.display = 'flex';
-            
+
             db.collection("journey_rooms").doc(currentRoomId).collection("players").add({
                 name: nameInput, status: "not_started", answers: {}, totalCorrect: 0, hp: 100, totalTimeSpent: 0,
                 joinedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -425,52 +389,51 @@
             document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('select-screen').style.display = 'flex';
             sfxBgm.play().catch(e => console.log("Audio play prevented"));
-
-            if(currentRoomId && livePlayerId) {
+            if (currentRoomId && livePlayerId) {
                 db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({ status: "playing" });
             }
         }
 
         function dashToTarget(mover, target, callback) {
-            const mR = mover.getBoundingClientRect(); const tR = target.getBoundingClientRect();
+            const mR = mover.getBoundingClientRect();
+            const tR = target.getBoundingClientRect();
             const dx = (tR.left + tR.width/2) - (mR.left + mR.width/2);
             const dy = (tR.top + tR.height/2) - (mR.top + mR.height/2);
             mover.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
             mover.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
-            setTimeout(() => { if(callback) callback(); }, 350);
+            setTimeout(() => { if (callback) callback(); }, 350);
         }
 
         function returnToOrigin(mover, callback) {
             mover.style.transition = 'transform 0.4s ease-in-out';
             mover.style.transform = 'translate(0px, 0px)';
-            setTimeout(() => { if(callback) callback(); }, 400);
+            setTimeout(() => { if (callback) callback(); }, 400);
         }
 
         function startGame(charId) {
             document.getElementById('select-screen').style.display = 'none';
             document.getElementById('battle-scene').style.display = 'block';
             player.id = charId;
-            
+
             const skillBtn = document.getElementById('skill-btn');
-            if (charId === 'wukong') { playerImg.src = '/static/images/char_wukong.png'; skillBtn.innerHTML = '👁️‍🗨️'; }
+            if (charId === 'wukong') { playerImg.src = '/static/images/char_wukong.png'; skillBtn.innerHTML = '👁️'; }
             if (charId === 'tang') { playerImg.src = '/static/images/char_tang.png'; skillBtn.innerHTML = '🙏'; }
             if (charId === 'bajie') { playerImg.src = '/static/images/char_bajie.png'; skillBtn.innerHTML = '🍉'; }
             if (charId === 'sha') { playerImg.src = '/static/images/char_sha.png'; skillBtn.innerHTML = '💪'; }
 
             document.getElementById('total-turn-text').innerText = TOTAL_ROUNDS;
-            selectedQuestions = [...questionBank]; 
+            selectedQuestions = [...questionBank];
             runSequence();
         }
 
         function runSequence() {
             if (currentQIndex >= TOTAL_ROUNDS || player.hp <= 0) return showEndScreen();
-            
-            // 每回合开始前检查老师是否已经关停房间
-            if(currentRoomId) {
+
+            if (currentRoomId) {
                 db.collection("journey_rooms").doc(currentRoomId).get().then(doc => {
-                    if(doc.exists && doc.data().isClosed) {
+                    if (doc.exists && doc.data().isClosed) {
                         alert("Teacher has ended the game!");
-                        showEndScreen(); return;
+                        showEndScreen();
                     }
                 });
             }
@@ -478,10 +441,10 @@
             document.getElementById('turn-text').innerText = currentQIndex + 1;
             bgLayer.style.animationPlayState = 'running';
             playerImg.style.animationPlayState = 'running';
-            enemiesBox.innerHTML = ''; 
-            
+            enemiesBox.innerHTML = '';
+
             if (shaDefenseTurns > 0) shaDefenseTurns--;
-            tangShieldActive = false; 
+            tangShieldActive = false;
             document.getElementById('tang-shield').style.display = 'none';
 
             setTimeout(() => {
@@ -498,13 +461,13 @@
         function spawnEnemiesLogic() {
             enemiesBox.innerHTML = '<div id="boss-origin"><img src="/static/images/enemy_demon_1.png" style="height: 180px; animation: float 1.5s infinite alternate;"></div>';
             const origin = document.getElementById('boss-origin');
-            setTimeout(() => { origin.style.transform = 'translateX(-100vw)'; }, 50); 
+            setTimeout(() => { origin.style.transform = 'translateX(-100vw)'; }, 50);
             setTimeout(() => {
-                origin.style.opacity = '0'; 
+                origin.style.opacity = '0';
                 const labels = ['A', 'B', 'C', 'D'];
                 for (let i = 0; i < 4; i++) {
                     let wrapper = document.createElement('div');
-                    wrapper.className = 'enemy-wrapper split-pop'; 
+                    wrapper.className = 'enemy-wrapper split-pop';
                     wrapper.id = 'enemy-' + i;
                     wrapper.innerHTML = '<div class="enemy-label">' + labels[i] + '</div><img src="/static/images/enemy_demon_1.png" class="enemy-img">';
                     enemiesBox.appendChild(wrapper);
@@ -513,7 +476,6 @@
             }, 1400);
         }
 
-        // --- 启动计时器 ---
         function startTimer() {
             timeRemaining = roomTimeLimit;
             document.getElementById('q-timer-fill').style.width = '100%';
@@ -524,14 +486,13 @@
                 timeRemaining--;
                 let pct = (timeRemaining / roomTimeLimit) * 100;
                 document.getElementById('q-timer-fill').style.width = pct + '%';
-                if(pct < 40) document.getElementById('q-timer-fill').style.backgroundColor = '#f1c40f';
-                if(pct < 15) document.getElementById('q-timer-fill').style.backgroundColor = '#e74c3c';
+                if (pct < 40) document.getElementById('q-timer-fill').style.backgroundColor = '#f1c40f';
+                if (pct < 15) document.getElementById('q-timer-fill').style.backgroundColor = '#e74c3c';
 
-                // 🌟 超时逻辑：强制作为答错处理
-                if(timeRemaining <= 0) {
+                if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
                     alert("Time's up! The demon attacks!");
-                    selectAnswer(-1); // -1 代表超时未作答
+                    selectAnswer(-1);
                 }
             }, 1000);
         }
@@ -541,160 +502,197 @@
             document.getElementById('q-text').innerText = qData.q;
             const imgEl = document.getElementById('q-image');
             if (qData.image) { imgEl.src = qData.image; imgEl.style.display = 'block'; } else { imgEl.style.display = 'none'; }
-            
+
             const labels = ['A', 'B', 'C', 'D'];
             for (let i = 0; i < 4; i++) {
                 let btn = document.getElementById('opt-' + i);
                 btn.innerText = labels[i] + ': ' + qData.options[i];
-                btn.className = 'q-option-btn'; 
+                btn.className = 'q-option-btn';
             }
             qOverlay.style.display = 'flex';
-            
-            startTimer(); // 卷轴弹出时开始计时
+            startTimer();
         }
 
         function selectAnswer(selectedIndex) {
-            clearInterval(timerInterval); // 停止计时
-            qOverlay.style.display = 'none'; 
+            clearInterval(timerInterval);
+            qOverlay.style.display = 'none';
 
-            // 计算时间消耗
             let timeSpent = roomTimeLimit - Math.max(0, timeRemaining);
-            totalTimeSpent += timeSpent; // 累加总时间
+            totalTimeSpent += timeSpent;
 
             const qData = selectedQuestions[currentQIndex];
             const isCorrect = (selectedIndex === qData.correct);
             const realEnemy = document.getElementById('enemy-' + qData.correct);
-            
-            // 如果超时 (-1) 就没有 targetEnemy
             const targetEnemy = selectedIndex >= 0 ? document.getElementById('enemy-' + selectedIndex) : null;
 
             document.querySelectorAll('.enemy-wrapper').forEach(el => el.classList.remove('split-pop'));
 
-            if (isCorrect) { sfxHit.currentTime = 0; sfxHit.play(); correctCount++; } 
-            else { sfxLaugh.currentTime = 0; sfxLaugh.play(); }
+            if (isCorrect) { sfxHit.currentTime = 0; sfxHit.play().catch(()=>{}); correctCount++; }
+            else { sfxLaugh.currentTime = 0; sfxLaugh.play().catch(()=>{}); }
 
-            // 动态伤害计算 (0%时间用完 = 0.8 倍；100%时间用完 = 1.0 倍)
-            let timeRatio = timeSpent / roomTimeLimit;
-            if (timeRatio > 1) timeRatio = 1;
+            let timeRatio = Math.min(1, timeSpent / roomTimeLimit);
             let currentDamage = DAMAGE * (0.8 + 0.2 * timeRatio);
 
-            if(currentRoomId && livePlayerId) {
+            if (currentRoomId && livePlayerId) {
                 let updateData = { totalCorrect: correctCount, totalTimeSpent: totalTimeSpent };
-                // 这里暂时不更新 HP，等撞击动画结束再更新
                 updateData['answers.' + currentQIndex] = isCorrect ? "O" : "X";
                 db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update(updateData);
             }
 
             if (isCorrect && targetEnemy) {
                 dashToTarget(playerBox, targetEnemy, () => {
-                    showEffect('/static/images/fx_hit.jpg', targetEnemy); targetEnemy.style.opacity = '0'; 
+                    showEffect('/static/images/fx_hit.jpg', targetEnemy);
+                    targetEnemy.style.opacity = '0';
                     returnToOrigin(playerBox, () => {
                         setTimeout(() => {
                             document.querySelectorAll('.enemy-wrapper').forEach(el => el.style.opacity = '0');
                             setTimeout(() => { currentQIndex++; runSequence(); }, 600);
-                        }, 300); 
+                        }, 300);
                     });
                 });
             } else {
                 wrongRecords.push('Q: ' + qData.q + ' (Correct: ' + qData.options[qData.correct] + ')');
-                
                 if (targetEnemy) {
                     dashToTarget(playerBox, targetEnemy, () => {
-                        targetEnemy.style.opacity = '0'; 
+                        targetEnemy.style.opacity = '0';
                         returnToOrigin(playerBox, () => executeEnemyAttack(realEnemy, selectedIndex, currentDamage));
                     });
                 } else {
-                    // 超时的情况：玩家不撞，真怪物直接冲过来
-                    for(let i=0; i<4; i++){ if(i !== qData.correct) document.getElementById('enemy-' + i).style.opacity = '0'; }
+                    for (let i = 0; i < 4; i++) {
+                        if (i !== qData.correct) document.getElementById('enemy-' + i).style.opacity = '0';
+                    }
                     executeEnemyAttack(realEnemy, -1, currentDamage);
                 }
             }
         }
 
-        // 抽取出来的真妖怪攻击逻辑
         function executeEnemyAttack(realEnemy, selectedIndex, currentDamage) {
-            for(let i=0; i<4; i++){ if(i !== parseInt(realEnemy.id.split('-')[1]) && i !== selectedIndex) document.getElementById('enemy-' + i).style.opacity = '0'; }
-            
+            for (let i = 0; i < 4; i++) {
+                if (i !== parseInt(realEnemy.id.split('-')[1]) && i !== selectedIndex) {
+                    const el = document.getElementById('enemy-' + i);
+                    if (el) el.style.opacity = '0';
+                }
+            }
+
             setTimeout(() => {
-                setTimeout(() => { sfxScratch.currentTime = 0; sfxScratch.play(); }, 150);
+                setTimeout(() => { sfxScratch.currentTime = 0; sfxScratch.play().catch(()=>{}); }, 150);
                 dashToTarget(realEnemy, playerBox, () => {
-                    let dmg = currentDamage; // 使用算好的动态伤害
-                    if (tangShieldActive) { dmg = 0; tangShieldActive = false; document.getElementById('tang-shield').style.display='none'; }
-                    else if (shaDefenseTurns > 0) { dmg = dmg / 2; }
-                    
-                    player.hp -= dmg; updateHealth();
-                    
-                    if(currentRoomId && livePlayerId) {
+                    let dmg = currentDamage;
+                    if (tangShieldActive) {
+                        dmg = 0;
+                        tangShieldActive = false;
+                        document.getElementById('tang-shield').style.display = 'none';
+                    } else if (shaDefenseTurns > 0) {
+                        dmg = dmg / 2;
+                    }
+
+                    player.hp = Math.max(0, player.hp - dmg);
+                    updateHealth();
+
+                    if (currentRoomId && livePlayerId) {
                         db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({ hp: Math.max(0, Math.round(player.hp)) });
                     }
 
                     showEffect('/static/images/fx_scratch.jpg', playerBox);
-                    realEnemy.style.transition = 'transform 0.8s ease-in, opacity 0.8s';
-                    realEnemy.style.transform = 'translate(-100vw, -50vh) scale(0.5)';
-                    realEnemy.style.opacity = '0';
-                    setTimeout(() => { if(player.hp <= 0) showEndScreen(); else { currentQIndex++; runSequence(); } }, 1000);
+                    returnToOrigin(realEnemy, () => {
+                        setTimeout(() => {
+                            document.querySelectorAll('.enemy-wrapper').forEach(el => el.style.opacity = '0');
+                            setTimeout(() => { currentQIndex++; runSequence(); }, 600);
+                        }, 300);
+                    });
                 });
-            }, 200);
+            }, 300);
         }
 
         function useSkill() {
-            if (skillUsed) return; 
-            const btn = document.getElementById('skill-btn');
-            if (player.id === 'wukong') {
-                if (qOverlay.style.display !== 'flex') return alert("Use this when the question is open!");
-                const correctIdx = selectedQuestions[currentQIndex].correct; let crossed = 0;
-                for(let i=0; i<4; i++) {
-                    if (i !== correctIdx && crossed < 2) { document.getElementById('opt-' + i).classList.add('disabled-option'); document.getElementById('enemy-' + i).style.opacity = '0.3'; crossed++; }
-                }
-                skillUsed = true; btn.disabled = true;
-            } else if (player.id === 'tang') { tangShieldActive = true; document.getElementById('tang-shield').style.display = 'block'; skillUsed = true; btn.disabled = true;
-            } else if (player.id === 'bajie') { player.hp = Math.min(100, player.hp + 20); updateHealth(); skillUsed = true; btn.disabled = true;
-                if(currentRoomId && livePlayerId) db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({ hp: Math.round(player.hp) }); 
-            } else if (player.id === 'sha') { shaDefenseTurns = 2; skillUsed = true; btn.disabled = true; }
-        }
+            if (skillUsed) return;
+            skillUsed = true;
+            document.getElementById('skill-btn').disabled = true;
 
-        function showEffect(src, targetEl) {
-            const effect = document.createElement('img'); effect.src = src; effect.className = 'effect-img';
-            const rect = targetEl.getBoundingClientRect(); const containerRect = document.getElementById('game-container').getBoundingClientRect();
-            effect.style.left = (rect.left - containerRect.left) + 'px'; effect.style.top = (rect.top - containerRect.top) + 'px'; effect.style.width = rect.width + 'px';
-            document.getElementById('game-container').appendChild(effect); setTimeout(() => effect.remove(), 500);
+            const qData = selectedQuestions[currentQIndex];
+            if (player.id === 'wukong') {
+                // Eliminate 2 wrong options
+                let removed = 0;
+                for (let i = 0; i < 4; i++) {
+                    if (i !== qData.correct && removed < 2) {
+                        const btn = document.getElementById('opt-' + i);
+                        if (btn) btn.classList.add('disabled-option');
+                        const en = document.getElementById('enemy-' + i);
+                        if (en) en.style.opacity = '0.25';
+                        removed++;
+                    }
+                }
+            } else if (player.id === 'tang') {
+                tangShieldActive = true;
+                document.getElementById('tang-shield').style.display = 'block';
+            } else if (player.id === 'bajie') {
+                player.hp = Math.min(100, player.hp + 30);
+                updateHealth();
+            } else if (player.id === 'sha') {
+                shaDefenseTurns = 2;
+            }
         }
 
         function updateHealth() {
-            const hp = Math.max(0, Math.round(player.hp));
-            document.getElementById('hp-text').innerText = hp;
-            const bar = document.getElementById('health-fill'); bar.style.width = hp + '%';
-            if (hp < 30) bar.style.backgroundColor = '#e74c3c';
+            const hpVal = Math.max(0, Math.round(player.hp));
+            document.getElementById('hp-text').innerText = hpVal;
+            const fill = document.getElementById('health-fill');
+            fill.style.width = hpVal + '%';
+            if (hpVal > 50) fill.style.background = '#2ecc71';
+            else if (hpVal > 25) fill.style.background = '#f1c40f';
+            else fill.style.background = '#e74c3c';
+        }
+
+        function showEffect(src, targetEl) {
+            if (!targetEl) return;
+            const img = document.createElement('img');
+            img.src = src;
+            img.className = 'effect-img';
+            img.style.width = '100px';
+            img.style.height = '100px';
+            img.style.top = '10%';
+            img.style.left = '10%';
+            targetEl.appendChild(img);
+            setTimeout(() => img.remove(), 450);
         }
 
         function showEndScreen() {
-            clearInterval(timerInterval); // 确保计时器关闭
+            clearInterval(timerInterval);
+            sfxBgm.pause();
             document.getElementById('battle-scene').style.display = 'none';
             document.getElementById('end-screen').style.display = 'flex';
-            sfxBgm.pause(); 
-            
-            const finalScore = Math.max(0, Math.round(player.hp));
-            if (finalScore > 0) { sfxWin.play(); document.getElementById('end-title').innerText = "🏆 Victory! Scriptures Obtained!"; } 
-            else { document.getElementById('end-title').innerText = "💀 Defeat... The journey ends here."; }
-            
-            document.getElementById('final-score').innerText = finalScore;
-            const list = document.getElementById('wrong-list');
-            if (wrongRecords.length === 0) { list.innerHTML = "<li>Perfect! You answered everything correctly!</li>"; } 
-            else { wrongRecords.forEach(rec => { let li = document.createElement('li'); li.innerText = rec; list.appendChild(li); }); }
 
-            if(currentRoomId && livePlayerId) {
+            if (currentRoomId && livePlayerId) {
                 db.collection("journey_rooms").doc(currentRoomId).collection("players").doc(livePlayerId).update({
-                    status: "done", hp: finalScore, totalTimeSpent: totalTimeSpent
+                    status: "done",
+                    hp: Math.max(0, Math.round(player.hp))
                 });
+            }
+
+            const titleEl = document.getElementById('end-title');
+            if (player.hp > 0) {
+                titleEl.innerText = "🏆 Victory! You Reached the West!";
+                sfxWin.play().catch(()=>{});
             } else {
-                const user = firebase.auth().currentUser;
-                if (user) {
-                    db.collection("users").doc(user.uid).collection("journey_history").add({
-                        characterPlayed: player.id, score: finalScore, totalQuestions: TOTAL_ROUNDS, wrongAnswers: wrongRecords, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
+                titleEl.innerText = "💀 Defeated on the Journey...";
+            }
+
+            const scorePct = TOTAL_ROUNDS > 0 ? Math.round((correctCount / TOTAL_ROUNDS) * 100) : 0;
+            document.getElementById('final-score').innerText = scorePct;
+
+            const listEl = document.getElementById('wrong-list');
+            listEl.innerHTML = '';
+            if (wrongRecords.length === 0) {
+                listEl.innerHTML = '<li>🎉 Flawless! You answered every question correctly!</li>';
+            } else {
+                wrongRecords.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerText = item;
+                    li.style.marginBottom = '6px';
+                    listEl.appendChild(li);
+                });
             }
         }
-</script>
+    </script>
 </body>
 </html>

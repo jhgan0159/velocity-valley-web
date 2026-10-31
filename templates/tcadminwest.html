@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Admin | Journey to the West</title>
-    
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
@@ -20,43 +19,55 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
     </script>
-
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; padding: 20px; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; padding: 20px; margin: 0; }
         .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h1 { color: #d35400; text-align: center; }
-        
+        .top-nav-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .btn-back-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
+        }
+        h1 { color: #d35400; text-align: center; margin-top: 0; }
         .top-section { display: flex; gap: 20px; flex-wrap: wrap; }
-        .box { flex: 1; background: #fdf2e9; padding: 20px; border-radius: 10px; border: 1px solid #e67e22; min-width: 300px; }
-        
+        .box { flex: 1; background: #fdf2e9; padding: 20px; border-radius: 10px; border: 1px solid #e67e22; min-width: 280px; }
         .q-block { background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #ccc; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         input[type="text"], select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         button { background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; }
         button:hover { background: #2980b9; }
-        
         .btn-add { background: #2ecc71; width: 100%; margin-bottom: 20px; }
         .btn-create { background: #e67e22; width: 100%; font-size: 1.2rem; padding: 15px; }
         .btn-remove { position: absolute; top: 10px; right: 10px; background: #e74c3c; padding: 5px 10px; }
-        
         #result-box { display: none; margin-top: 20px; padding: 20px; background: #e8f8f5; border: 2px solid #1abc9c; border-radius: 10px; text-align: center; }
         #room-link { font-size: 1.2rem; font-weight: bold; color: #16a085; word-break: break-all; margin: 15px 0; }
-
-        /* Dashboard Styles */
         #dashboard-area { display: none; margin-top: 30px; padding: 20px; background: #fff; border: 2px solid #34495e; border-radius: 10px; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #ddd; padding: 12px 8px; text-align: center; }
         th { background-color: #34495e; color: white; }
         tr:nth-child(even) { background-color: #f2f2f2; }
-
-        /* Podium Styles */
         #podium-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .podium-box { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 80%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .podium-box { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 85%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .podium-list { list-style: none; padding: 0; text-align: left; margin-top: 20px; }
-        .podium-list li { padding: 15px; margin-bottom: 10px; border-radius: 8px; font-weight: bold; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+        .podium-list li { padding: 15px; margin-bottom: 10px; border-radius: 8px; font-weight: bold; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
         .rank-1 { background: #f1c40f; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); font-size: 1.4rem !important; }
         .rank-2 { background: #bdc3c7; color: #333; }
         .rank-3 { background: #cd7f32; color: #fff; }
         .rank-others { background: #ecf0f1; color: #7f8c8d; font-size: 1rem !important; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 16px; }
+            .podium-box { padding: 20px; width: 95%; }
+        }
     </style>
 </head>
 <body>
@@ -67,12 +78,16 @@
 </div>
 
 <div class="container" id="main-content" style="display: none;">
+    <div class="top-nav-row">
+        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <span style="font-weight: bold; color: #d35400;">👑 Pro Teacher Room Manager</span>
+    </div>
+
     <h1>👑 Teacher Admin Dashboard</h1>
     
     <div class="top-section">
         <div class="box">
             <h2 style="margin-top:0;">📝 Create New Room</h2>
-            
             <label style="font-weight:bold; color:#e67e22;">⏱️ Timer per Question:</label>
             <select id="room-time-limit" style="margin-bottom: 20px; font-weight:bold;">
                 <option value="30">30 Seconds</option>
@@ -105,7 +120,7 @@
     <div id="dashboard-area">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <h2 style="margin: 0;">Live Dashboard: Room <span id="dash-room" style="color:#e74c3c;"></span></h2>
-            <div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button onclick="downloadExcel()" style="background:#2ecc71;">📥 Download Excel</button>
                 <button onclick="endGameAndShowPodium()" style="background:#e74c3c;">🏆 End Game & Podium</button>
             </div>
@@ -124,9 +139,8 @@
 <div id="podium-overlay">
     <div class="podium-box">
         <h1 style="color: #e67e22; margin-top: 0; font-size: 2.5rem;">🏆 Final Podium</h1>
-        <p style="color: #7f8c8d; margin-bottom: 20px;">Ranked by: Correct Answers > HP Left > Time Spent</p>
-        <ul class="podium-list" id="podium-results">
-            </ul>
+        <p style="color: #7f8c8d; margin-bottom: 20px;">Ranked by: Correct Answers &gt; HP Left &gt; Time Spent</p>
+        <ul class="podium-list" id="podium-results"></ul>
         <button onclick="document.getElementById('podium-overlay').style.display='none'" style="margin-top: 20px; width: 100%;">Close</button>
     </div>
 </div>
@@ -136,7 +150,6 @@
     let unsubscribe = null;
     let roomQCount = 0;
 
-    // Security Check
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             db.collection("users").doc(user.uid).get().then((doc) => {
@@ -146,12 +159,12 @@
                     addQuestionBlock();
                 } else {
                     alert("Access Denied 🛑: This area is for Pro Teachers only.");
-                    window.location.href = "/";
+                    window.location.href = window.location.protocol === 'file:' ? 'index.html' : '/';
                 }
-            }).catch(() => { window.location.href = "/"; });
+            }).catch(() => { window.location.href = window.location.protocol === 'file:' ? 'index.html' : '/'; });
         } else {
             alert("Please Sign In first to access Teacher Admin!");
-            window.location.href = "/login";
+            window.location.href = window.location.protocol === 'file:' ? 'login.html' : '/login';
         }
     });
 
@@ -172,13 +185,12 @@
             '<input type="text" class="input-opt3" placeholder="Option D" required>' +
             '<label>Correct Answer Index (0=A, 1=B, 2=C, 3=D):</label>' +
             '<select class="input-correct">' +
-                '<option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option>' +
+            '<option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option>' +
             '</select></div>';
         container.insertAdjacentHTML('beforeend', html);
     }
 
     function removeQuestion(id) { const el = document.getElementById('qblock-' + id); if (el) el.remove(); }
-
     function generateRoomCode() { return Math.random().toString(36).substring(2, 8).toUpperCase(); }
 
     function createRoom() {
@@ -205,12 +217,12 @@
         if (customQuestionBank.length === 0) return alert("Please fill in the required fields!");
 
         const roomCode = generateRoomCode();
-        const timeLimit = parseInt(document.getElementById('room-time-limit').value); // 读取选择的时间
+        const timeLimit = parseInt(document.getElementById('room-time-limit').value);
 
         db.collection("journey_rooms").doc(roomCode).set({
             questions: customQuestionBank,
             timeLimit: timeLimit,
-            isClosed: false, // 房间开启状态
+            isClosed: false,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             const gameUrl = window.location.origin + '/journey?room=' + roomCode;
@@ -218,7 +230,7 @@
             document.getElementById('result-box').style.display = 'block';
             document.getElementById('existing-room-code').value = roomCode;
             loadDashboard(roomCode);
-        }).catch((err) => { alert("Failed to create room."); });
+        }).catch(() => { alert("Failed to create room."); });
     }
 
     function copyLink() {
@@ -231,7 +243,6 @@
 
         db.collection('journey_rooms').doc(roomCode).get().then(doc => {
             if (!doc.exists) return alert("Room not found!");
-            
             roomQCount = doc.data().questions.length;
             document.getElementById('dash-room').innerText = roomCode;
             document.getElementById('dashboard-area').style.display = 'block';
@@ -241,8 +252,8 @@
             theadHtml += '<th>Total Correct</th><th>HP Left</th><th>Time Used</th></tr>';
             document.getElementById('dash-thead').innerHTML = theadHtml;
 
-            if (unsubscribe) unsubscribe(); 
-            
+            if (unsubscribe) unsubscribe();
+
             unsubscribe = db.collection('journey_rooms').doc(roomCode).collection('players')
                 .orderBy("joinedAt", "asc")
                 .onSnapshot(snapshot => {
@@ -250,9 +261,9 @@
                     let tbodyHtml = '';
                     snapshot.forEach(pDoc => {
                         let p = pDoc.data();
-                        let statusText = "Haven't Started"; let statusBg = "#2ecc71"; 
-                        if (p.status === 'playing') { statusText = "Playing"; statusBg = "#f1c40f"; } 
-                        if (p.status === 'done') { statusText = "Finished"; statusBg = "#e74c3c"; } 
+                        let statusText = "Haven't Started"; let statusBg = "#2ecc71";
+                        if (p.status === 'playing') { statusText = "Playing"; statusBg = "#f1c40f"; }
+                        if (p.status === 'done') { statusText = "Finished"; statusBg = "#e74c3c"; }
 
                         let rowHtml = '<tr><td style="font-weight:bold;">' + p.name + '</td><td style="background-color:' + statusBg + '; color:white; font-weight:bold;">' + statusText + '</td>';
                         for (let i = 0; i < roomQCount; i++) {
@@ -268,43 +279,36 @@
         });
     }
 
-    // 🏆 排行榜和结束游戏逻辑
     function endGameAndShowPodium() {
         const roomCode = document.getElementById('dash-room').innerText;
-        if(!confirm("Are you sure you want to end the game? Students won't be able to submit new answers.")) return;
-        
-        // 1. 关闭房间
+        if (!confirm("Are you sure you want to end the game? Students won't be able to submit new answers.")) return;
+
         db.collection("journey_rooms").doc(roomCode).update({ isClosed: true });
 
-        // 2. 获取所有玩家数据并排序
         db.collection("journey_rooms").doc(roomCode).collection("players").get().then(snap => {
             let players = [];
             snap.forEach(doc => players.push(doc.data()));
 
-            // 核心排序逻辑：对题数(降序) > HP(降序) > 时间(升序)
             players.sort((a, b) => {
                 let aCorrect = a.totalCorrect || 0; let bCorrect = b.totalCorrect || 0;
                 if (bCorrect !== aCorrect) return bCorrect - aCorrect;
-                
                 let aHp = a.hp || 0; let bHp = b.hp || 0;
                 if (bHp !== aHp) return bHp - aHp;
-                
                 let aTime = a.totalTimeSpent || 9999; let bTime = b.totalTimeSpent || 9999;
                 return aTime - bTime;
             });
 
-            // 渲染 UI
             let listHtml = '';
             players.forEach((p, index) => {
                 let rankClass = index === 0 ? 'rank-1' : (index === 1 ? 'rank-2' : (index === 2 ? 'rank-3' : 'rank-others'));
-                let medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : '#' + (index+1)));
+                let medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : '#' + (index + 1)));
                 listHtml += '<li class="' + rankClass + '">' +
-                                '<span>' + medal + ' ' + p.name + '</span>' +
-                                '<span style="font-size:0.9rem; font-weight:normal;">' + (p.totalCorrect || 0) + ' Correct | ' + (p.hp || 0) + '% HP | ' + (p.totalTimeSpent || 0) + 's</span>' +
-                            '</li>';
+                    '<span>' + medal + ' ' + p.name + '</span>' +
+                    '<span style="font-size:0.9rem; font-weight:normal;">' + (p.totalCorrect || 0) + ' Correct | ' + (p.hp || 0) + '% HP | ' + (p.totalTimeSpent || 0) + 's</span>' +
+                    '</li>';
             });
 
-            if(players.length === 0) listHtml = '<li style="text-align:center; color:#7f8c8d;">No players joined yet.</li>';
+            if (players.length === 0) listHtml = '<li style="text-align:center; color:#7f8c8d;">No players joined yet.</li>';
 
             document.getElementById('podium-results').innerHTML = listHtml;
             document.getElementById('podium-overlay').style.display = 'flex';
@@ -318,10 +322,15 @@
             for (let j = 0; j < cols.length; j++) { row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"'); }
             csv.push(row.join(","));
         }
-        let csvString = "\uFEFF" + csv.join("\n"); 
+        let csvString = "\uFEFF" + csv.join("\n");
         let blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-        let url = URL.createObjectURL(blob); let a = document.createElement("a");
-        a.href = url; a.download = 'Journey_Room_' + document.getElementById('dash-room').innerText + '.csv'; a.click();
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = 'Journey_Room_' + document.getElementById('dash-room').innerText + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 </script>
 </body>

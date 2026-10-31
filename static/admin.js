@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     categories.forEach(cat => {
         const section = document.createElement('section');
         section.className = 'category-section';
-        
+
         const catHeader = document.createElement('h2');
         catHeader.textContent = `Category: ${cat.replace('_', ' ')}`;
         catHeader.style.borderBottom = "2px solid #ddd";
@@ -33,9 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
         section.appendChild(questionsList);
 
         const existingList = loadedQuestions[cat] || [];
-        
+
         if (existingList.length === 0) {
-            addQuestionForm(cat, questionsList); 
+            addQuestionForm(cat, questionsList);
         } else {
             existingList.forEach(qData => {
                 addQuestionForm(cat, questionsList, qData);
@@ -59,23 +59,24 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapper.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>Question Item</h3>
-                <button class="btn-delete">🗑️ Remove</button>
+                <button type="button" class="btn-delete">🗑️ Remove</button>
             </div>
             
             <label>Question Text:</label>
             <textarea class="q-text" placeholder="Enter the question here...">${data.question || ''}</textarea>
+            
+            <label>Image URL (Optional):</label>
+            <input type="text" class="q-image" placeholder="e.g. /static/images/imageS21.jpg" value="${data.image || ''}">
             
             <label>Correct Answer(s) (separate multiple with comma):</label>
             <input type="text" class="q-answer" placeholder="e.g. A, a, Apple" value="${data.answer ? (Array.isArray(data.answer) ? data.answer.join(',') : data.answer) : ''}">
             
             <label>Explanation:</label>
             <textarea class="q-explanation" placeholder="Explain why...">${data.explanation || ''}</textarea>
-            
-           
         `;
 
         wrapper.querySelector('.btn-delete').addEventListener('click', () => {
-            if(confirm('Remove this question?')) {
+            if (confirm('Remove this question?')) {
                 wrapper.remove();
             }
         });
@@ -93,15 +94,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         groups.forEach(group => {
             const cat = group.getAttribute('data-category');
-            const qText = group.querySelector('.q-text').value.trim();
-            const qAnsStr = group.querySelector('.q-answer').value.trim();
-            const qExp = group.querySelector('.q-explanation').value.trim();
-            const qImg = group.querySelector('.q-image').value.trim();
+            const qTextEl = group.querySelector('.q-text');
+            const qAnsEl = group.querySelector('.q-answer');
+            const qExpEl = group.querySelector('.q-explanation');
+            const qImgEl = group.querySelector('.q-image');
+
+            const qText = qTextEl ? qTextEl.value.trim() : '';
+            const qAnsStr = qAnsEl ? qAnsEl.value.trim() : '';
+            const qExp = qExpEl ? qExpEl.value.trim() : '';
+            const qImg = qImgEl ? qImgEl.value.trim() : '';
 
             if (qText && qAnsStr) {
                 hasData = true;
                 const ansArray = qAnsStr.split(',').map(s => s.trim()).filter(s => s !== "");
-                
+
                 const newQuestionObj = {
                     level: `${cat.split('_')[0]}: Custom`,
                     question: qText,
@@ -110,23 +116,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 if (qImg) newQuestionObj.image = qImg;
-                
+
                 newPool[cat].push(newQuestionObj);
             }
         });
 
         if (hasData) {
             localStorage.setItem('customQuestions', JSON.stringify(newPool));
-            statusMsg.textContent = "✅ Saved! " + groups.length + " slots checked.";
-            statusMsg.style.color = "green";
+            statusMsg.textContent = "✅ Saved! " + groups.length + " question slots processed.";
+            statusMsg.style.color = "#27ae60";
         } else {
-            statusMsg.textContent = "⚠️ Please fill in at least one question.";
-            statusMsg.style.color = "orange";
+            statusMsg.textContent = "⚠️ Please fill in at least one question and answer.";
+            statusMsg.style.color = "#e67e22";
         }
     });
 
     clearBtn.addEventListener('click', () => {
-        if(confirm("Delete all custom questions?")) {
+        if (confirm("Delete all custom questions and restore defaults?")) {
             localStorage.removeItem('customQuestions');
             location.reload();
         }

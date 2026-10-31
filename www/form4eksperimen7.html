@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Eksperimen 4.5: Hukum Charles</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .top-bar-wrapper { width: 100%; max-width: 1000px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .btn-back-menu { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(30,60,114,0.25); }
+        .principle-banner { width: 100%; max-width: 1000px; background: linear-gradient(135deg, #e0f2fe, #bae6fd); border-left: 5px solid #0284c7; padding: 14px 18px; border-radius: 8px; margin-bottom: 18px; color: #0f172a; font-size: 0.94rem; line-height: 1.5; }
+        .container { display: flex; flex-wrap: wrap; gap: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 1000px; width: 100%; }
+        .simulation-area { flex: 1; min-width: 300px; display: flex; flex-direction: column; align-items: center; border: 2px solid #ddd; padding: 20px; border-radius: 8px; background-color: #fafafa; }
+        .apparatus { position: relative; width: 250px; height: 400px; margin-top: 20px; }
+        .beaker { position: absolute; bottom: 40px; left: 50px; width: 150px; height: 200px; border: 3px solid #ccc; border-top: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; background: rgba(255, 255, 255, 0.5); z-index: 2; }
+        .water { position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; background: rgba(0, 150, 255, 0.3); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; transition: background 0.3s; }
+        .heater { position: absolute; bottom: 0; left: 100px; width: 50px; height: 30px; background: #555; border-radius: 5px; }
+        .flame { position: absolute; bottom: 30px; left: 115px; width: 20px; height: 30px; background: orange; border-radius: 50% 50% 20% 20%; opacity: 0.5; transition: height 0.3s, opacity 0.3s; }
+        .ruler { position: absolute; bottom: 10px; left: 30px; width: 20px; height: 250px; background: #f0e68c; border: 1px solid #aaa; z-index: 3; display: flex; flex-direction: column-reverse; }
+        .ruler-tick { width: 10px; border-top: 1px solid black; flex-grow: 1; }
+        .ruler-tick:nth-child(5n) { width: 100%; }
+        .capillary-tube { position: absolute; bottom: 10px; left: 60px; width: 12px; height: 250px; border: 2px solid #ccc; border-top: none; background: white; z-index: 3; display: flex; flex-direction: column; justify-content: flex-end; }
+        .gas { width: 100%; background: #e0f7fa; height: 100px; transition: height 0.3s ease; }
+        .acid-plug { width: 100%; height: 20px; background: #888; }
+        .thermometer { position: absolute; bottom: 20px; left: 110px; width: 10px; height: 200px; border: 2px solid #aaa; border-radius: 10px; background: white; z-index: 3; display: flex; flex-direction: column; justify-content: flex-end; padding: 2px; }
+        .mercury { width: 100%; background: red; height: 30%; border-radius: 10px; transition: height 0.3s ease; }
+        .controls-area { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px; }
+        .control-group { background: #eef2f5; padding: 15px; border-radius: 8px; border: 1px solid #d1d9e0; }
+        input[type="range"] { width: 100%; }
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-record { background-color: #28a745; }
+        .btn-download { background-color: #007bff; margin-top: 10px; width: 100%; }
+        .table-scroll { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table, th, td { border: 1px solid #bbb; }
+        th, td { padding: 10px; text-align: center; }
+        th { background-color: #f8f9fa; }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { flex-direction: column; padding: 14px; gap: 18px; }
+            .simulation-area, .controls-area { min-width: 100%; }
+            .btn-record { width: 100%; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="top-bar-wrapper">
+    <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+    <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 4.5</span>
+</div>
+<div class="principle-banner">
+    <strong>📘 Prinsip Fizik (Hukum Charles):</strong> Isi padu (<em>V</em>) adalah berkadar terus dengan suhu mutlak (<em>T</em> dalam Kelvin) bagi suatu gas berjisim tetap pada tekanan malar (<strong>V ∝ T</strong> atau <strong>V₁ / T₁ = V₂ / T₂</strong>).
+</div>
+<div class="container">
+    <div class="simulation-area">
+        <h2 style="margin-top:0;">Visual Radas</h2>
+        <div class="apparatus">
+            <div class="heater"></div><div class="flame" id="flame"></div>
+            <div class="beaker">
+                <div class="water" id="water">
+                    <div class="ruler" id="ruler"></div>
+                    <div class="capillary-tube"><div class="acid-plug"></div><div class="gas" id="gas"></div></div>
+                    <div class="thermometer"><div class="mercury" id="mercury"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="controls-area">
+        <h2 style="margin-top:0;">Panel Kawalan & Data</h2>
+        <div class="control-group">
+            <label for="tempSlider"><strong>Suhu Air, &theta; (&deg;C): </strong></label>
+            <span id="tempDisplay" style="font-size: 1.2em; font-weight: bold; color: red;">30</span> &deg;C<br><br>
+            <input type="range" id="tempSlider" min="30" max="80" step="10" value="30">
+        </div>
+        <div class="control-group">
+            <p><strong>Panjang Turus Udara, L: </strong> <span id="lengthDisplay">9.0</span> cm</p>
+            <button class="btn btn-record" onclick="rekodData()">➕ Rekod Data ke Jadual</button>
+        </div>
+        <div>
+            <h3>Jadual Keputusan</h3>
+            <div class="table-scroll">
+                <table id="dataTable">
+                    <thead><tr><th>Suhu, &theta; (&deg;C)</th><th>Panjang turus udara, L (cm)</th></tr></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <button class="btn btn-download" onclick="muatTurunExcel()">⬇ Muat Turun Data (Excel/CSV)</button>
+        </div>
+    </div>
+</div>
+<script>
+    const ruler = document.getElementById('ruler');
+    for (let i = 0; i < 20; i++) { let tick = document.createElement('div'); tick.className = 'ruler-tick'; ruler.appendChild(tick); }
+    const tempSlider = document.getElementById('tempSlider'), tempDisplay = document.getElementById('tempDisplay'), lengthDisplay = document.getElementById('lengthDisplay'), gas = document.getElementById('gas'), mercury = document.getElementById('mercury'), flame = document.getElementById('flame'), water = document.getElementById('water'), tableBody = document.getElementById('tableBody'), factor = 0.02976;
+    function updateSimulation() {
+        let suhuC = parseInt(tempSlider.value); tempDisplay.innerText = suhuC;
+        let panjangL = ((suhuC + 273.15) * factor).toFixed(1); lengthDisplay.innerText = panjangL;
+        gas.style.height = (panjangL * 15) + 'px'; mercury.style.height = suhuC + '%';
+        let intensity = (suhuC - 30) / 50;
+        flame.style.opacity = 0.5 + (intensity * 0.5); flame.style.height = 30 + (intensity * 20) + 'px';
+        water.style.background = `rgba(${intensity * 100}, 150, 255, 0.3)`;
+    }
+    updateSimulation();
+    tempSlider.addEventListener('input', updateSimulation);
+    function rekodData() {
+        let suhuC = tempSlider.value, panjangL = lengthDisplay.innerText;
+        for (let row of tableBody.getElementsByTagName('tr')) {
+            if (row.getElementsByTagName('td')[0].innerText == suhuC) return alert(`Data untuk suhu ${suhuC} °C telah direkodkan!`);
+        }
+        let row = document.createElement('tr'); row.innerHTML = `<td>${suhuC}</td><td>${panjangL}</td>`; tableBody.appendChild(row);
+    }
+    function muatTurunExcel() {
+        let rows = document.querySelectorAll("#dataTable tr");
+        if (rows.length <= 1) return alert("Tiada data untuk dimuat turun.");
+        let csvContent = "\uFEFF";
+        rows.forEach(row => { csvContent += Array.from(row.querySelectorAll("th, td")).map(c => c.innerText).join(",") + "\n"; });
+        let link = document.createElement("a");
+        link.setAttribute("href", URL.createObjectURL(new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })));
+        link.setAttribute("download", "Data_Hukum_Charles.csv");
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo", authDomain: "velocity-valley-edu.firebaseapp.com", projectId: "velocity-valley-edu", storageBucket: "velocity-valley-edu.firebasestorage.app", messagingSenderId: "340043533038", appId: "1:340043533038:web:0abf2444b8ac6da07f41ff" };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const stationItem = { id: "exp4_5", title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment7", fileUrl: "form4eksperimen7.html", timestamp: new Date().toLocaleString('en-GB') };
+            try {
+                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+                localStorage.setItem('vv_recent_activities', JSON.stringify([stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5)));
+            } catch (e) {}
+            const pageID = "visited_Charles_eksperimen4_5";
+            const isFirst = !sessionStorage.getItem(pageID);
+            sessionStorage.setItem(pageID, "true");
+            db.collection("users").doc(user.uid).get().then(doc => {
+                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+                let payload = { recentActivities: [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5) };
+                if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+                db.collection("users").doc(user.uid).set(payload, { merge: true });
+            });
+        } else {
+            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+        }
+    });
+</script>
+</body>
+</html>
