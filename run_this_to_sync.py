@@ -27,6 +27,16 @@ ROUTES = {
     "'/form4experiment10'": "'form4eksperimen10.html'",
     '"/form4experiment11"': '"form4eksperimen11.html"',
     "'/form4experiment11'": "'form4eksperimen11.html'",
+    '"/form5experiment1"': '"form5eksperimen1.html"',
+    "'/form5experiment1'": "'form5eksperimen1.html'",
+    '"/form5experiment2"': '"form5eksperimen2.html"',
+    "'/form5experiment2'": "'form5eksperimen2.html'",
+    '"/form5experiment3"': '"form5eksperimen3.html"',
+    "'/form5experiment3'": "'form5eksperimen3.html'",
+    '"/form5experiment4"': '"form5eksperimen4.html"',
+    "'/form5experiment4'": "'form5eksperimen4.html'",
+    '"/form5experiment5"': '"form5eksperimen5.html"',
+    "'/form5experiment5'": "'form5eksperimen5.html'",
     '"/dashboard"': '"dashboard.html"',
     "'/dashboard'": "'dashboard.html'",
     '"/boardgame"': '"boardgame.html"',
@@ -46,6 +56,14 @@ ROUTES = {
 
 os.makedirs('templates', exist_ok=True)
 os.makedirs('www', exist_ok=True)
+os.makedirs(os.path.join('static', 'images'), exist_ok=True)
+os.makedirs(os.path.join('www', 'static', 'images'), exist_ok=True)
+
+# 0. Automatically copy advertise.png (if placed in root) into static/images/ and www/static/images/
+if os.path.exists('advertise.png'):
+    shutil.copy2('advertise.png', os.path.join('static', 'images', 'advertise.png'))
+    shutil.copy2('advertise.png', os.path.join('www', 'static', 'images', 'advertise.png'))
+    print("[OK] Updated advertise.png -> static/images/ and www/static/images/")
 
 # 1. Automatically copy any .html files placed in the project root into templates/
 for root_html in glob.glob('*.html'):
@@ -61,4 +79,4 @@ for f in glob.glob('templates/*.html'):
         c = c.replace(k, v)
     open(os.path.join('www', os.path.basename(f)), 'w', encoding='utf-8').write(c)
 
-print("All templates and Android www/*.html links synced!")
+print("All templates, images, and Android www/*.html links synced!")

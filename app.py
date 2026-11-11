@@ -10,18 +10,13 @@ app = Flask(__name__)
 
 # ==============================================================================
 # ILMU AI CONFIGURATION (YTL AI Labs - OpenAI-Compatible Endpoint)
-# 方式 A (本地直接填)：把下面的 "(paste your key here)" 换成你的 "sk-..." 密钥
-# 方式 B (最省心，以后覆盖 app.py 也不会丢)：在项目文件夹新建 ilmu_key.txt 粘贴 sk-... 密钥
-# 方式 C (Vercel 线上部署)：在 Vercel -> Settings -> Environment Variables 添加 ILMU_API_KEY
 # ==============================================================================
 ILMU_API_KEY = os.environ.get("ILMU_API_KEY", "(paste your key here)")
 
 def get_ilmu_api_key():
-    # 1. 优先读取环境变量或上面第 17 行填入的 ILMU_API_KEY
     key_candidate = (ILMU_API_KEY or "").strip()
     if key_candidate and key_candidate != "(paste your key here)" and not key_candidate.startswith("("):
         return key_candidate
-    # 2. 其次读取本地 ilmu_key.txt 文件（如果存在）
     if os.path.exists("ilmu_key.txt"):
         try:
             file_key = open("ilmu_key.txt", "r", encoding="utf-8").read().strip()
@@ -35,50 +30,31 @@ ILMU_BASE_URL = os.environ.get("ILMU_BASE_URL", "https://api.ilmu.ai/v1/chat/com
 ILMU_MODEL = os.environ.get("ILMU_MODEL", "ilmu-mini-v3.3")
 
 # ==============================================================================
-# COMPLETE KSSM PHYSICS KNOWLEDGE BASE (INJECTED INTO ILMU AI SYSTEM PROMPT)
+# ULTRA-COMPACT TOKEN-SAVING SYSTEM PROMPT (~110 TOKENS INSTEAD OF 1,700 TOKENS!)
+# Fixed prefix is automatically cached by ILMU API at 90% discount, and only the
+# student's active KSSM chapter summary is injected per request.
 # ==============================================================================
-VELOCITY_VALLEY_SYSTEM_PROMPT = """You are Prof. Vector, the friendly and knowledgeable AI Physics Tutor inside "Velocity Valley", an interactive Malaysian KSSM Form 4 & Form 5 Physics Simulation and Educational Game platform created by Gan Jun Heng (Universiti Teknologi Malaysia - UTM).
+CORE_SYSTEM_PREFIX = (
+    "You are Prof. Vector, the KSSM Form 4 & 5 Physics AI Tutor inside Velocity Valley (by Gan Jun Heng, UTM). "
+    "Rules: Use secondary school SPM algebra only (never calculus). "
+    "Reply concisely (150-300 words) in the student's language using plain Unicode math (F = ma, m s⁻², Δθ, √, ×) and **bold** for key terms. "
+    "Never output #, ##, ### headers, --- lines, or \\[ \\] / \\( \\) LaTeX brackets."
+)
 
-1. ABOUT THE VELOCITY VALLEY PLATFORM:
-- Mini Simulations:
-  • Mini Newton's Second Law (F = ma): Interactive block with Force (-50 N to 50 N) and Mass (1 kg to 20 kg) sliders.
-- Form 4 KSSM Compulsory Virtual Labs (11 Experiments):
-  • Exp 1.1: Simple Pendulum (T = 2π√(l/g), plotting T² vs l graph, gradient m = 4π²/g)
-  • Exp 2.1: Gravitational Acceleration g using dual photogates (g = 2h / (t₂² - t₁²))
-  • Exp 2.2: Mass & Inertia using horizontally oscillating hacksaw blade and plasticine (T² ∝ m)
-  • Exp 4.1 & 4.2: Specific Heat Capacity of water, oil, Al, steel, Cu (c = Pt / (mΔθ))
-  • Exp 4.3: Specific Latent Heat of Fusion of Ice (Part A with control set: l_f = Pt / (m₁ - m₂)) & Vaporization of Water (Part B: l_v = Pt / Δm)
-  • Exp 4.4: Boyle's Law (P₁V₁ = P₂V₂, syringe & Bourdon gauge, P ∝ 1/V)
-  • Exp 4.5: Charles's Law (V₁/T₁ = V₂/T₂, capillary tube & sulfuric acid plug, absolute zero -273 °C)
-  • Exp 4.6: Gay-Lussac's / Pressure Law (P₁/T₁ = P₂/T₂, constant volume flask)
-  • Exp 6.1: Snell's Law Glass Block (n = sin i / sin r ≈ 1.50)
-  • Exp 6.2: Real & Apparent Depth of Water via non-parallax pin method (n = H / h ≈ 1.33)
-  • Exp 6.3: Convex Lens Formula (1/f = 1/u + 1/v, f = 10.0 cm)
-- Educational Games:
-  • Physics Monopoly: Ultimate Edition (C1-C4 Bloom's taxonomy board game)
-  • Journey to the West: Physics Quiz RPG (Wukong, Tang Seng, Bajie, Sha Wujing)
-
-2. MALAYSIAN KSSM FORM 4 & FORM 5 SYLLABUS HIGHLIGHTS & EXAM HOTSPOTS:
-- Form 4 Bab 1 (Pengukuran / Measurement): Kuantiti Asas vs Terbitan, Skalar vs Vektor, التفسير Graf (kecerunan, pintasan-y, ekstrapolasi).
-- Form 4 Bab 2 (Daya dan Gerakan I / Force & Motion I): Gerakan Linear (v = u + at, s = ut + ½at², v² = u² + 2as), Graf Gerakan, Inersia (Hukum Pertama Newton), Hukum Kedua Newton (F = ma, kadar perubahan momentum), Impuls (Ft = mv - mu) & Daya Impuls, Keabadian Momentum.
-- Form 4 Bab 3 (Kegravitian / Gravitation):
-  • 3.1 Hukum Kegravitian Semesta Newton (Newton's Universal Law of Gravitation): F = G m₁ m₂ / r², Pecutan graviti g = GM / r², Daya memusat (Centripetal force) F = mv² / r.
-  • 3.2 Hukum Kepler (Kepler's Laws I, II, III): T₁² / T₂² = r₁³ / r₂³ (derivasi dari GMm/r² = mv²/r dan v = 2πr/T).
-  • 3.3 Satelit Buatan Manusia (Man-made Satellites): Laju linear satelit v = √(GM / r), Halaju lepas (Escape velocity) v = √(2GM / r), Satelit Geopegun (Geostationary: T = 24 jam, arah sama putaran Bumi, berada di atas khatulistiwa) vs Bukan Geopegun.
-- Form 4 Bab 4 (Haba / Heat): Keseimbangan Terma, Muatan Haba Tentu (Q = mcΔθ), Haba Pendam Tentu (Q = ml), Hukum-hukum Gas (Boyle, Charles, Tekanan, suhu mutlak T dalam Kelvin = θ °C + 273).
-- Form 4 Bab 5 (Gelombang / Waves): Pantulan, Pembiasan, Pembelauan, Interferens (λ = ax / D), Gelombang Elektromagnet.
-- Form 4 Bab 6 (Cahaya dan Optik / Light & Optics): Pembiasan (n = sin i / sin r = H / h = c / v), Sudut Genting & Pantulan Dalam Penuh (n = 1 / sin c), Formula Kanta Nipis (1/f = 1/u + 1/v).
-- Form 5 Bab 1–7: Daya & Gerakan II (Leraian daya, keseimbangan daya, Hukum Hooke F = kx, Tekanan cecair P = hρg, Prinsip Pascal, Prinsip Archimedes, Prinsip Bernoulli), Elektrik (V = IR, E = V + Ir), Keelektromagnetan (F = BIL, Hukum Faraday & Lenz, Transformer), Elektronik (Diod, Transistor), Fizik Nuklear (Separuh hayat, E = mc²), Fizik Kuantum (Teori Fotoelektrik Einstein hf = W + ½mv²_max).
-
-3. STRICT CHAT FORMATTING & TEACHING RULES:
-- Directly and thoroughly answer the exact question(s) the student asked! If the student asks for Chinese + Bahasa Melayu translation or asks to analyze the hardest part of a chapter, fulfill every part of their request clearly.
-- Format your reply for a mobile Messenger chat window: use clean paragraphs and simple bullet points ("•").
-- NEVER output raw LaTeX delimiters like \\[ ... \\], \\( ... \\), or $$ ... $$. Write all math/formulas using clean readable Unicode characters (e.g., F = G m₁ m₂ / r², g = GM / r², v = √(GM / r), T₁² / T₂² = r₁³ / r₂³, m s⁻², Δθ, ×, ÷).
-- NEVER output Markdown heading hashes (#, ##, ###, ####) or horizontal divider lines (---). Use **bold** only for key physics terms, titles, or formulas.
-"""
+CHAPTER_COMPACT_NOTES = {
+    "F4_B1": "Form 4 Bab 1 Pengukuran: Base/derived quantities, scalar/vector, Exp 1.1 Simple Pendulum (T = 2π√(l/g), T² vs l gradient = 4π²/g).",
+    "F4_B2": "Form 4 Bab 2 Daya & Gerakan I: Linear motion (v=u+at, s=ut+½at², v²=u²+2as), Newton's Laws (F=ma), momentum, impulse, Exp 2.1 Photogate g = 2h/(t₂²-t₁²), Exp 2.2 Inertia hacksaw blade (T² ∝ m).",
+    "F4_B3": "Form 4 Bab 3 Kegravitian: Newton's Gravitation F = Gm₁m₂/r², g = GM/r², centripetal F = mv²/r, Kepler's Laws (GMm/r² = mv²/r with v=2πr/T gives T₁²/T₂² = r₁³/r₂³), satellite v = √(GM/r), escape v = √(2GM/r).",
+    "F4_B4": "Form 4 Bab 4 Haba: Thermal equilibrium, Exp 4.1/4.2 Specific Heat Capacity c = Pt/(mΔθ), Exp 4.3 Latent Heat l = Pt/Δm (control set m₂), Gas Laws: Exp 4.4 Boyle (P₁V₁=P₂V₂), Exp 4.5 Charles (V₁/T₁=V₂/T₂), Exp 4.6 Gay-Lussac (P₁/T₁=P₂/T₂, T in Kelvin).",
+    "F4_B5": "Form 4 Bab 5 Gelombang: v = fλ, reflection, refraction, diffraction, interference (λ = ax/D), EM waves.",
+    "F4_B6": "Form 4 Bab 6 Cahaya & Optik: Exp 6.1 Snell's Law (n = sin i / sin r ≈ 1.50), Exp 6.2 Apparent Depth (n = H/h ≈ 1.33), critical angle (n = 1/sin c), Exp 6.3 Convex Lens (1/f = 1/u + 1/v).",
+    "F5_B1": "Form 5 Bab 1 Daya & Gerakan II: Resolution/equilibrium of forces, Exp 1.1 Hooke's Law (F = kx, extension x = l - l₀, E_p = ½Fx = ½kx²).",
+    "F5_B2": "Form 5 Bab 2 Tekanan: Exp 2.1 Liquid Pressure vs Depth (P = hρg, U-tube D ∝ h), Exp 2.2 Liquid Pressure vs Density (Alcohol 790, Water 1000, Glycerine 1300 kg m⁻³, D ∝ ρ), Pascal's Principle, Exp 2.3 Archimedes' Principle (Buoyant force F_B = W_U - W_A = W_S displaced water weight), Bernoulli's Principle.",
+    "F5_B3": "Form 5 Bab 3 Elektrik & Keelektromagnetan: Exp 3.1 Ohm's Law (Part A constantan wire V=IR straight line; Part B filament bulb V vs I curves up as temperature & R increase), E = V + Ir, Electromagnetism F = BIL, Faraday/Lenz Law, transformer.",
+    "F5_B4": "Form 5 Bab 4-7 Elektronik, Nuklear & Kuantum: Diode rectification, transistor, radioactive half-life, E = mc², Einstein photoelectric hf = W + ½mv²_max."
+}
 
 def clean_ai_text(text):
-    """Strips raw LaTeX delimiters, Markdown heading hashes, and horizontal rules so students see clean text."""
     if not text:
         return ""
     s = str(text)
@@ -120,10 +96,12 @@ def clean_ai_text(text):
     for k, v in latex_map.items():
         s = s.replace(k, v)
     s = re.sub(r'\$([^$\n]+)\$', r'\1', s)
+    if s.count('**') % 2 == 1:
+        s = s + '**'
     s = re.sub(r'\n{3,}', '\n\n', s)
     return s.strip()
 
-# Built-in KSSM Chapter-Specific Question Bank (For Daily Challenge instant fallback)
+# Built-in Zero-Token KSSM Daily Question Bank (Costs 0 API Tokens!)
 SYLLABUS_QUESTION_BANK = {
     "F4_B1": {
         "chapterTitle": "Form 4 • Bab 1: Pengukuran (Measurement)",
@@ -150,6 +128,12 @@ SYLLABUS_QUESTION_BANK = {
                 "options": ["4.92 m s⁻²", "9.83 m s⁻²", "14.75 m s⁻²", "19.67 m s⁻²"],
                 "correct": 1,
                 "explanation": "Using g = 2(0.59) / (0.40² - 0.20²) = 1.18 / (0.16 - 0.04) = 1.18 / 0.12 = 9.83 m s⁻²."
+            },
+            {
+                "q": "In Experiment 2.2 (Mass & Inertia), why is the hacksaw blade displaced horizontally instead of vertically?",
+                "options": ["To increase air resistance", "To eliminate the effect of gravitational pull on the oscillation", "To reduce the mass of the plasticine", "To shorten the blade length"],
+                "correct": 1,
+                "explanation": "Horizontal oscillation ensures that gravity acts perpendicular to the motion and does not affect the restoring force of the hacksaw blade."
             }
         ]
     },
@@ -201,32 +185,32 @@ SYLLABUS_QUESTION_BANK = {
         "chapterTitle": "Form 5 • Bab 1: Daya dan Gerakan II (Force & Motion II)",
         "questions": [
             {
-                "q": "According to Hooke's Law (F = kx), a spring extends by 4.0 cm when a force of 8.0 N is applied. What is the elastic potential energy (E_p = ½Fx) stored in the spring?",
-                "options": ["0.16 J", "0.32 J", "16.0 J", "32.0 J"],
+                "q": "In Form 5 Experiment 1.1 (Hooke's Law), a spring of original length l₀ = 10.0 cm stretches to l = 14.0 cm when a force of 0.8 N is applied. What is the extension x of the spring?",
+                "options": ["4.0 cm", "10.0 cm", "14.0 cm", "24.0 cm"],
                 "correct": 0,
-                "explanation": "Convert x = 4.0 cm = 0.04 m. Elastic potential energy E_p = ½ F x = 0.5 × 8.0 N × 0.04 m = 0.16 J."
+                "explanation": "Extension x = l - l₀ = 14.0 cm - 10.0 cm = 4.0 cm."
             }
         ]
     },
     "F5_B2": {
-        "chapterTitle": "Form 5 • Bab 2: Elektrik (Electricity)",
+        "chapterTitle": "Form 5 • Bab 2: Tekanan (Pressure & Archimedes)",
         "questions": [
             {
-                "q": "In Form 5 Experiment 2.2 (Ohm's Law & Resistivity), how does the resistance R of a constantan wire change if its length l is doubled while cross-sectional area A stays constant?",
-                "options": ["Halves", "Remains the same", "Doubles", "Quadruples"],
-                "correct": 2,
-                "explanation": "From R = ρl / A, resistance R is directly proportional to length l. Doubling l doubles the resistance R."
+                "q": "In Form 5 Experiment 2.3 (Archimedes' Principle), a slotted weight weighs W_U = 3.00 N in air and W_A = 2.40 N when fully submerged in water inside a Eureka can. What is the buoyant force F_B and the weight of water displaced W_S?",
+                "options": ["0.60 N", "2.40 N", "3.00 N", "5.40 N"],
+                "correct": 0,
+                "explanation": "Buoyant force F_B = W_U - W_A = 3.00 N - 2.40 N = 0.60 N, which equals the weight of water displaced W_S = 0.60 N."
             }
         ]
     },
     "F5_B3": {
-        "chapterTitle": "Form 5 • Bab 3: Keelektromagnetan (Electromagnetism)",
+        "chapterTitle": "Form 5 • Bab 3: Elektrik & Keelektromagnetan",
         "questions": [
             {
-                "q": "A straight conductor of length L = 0.20 m carries a current I = 3.0 A perpendicular to a uniform magnetic field B = 0.50 T. What is the magnetic force F = BIL on the wire?",
-                "options": ["0.15 N", "0.30 N", "0.75 N", "3.00 N"],
+                "q": "In Form 5 Experiment 3.1B (Non-Ohmic Conductor), why does the graph of V against I for a filament bulb curve upwards with an increasing gradient?",
+                "options": ["Because the bulb length increases", "Because as current increases, filament temperature rises and resistance increases", "Because electromotive force increases", "Because resistance decreases with temperature"],
                 "correct": 1,
-                "explanation": "Using F = B I L = 0.50 T × 3.0 A × 0.20 m = 0.30 N."
+                "explanation": "For a filament bulb, higher current I heats up the tungsten filament, increasing its resistance R (gradient of V vs I)."
             }
         ]
     },
@@ -250,9 +234,7 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return response
 
-def call_ilmu_llm(messages, temperature=0.4, max_tokens=4096):
-    """Calls YTL AI Labs ILMU API with 60s timeout for detailed multilingual explanations.
-    Returns (content, error_message)."""
+def call_ilmu_llm(messages, temperature=0.4, max_tokens=2048):
     api_key = get_ilmu_api_key()
     if not api_key:
         return None, "MISSING_API_KEY"
@@ -284,54 +266,20 @@ def call_ilmu_llm(messages, temperature=0.4, max_tokens=4096):
             err_body = he.read().decode("utf-8")
         except Exception:
             pass
-        print(f"[ILMU API HTTP Error {he.code}]: {err_body}")
         return None, f"HTTP {he.code}: {err_body[:180]}"
     except Exception as e:
-        print(f"[ILMU API Connection Error]: {e}")
         return None, str(e)
 
 @app.route('/api/ilmu/daily-question', methods=['POST', 'OPTIONS'])
 def api_daily_question():
+    """Serves the Daily KSSM Physics Challenge from the built-in syllabus bank at ZERO (0) token cost!"""
     if request.method == 'OPTIONS':
         return jsonify({"status": "ok"})
 
     data = request.get_json(silent=True) or {}
     syllabus_code = data.get("syllabus", "F4_B2")
-    recent_activities = data.get("recentActivities", [])
-
     chapter_entry = SYLLABUS_QUESTION_BANK.get(syllabus_code, SYLLABUS_QUESTION_BANK["F4_B2"])
     chapter_title = chapter_entry["chapterTitle"]
-    recent_summary = ", ".join([a.get("title", "") for a in recent_activities[:3]]) if recent_activities else "None yet"
-
-    prompt = f"""Generate ONE multiple-choice KSSM Physics question strictly for a Malaysian secondary school student currently at "{chapter_title}".
-Recent simulations the student did in Velocity Valley: {recent_summary}.
-Do NOT use LaTeX delimiters like \\[ \\] or \\( \\). Use plain Unicode math (e.g., m s⁻², T², π, √).
-Return ONLY valid JSON in this exact format (no markdown fences):
-{{
-  "q": "Question text in clear English/BM",
-  "options": ["Option A", "Option B", "Option C", "Option D"],
-  "correct": 0,
-  "explanation": "Step-by-step formula & concept explanation"
-}}"""
-
-    ai_raw, _ = call_ilmu_llm([
-        {"role": "system", "content": VELOCITY_VALLEY_SYSTEM_PROMPT},
-        {"role": "user", "content": prompt}
-    ], temperature=0.5, max_tokens=4096)
-
-    if ai_raw:
-        try:
-            cleaned = ai_raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-            parsed = json.loads(cleaned)
-            if "q" in parsed and "options" in parsed and len(parsed["options"]) == 4:
-                parsed["q"] = clean_ai_text(parsed["q"])
-                parsed["options"] = [clean_ai_text(opt) for opt in parsed["options"]]
-                parsed["explanation"] = clean_ai_text(parsed.get("explanation", ""))
-                parsed["chapterTitle"] = chapter_title
-                parsed["source"] = "ILMU AI"
-                return jsonify(parsed)
-        except Exception as e:
-            print("JSON parse fallback:", e)
 
     questions_list = chapter_entry["questions"]
     day_seed = datetime.now().day + len(syllabus_code)
@@ -342,11 +290,12 @@ Return ONLY valid JSON in this exact format (no markdown fences):
         "correct": chosen["correct"],
         "explanation": chosen["explanation"],
         "chapterTitle": chapter_title,
-        "source": "KSSM Syllabus Engine"
+        "source": "KSSM Syllabus Engine (0 Tokens)"
     })
 
 @app.route('/api/ilmu/ask-tutor', methods=['POST', 'OPTIONS'])
 def api_ask_tutor():
+    """Token-optimized AI Tutor endpoint: sends only the active chapter note (~120 input tokens instead of 1,737)."""
     if request.method == 'OPTIONS':
         return jsonify({"status": "ok"})
 
@@ -356,76 +305,55 @@ def api_ask_tutor():
     recent_activities = data.get("recentActivities", [])
     chat_history = data.get("chatHistory", [])
 
-    chapter_entry = SYLLABUS_QUESTION_BANK.get(syllabus_code, SYLLABUS_QUESTION_BANK["F4_B2"])
-    chapter_title = chapter_entry["chapterTitle"]
-    recent_titles = [a.get("title", "") for a in recent_activities[:5] if a.get("title")]
-    recent_str = " -> ".join(recent_titles) if recent_titles else "No simulation visited yet"
-
     if not user_question:
         return jsonify({"answer": "Please type a physics question so Prof. Vector can help you!"})
 
-    # Build multi-turn messages array so ILMU AI remembers conversation context
+    chapter_note = CHAPTER_COMPACT_NOTES.get(syllabus_code, CHAPTER_COMPACT_NOTES["F4_B2"])
+    latest_lab = recent_activities[0].get("title", "None") if (isinstance(recent_activities, list) and len(recent_activities) > 0) else "None"
+
     messages = [
         {
             "role": "system",
-            "content": (
-                VELOCITY_VALLEY_SYSTEM_PROMPT
-                + f"\n\nCURRENT STUDENT CONTEXT:\n"
-                + f"- Current KSSM Chapter: {chapter_title} (Code: {syllabus_code})\n"
-                + f"- Recent Velocity Valley Labs Visited: {recent_str}\n"
-            )
+            "content": f"{CORE_SYSTEM_PREFIX}\nStudent Chapter: {chapter_note}\nLatest Lab: {latest_lab}"
         }
     ]
 
-    # Include up to last 6 turns of prior conversation for natural follow-up memory
+    # Include at most the last 2 short messages (capped at 160 chars) so old essays don't waste input tokens
     if isinstance(chat_history, list):
-        for msg in chat_history[-6:]:
+        for msg in chat_history[-2:]:
             role = msg.get("role")
             text = (msg.get("text") or "").strip()
             if not text or text == user_question:
                 continue
+            short_text = text[:160] + ("..." if len(text) > 160 else "")
             if role == "user":
-                messages.append({"role": "user", "content": text})
+                messages.append({"role": "user", "content": short_text})
             elif role == "ai":
-                messages.append({"role": "assistant", "content": text})
+                messages.append({"role": "assistant", "content": short_text})
 
-    messages.append({
-        "role": "user",
-        "content": (
-            f"{user_question}\n\n"
-            f"(Reminder: Directly answer every part of the student's question above. "
-            f"Do NOT use #, ##, ### headers, --- lines, or \\[ \\] / \\( \\) LaTeX brackets. "
-            f"Use clean plain Unicode formulas like F = G m₁ m₂ / r² and **bold** for key terms.)"
-        )
-    })
+    messages.append({"role": "user", "content": user_question})
 
-    ai_reply, err = call_ilmu_llm(messages, temperature=0.4, max_tokens=4096)
+    ai_reply, err = call_ilmu_llm(messages, temperature=0.4, max_tokens=2048)
 
     if ai_reply:
         return jsonify({"answer": clean_ai_text(ai_reply), "source": "ILMU AI"})
 
-    # No fake pre-written answers! Show exact diagnostic reason if API key is missing or call failed
     if err == "MISSING_API_KEY":
         return jsonify({
             "answer": (
                 "⚠️ **尚未检测到你的 ILMU API Key！**\n\n"
-                "因为你刚刚覆盖了新的 `app.py`，请打开 `app.py` 在第 17 行填入你的 `sk-...` 密钥：\n"
-                "**ILMU_API_KEY = \"sk-你的密钥\"**\n\n"
-                "（或者在项目文件夹里新建一个 `ilmu_key.txt` 把密钥粘进去保存，以后换 `app.py` 也不会再被覆盖！）填好后重启 `python app.py` 即可。"
+                "请确认你的项目文件夹里有 `ilmu_key.txt`（或在 Vercel Environment Variables 已添加 `ILMU_API_KEY`）。"
             ),
             "source": "System Diagnostic"
         })
 
     return jsonify({
-        "answer": (
-            f"⚠️ **连接 ILMU AI 时遇到网络或接口超时：**\n{err}\n\n"
-            f"请再点一次发送重试，或检查你的 `ILMU_API_KEY` 状态。"
-        ),
+        "answer": f"⚠️ **连接 ILMU AI 时遇到网络或接口超时：**\n{err}\n\n请再点一次发送重试。",
         "source": "System Diagnostic"
     })
 
 # ==============================================================================
-# STANDARD PAGE ROUTES (Supports both Flask routes and .html filenames)
+# STANDARD PAGE ROUTES (FORM 4 & FORM 5 EXPERIMENTS)
 # ==============================================================================
 @app.route('/')
 def home():
@@ -482,6 +410,26 @@ def form4experiment10():
 @app.route('/form4experiment11')
 def form4experiment11():
     return render_template('form4eksperimen11.html')
+
+@app.route('/form5experiment1')
+def form5experiment1():
+    return render_template('form5eksperimen1.html')
+
+@app.route('/form5experiment2')
+def form5experiment2():
+    return render_template('form5eksperimen2.html')
+
+@app.route('/form5experiment3')
+def form5experiment3():
+    return render_template('form5eksperimen3.html')
+
+@app.route('/form5experiment4')
+def form5experiment4():
+    return render_template('form5eksperimen4.html')
+
+@app.route('/form5experiment5')
+def form5experiment5():
+    return render_template('form5eksperimen5.html')
 
 @app.route('/dashboard')
 def dashboard():

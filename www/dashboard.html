@@ -516,8 +516,8 @@
                             <option value="F4_B5">Form 4 • Bab 5: Gelombang</option>
                             <option value="F4_B6">Form 4 • Bab 6: Cahaya & Optik</option>
                             <option value="F5_B1">Form 5 • Bab 1: Daya & Gerakan II</option>
-                            <option value="F5_B2">Form 5 • Bab 2: Elektrik</option>
-                            <option value="F5_B3">Form 5 • Bab 3: Keelektromagnetan</option>
+                            <option value="F5_B2">Form 5 • Bab 2: Tekanan & Archimedes</option>
+                            <option value="F5_B3">Form 5 • Bab 3: Elektrik & Keelektromagnetan</option>
                             <option value="F5_B4">Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum</option>
                         </select>
                     </div>
@@ -641,6 +641,11 @@
             exp6_1: { title: "Experiment 6.1: Snell's Law (Glass Block)", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen9.html", fileUrl: "form4eksperimen9.html" },
             exp6_2: { title: "Experiment 6.2: Real & Apparent Depth (Water)", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen10.html", fileUrl: "form4eksperimen10.html" },
             exp6_3: { title: "Experiment 6.3: Convex Lens Formula", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen11.html", fileUrl: "form4eksperimen11.html" },
+            f5_exp1_1: { title: "Form 5 Exp 1.1: Hooke's Law (F = kx)", category: "Form 5 • Chapter 1", webUrl: "form5eksperimen1.html", fileUrl: "form5eksperimen1.html" },
+            f5_exp2_1: { title: "Form 5 Exp 2.1: Liquid Pressure & Depth", category: "Form 5 • Chapter 2", webUrl: "form5eksperimen2.html", fileUrl: "form5eksperimen2.html" },
+            f5_exp2_2: { title: "Form 5 Exp 2.2: Liquid Pressure & Density", category: "Form 5 • Chapter 2", webUrl: "form5eksperimen3.html", fileUrl: "form5eksperimen3.html" },
+            f5_exp2_3: { title: "Form 5 Exp 2.3: Archimedes' Principle", category: "Form 5 • Chapter 2", webUrl: "form5eksperimen4.html", fileUrl: "form5eksperimen4.html" },
+            f5_exp3_1: { title: "Form 5 Exp 3.1: Ohmic & Non-Ohmic Conductors", category: "Form 5 • Chapter 3", webUrl: "form5eksperimen5.html", fileUrl: "form5eksperimen5.html" },
             boardgame: { title: "Physics Monopoly: Ultimate Edition", category: "Educational Game", webUrl: "boardgame.html", fileUrl: "boardgame.html" },
             journey: { title: "Journey to the West: Physics Quiz RPG", category: "Educational Game", webUrl: "journey.html", fileUrl: "journey.html" }
         };
@@ -665,7 +670,7 @@
             stations = stations.slice(0, 5);
 
             if (stations.length === 0) {
-                const starterKeys = ['pendulum', 'exp2_1', 'exp4_4', 'exp6_1', 'newton'];
+                const starterKeys = ['pendulum', 'exp2_1', 'f5_exp1_1', 'f5_exp2_3', 'f5_exp3_1'];
                 starterKeys.forEach((key, idx) => {
                     const item = simulationCatalog[key];
                     const href = resolveLink(item.webUrl, item.fileUrl);
@@ -720,12 +725,12 @@
             document.getElementById('badge-login-total').innerText = totalLogins;
 
             let simRank = "🔬 Lab Novice Badge";
-            if (simsCount >= 12) simRank = "🏆 Grand Physics Master Badge";
-            else if (simsCount >= 6) simRank = "⚡ Senior KSSM Researcher Badge";
+            if (simsCount >= 15) simRank = "🏆 Grand Physics Master Badge";
+            else if (simsCount >= 8) simRank = "⚡ Senior KSSM Researcher Badge";
             else if (simsCount >= 1) simRank = "🔬 Active Lab Explorer Badge";
             document.getElementById('sim-badge-rank').innerText = simRank;
-            document.getElementById('sim-badge-sub').innerText = `${simsCount} Simulations Explored • Keep experimenting to master all 12 labs!`;
-            document.getElementById('sim-progress-fill').style.width = Math.min(100, Math.round((simsCount / 12) * 100)) + '%';
+            document.getElementById('sim-badge-sub').innerText = `${simsCount} Simulations Explored • Keep experimenting across Form 4 & Form 5 labs!`;
+            document.getElementById('sim-progress-fill').style.width = Math.min(100, Math.round((simsCount / 17) * 100)) + '%';
 
             let streakRank = "🔥 Momentum Starter Badge";
             if (streakCount >= 100) streakRank = "👑 100-Day Physics Legend Badge";

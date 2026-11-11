@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimen 2.3 (Tingkatan 5): Prinsip Archimedes | Velocity Valley</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .top-bar-wrapper {
+            width: 100%;
+            max-width: 1280px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .btn-back-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
+        }
+        .lang-switch-btn {
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.88rem;
+        }
+        h1 { text-align: center; color: #0f172a; margin: 0 0 6px 0; font-size: 1.75rem; }
+        .subtitle { text-align: center; color: #475569; margin: 0 0 16px 0; font-size: 0.98rem; }
+        .principle-banner {
+            width: 100%;
+            max-width: 1280px;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border-left: 5px solid #0284c7;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            color: #0f172a;
+            font-size: 0.93rem;
+            line-height: 1.55;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1280px;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        canvas {
+            border: 1.5px solid #cbd5e1;
+            background-color: #ffffff;
+            display: block;
+            margin: 0 auto 14px auto;
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .control-group {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 14px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .choice-btn {
+            flex: 1;
+            min-width: 72px;
+            padding: 9px 10px;
+            background: #e2e8f0;
+            color: #1e293b;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.86rem;
+            transition: all 0.2s;
+        }
+        .choice-btn.active-c {
+            background: #0284c7;
+            color: white;
+            border-color: #38bdf8;
+            box-shadow: 0 3px 8px rgba(2,132,199,0.3);
+        }
+        .state-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 0.9rem;
+        }
+        .state-btn.active-state {
+            background: #7c3aed;
+            color: white;
+            border-color: #a78bfa;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            width: 100%;
+        }
+        .btn-excel {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+        }
+        .reminder {
+            font-weight: bold;
+            text-align: center;
+            padding: 9px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+        .reminder.warning { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .reminder.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .table-scroll { width: 100%; overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.88rem;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 9px 6px;
+            text-align: center;
+        }
+        th { background: #0f4c81; color: white; }
+        .discussion-box {
+            margin-top: 16px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+            body { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar-wrapper">
+        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:' || window.Capacitor || (window.location.hostname==='localhost' && !window.location.port)){this.href='index.html';}">← Back to Main Menu</a>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-weight: bold; color: #1e3a8a;">🚀 KSSM Tingkatan 5 • Eksperimen 2.3</span>
+            <button class="lang-switch-btn" onclick="toggleLang()">🌐 English / BM</button>
+        </div>
+    </div>
+
+    <h1 id="mainTitle">Eksperimen 2.3: Prinsip Archimedes (Daya Apungan)</h1>
+    <p class="subtitle" id="subTitle">Menentukan hubungan antara daya apungan, F_B dengan berat cecair yang disesarkan, W_S (Rajah 2.29)</p>
+
+    <div class="principle-banner">
+        <strong>📘 Inferens & Hipotesis (Prinsip Archimedes):</strong> Daya apungan bergantung pada berat cecair yang disesarkan. Apabila pemberat ditenggelamkan sepenuhnya ke dalam Tin Eureka berisi air, daya apungan <strong>F_B = W_U - W_A</strong> adalah sama dengan berat air yang disesarkan ke dalam bikar di atas neraca elektronik, <strong>W_S</strong> (kecerunan graf <em>W_S</em> melawan <em>F_B</em> = 1.0).
+    </div>
+
+    <div class="container">
+        <!-- LEFT PANEL -->
+        <div class="panel">
+            <canvas id="simCanvas" width="530" height="410"></canvas>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label><strong>1. Pilih Jisim Pemberat Berslot (1 kg = 10 N):</strong></label>
+                    <div class="btn-row">
+                        <button class="choice-btn" onclick="selectMass(100)" id="mbtn-100">100 g</button>
+                        <button class="choice-btn" onclick="selectMass(200)" id="mbtn-200">200 g</button>
+                        <button class="choice-btn" onclick="selectMass(300)" id="mbtn-300">300 g</button>
+                        <button class="choice-btn" onclick="selectMass(400)" id="mbtn-400">400 g</button>
+                        <button class="choice-btn" onclick="selectMass(500)" id="mbtn-500">500 g</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label><strong>2. Langkah Eksperimen (Rajah 2.29a → Rajah 2.29b):</strong></label>
+                    <div class="btn-row">
+                        <button class="state-btn active-state" id="st-air" onclick="setSubmerged(false)">☁️ (a) Timbang di Udara (W_U)</button>
+                        <button class="state-btn" id="st-water" onclick="setSubmerged(true)">🌊 (b) Tenggelamkan dalam Tin Eureka (W_A & W_S)</button>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="rekodData()">➕ Rekod Bacaan W_U, W_A, W_S & F_B ke Jadual 2.6</button>
+                <div id="reminderText" class="reminder warning">⚠️ Sila tenggelamkan pemberat (b) dan klik Rekod ke Jadual 2.6!</div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="panel">
+            <h3 style="margin-top:0;">Jadual 2.6: Keputusan Eksperimen 2.3</h3>
+            <div class="table-scroll">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Jisim, <i>m</i> / g</th>
+                            <th>Berat di udara, <i>W<sub>U</sub></i> / N</th>
+                            <th>Berat di dalam air, <i>W<sub>A</sub></i> / N</th>
+                            <th>Berat air disesarkan, <i>W<sub>S</sub></i> / N</th>
+                            <th>Daya apungan, <i>F<sub>B</sub></i> / N<br><small>(W<sub>U</sub> - W<sub>A</sub>)</small></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h4 style="margin: 18px 0 8px 0; color:#0f172a;">📈 Graf Berat Air yang Disesarkan, W_S (N) melawan Daya Apungan, F_B (N)</h4>
+            <canvas id="graphCanvas" width="520" height="220"></canvas>
+
+            <button class="btn-excel" onclick="muatTurunExcel()">⬇ Muat Turun Jadual 2.6 (Excel / CSV)</button>
+
+            <div class="discussion-box">
+                <strong>🔍 Perbincangan KSSM:</strong><br>
+                1. <strong>Apakah nilai kecerunan graf W_S melawan F_B?</strong> Kecerunan graf ialah <strong>1.0</strong>.<br>
+                2. <strong>Kesimpulan:</strong> Daya apungan yang bertindak ke atas objek yang tenggelam adalah sama dengan berat cecair yang disesarkan oleh objek itu (<em>F_B = W_S</em>).
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const gctx = graphCanvas.getContext('2d');
+
+        let currentMass = 100; // g
+        let isSubmerged = false;
+        let recorded = new Map();
+        let isEng = false;
+
+        function getValuesForMass(m) {
+            const WU = +(m * 0.01).toFixed(2); // 100g -> 1.00 N
+            const FB = +(WU * 0.20).toFixed(2); // 0.20 N per 100g displaced
+            const WA = +(WU - FB).toFixed(2);
+            const WS = FB;
+            const displacedGrams = Math.round(WS * 100); // since 1 kg = 10 N -> 100 g = 1.0 N
+            return { m, WU, WA, WS, FB, displacedGrams };
+        }
+
+        function selectMass(m) {
+            currentMass = m;
+            [100, 200, 300, 400, 500].forEach(v => {
+                document.getElementById('mbtn-' + v).classList.toggle('active-c', v === m);
+            });
+            updateReminderUI();
+            drawApparatus();
+        }
+
+        function setSubmerged(sub) {
+            isSubmerged = sub;
+            document.getElementById('st-air').classList.toggle('active-state', !sub);
+            document.getElementById('st-water').classList.toggle('active-state', sub);
+            drawApparatus();
+        }
+
+        function updateReminderUI() {
+            const rem = document.getElementById('reminderText');
+            const v = getValuesForMass(currentMass);
+            if (recorded.has(currentMass)) {
+                rem.className = 'reminder success';
+                rem.innerText = `✓ Data m = ${currentMass} g (W_U = ${v.WU.toFixed(2)} N, W_A = ${v.WA.toFixed(2)} N, W_S = ${v.WS.toFixed(2)} N, F_B = ${v.FB.toFixed(2)} N) telah direkodkan!`;
+            } else {
+                rem.className = 'reminder warning';
+                rem.innerText = `⚠️ Jisim m = ${currentMass} g dipilih. Sila perhatikan bacaan (a) & (b) dan klik Rekod ke Jadual 2.6!`;
+            }
+        }
+
+        function drawApparatus() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const v = getValuesForMass(currentMass);
+            const floorY = 375;
+
+            // 1. Retort Stand (Kaki Retort)
+            ctx.fillStyle = "#94a3b8";
+            ctx.fillRect(35, floorY - 12, 130, 12);
+            ctx.fillRect(70, 25, 10, floorY - 37);
+
+            const armY = isSubmerged ? 95 : 42;
+            ctx.fillRect(65, armY, 155, 7);
+
+            // 2. Spring Balance (Neraca Spring)
+            const sbX = 200;
+            const sbTopY = armY + 7;
+            const sbH = 92;
+            ctx.fillStyle = "#f8fafc";
+            ctx.strokeStyle = "#be185d";
+            ctx.lineWidth = 2.5;
+            ctx.fillRect(sbX - 16, sbTopY, 32, sbH);
+            ctx.strokeRect(sbX - 16, sbTopY, 32, sbH);
+
+            // Spring balance scale & indicator
+            const springReading = isSubmerged ? v.WA : v.WU;
+            const pointerOffset = (springReading / 5.0) * 60;
+            ctx.fillStyle = "#dc2626";
+            ctx.fillRect(sbX - 12, sbTopY + 14 + pointerOffset, 24, 4);
+
+            // Callout box for Neraca Spring Reading
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 12px Segoe UI";
+            ctx.fillText(
+                isSubmerged ? `Neraca Spring (W_A): ${v.WA.toFixed(2)} N` : `Neraca Spring (W_U): ${v.WU.toFixed(2)} N`,
+                sbX + 24,
+                sbTopY + 35
+            );
+
+            // 3. Wooden Block (Bongkah Kayu) & Eureka Can (Tin Eureka)
+            const blockX = 148, blockY = 295, blockW = 104, blockH = 80;
+            ctx.fillStyle = "#fde68a";
+            ctx.strokeStyle = "#b45309";
+            ctx.lineWidth = 2;
+            ctx.fillRect(blockX, blockY, blockW, blockH);
+            ctx.strokeRect(blockX, blockY, blockW, blockH);
+            ctx.fillStyle = "#78350f";
+            ctx.font = "11px Segoe UI";
+            ctx.fillText("Bongkah kayu", blockX + 16, blockY + 45);
+
+            const canX = 156, canY = 205, canW = 88, canH = 90;
+            const waterLevelY = 232;
+            // Water in Eureka Can
+            ctx.fillStyle = "rgba(56, 189, 248, 0.38)";
+            ctx.fillRect(canX, waterLevelY, canW, canY + canH - waterLevelY);
+
+            // Eureka Can walls + Overflow Spout
+            ctx.strokeStyle = "#334155";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(canX, canY);
+            ctx.lineTo(canX, canY + canH);
+            ctx.lineTo(canX + canW, canY + canH);
+            ctx.lineTo(canX + canW, waterLevelY + 8);
+            ctx.lineTo(canX + canW + 26, waterLevelY + 22);
+            ctx.moveTo(canX + canW, waterLevelY - 2);
+            ctx.lineTo(canX + canW + 28, waterLevelY + 12);
+            ctx.moveTo(canX + canW, canY);
+            ctx.lineTo(canX + canW, waterLevelY - 2);
+            ctx.stroke();
+
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 11px Segoe UI";
+            ctx.fillText("Tin Eureka", canX - 68, canY + 45);
+
+            // 4. Hanging Slotted Weight (Pemberat Berslot)
+            const weightY = isSubmerged ? 252 : 165;
+            ctx.strokeStyle = "#475569";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(sbX, sbTopY + sbH);
+            ctx.lineTo(sbX, weightY);
+            ctx.stroke();
+
+            const wHeight = 16 + (currentMass / 100) * 4;
+            ctx.fillStyle = "#d97706";
+            ctx.strokeStyle = "#78350f";
+            ctx.fillRect(sbX - 16, weightY, 32, wHeight);
+            ctx.strokeRect(sbX - 16, weightY, 32, wHeight);
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 10px Segoe UI";
+            ctx.fillText(`${currentMass}g`, sbX - 12, weightY + wHeight / 2 + 4);
+
+            // 5. Electronic Balance (Neraca Elektronik) & Beaker on Right
+            const balX = 325, balY = 335, balW = 135, balH = 40;
+            ctx.fillStyle = "#0284c7";
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 2;
+            ctx.fillRect(balX, balY, balW, balH);
+            ctx.strokeRect(balX, balY, balW, balH);
+            // Top pan
+            ctx.fillStyle = "#cbd5e1";
+            ctx.fillRect(balX + 18, balY - 6, balW - 36, 6);
+
+            // Digital LCD screen on Electronic Balance
+            ctx.fillStyle = "#dcfce7";
+            ctx.fillRect(balX + 24, balY + 10, balW - 48, 22);
+            ctx.fillStyle = "#065f46";
+            ctx.font = "bold 12px Courier New";
+            const dispText = isSubmerged ? `${v.displacedGrams} g (${v.WS.toFixed(2)} N)` : `0 g (0.00 N)`;
+            ctx.fillText(dispText, balX + 28, balY + 25);
+
+            // Beaker catching displaced water
+            const bkX = 352, bkY = 245, bkW = 80, bkH = 84;
+            if (isSubmerged) {
+                const dispH = (currentMass / 500) * 48;
+                ctx.fillStyle = "rgba(56, 189, 248, 0.45)";
+                ctx.fillRect(bkX, bkY + bkH - dispH, bkW, dispH);
+
+                // Water stream from spout into beaker
+                ctx.strokeStyle = "#38bdf8";
+                ctx.lineWidth = 3;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(canX + canW + 26, waterLevelY + 18);
+                ctx.lineTo(bkX + 20, bkY + bkH - dispH);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            ctx.strokeStyle = "#334155";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(bkX, bkY);
+            ctx.lineTo(bkX, bkY + bkH);
+            ctx.lineTo(bkX + bkW, bkY + bkH);
+            ctx.lineTo(bkX + bkW, bkY);
+            ctx.stroke();
+
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 11px Segoe UI";
+            ctx.fillText(isSubmerged ? "Air yang disesarkan (W_S)" : "Bikar (Sifar / Tare)", bkX - 15, bkY - 8);
+            ctx.fillText("Neraca elektronik", balX + 20, floorY + 18);
+        }
+
+        function rekodData() {
+            const v = getValuesForMass(currentMass);
+            recorded.set(currentMass, v);
+            renderTableAndGraph();
+            updateReminderUI();
+        }
+
+        function renderTableAndGraph() {
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = '';
+            const sorted = Array.from(recorded.values()).sort((a, b) => a.m - b.m);
+            sorted.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${r.m}</td>
+                    <td>${r.WU.toFixed(2)}</td>
+                    <td>${r.WA.toFixed(2)}</td>
+                    <td><strong style="color:#0284c7;">${r.WS.toFixed(2)}</strong></td>
+                    <td><strong style="color:#16a34a;">${r.FB.toFixed(2)}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            drawGraph(sorted);
+        }
+
+        function drawGraph(points) {
+            gctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+            const padL = 55, padB = 36, padT = 18, padR = 25;
+            const w = graphCanvas.width - padL - padR;
+            const h = graphCanvas.height - padT - padB;
+
+            gctx.strokeStyle = "#e2e8f0";
+            gctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const gx = padL + (i / 5) * w;
+                const gy = padT + (i / 5) * h;
+                gctx.beginPath(); gctx.moveTo(gx, padT); gctx.lineTo(gx, padT + h); gctx.stroke();
+                gctx.beginPath(); gctx.moveTo(padL, gy); gctx.lineTo(padL + w, gy); gctx.stroke();
+
+                gctx.fillStyle = "#475569";
+                gctx.font = "11px Segoe UI";
+                gctx.fillText((i * 0.2).toFixed(1), gx - 8, padT + h + 15);
+                gctx.fillText(((5 - i) * 0.2).toFixed(1), padL - 28, gy + 4);
+            }
+
+            gctx.strokeStyle = "#0f172a";
+            gctx.lineWidth = 2;
+            gctx.beginPath();
+            gctx.moveTo(padL, padT);
+            gctx.lineTo(padL, padT + h);
+            gctx.lineTo(padL + w, padT + h);
+            gctx.stroke();
+
+            gctx.fillStyle = "#0f172a";
+            gctx.font = "bold 12px Segoe UI";
+            gctx.fillText("Daya apungan, F_B / N", padL + w / 2 - 55, graphCanvas.height - 5);
+            gctx.save();
+            gctx.translate(15, padT + h / 2 + 25);
+            gctx.rotate(-Math.PI / 2);
+            gctx.fillText("W_S / N", 0, 0);
+            gctx.restore();
+
+            if (points.length === 0) return;
+
+            gctx.strokeStyle = "#16a34a";
+            gctx.lineWidth = 2.5;
+            gctx.beginPath();
+            gctx.moveTo(padL, padT + h);
+            points.forEach(p => {
+                const px = padL + (p.FB / 1.0) * w;
+                const py = padT + h - (p.WS / 1.0) * h;
+                gctx.lineTo(px, py);
+            });
+            gctx.stroke();
+
+            points.forEach(p => {
+                const px = padL + (p.FB / 1.0) * w;
+                const py = padT + h - (p.WS / 1.0) * h;
+                gctx.fillStyle = "#dc2626";
+                gctx.beginPath();
+                gctx.arc(px, py, 4.5, 0, Math.PI * 2);
+                gctx.fill();
+            });
+        }
+
+        function muatTurunExcel() {
+            if (recorded.size === 0) {
+                alert("Sila rekodkan sekurang-kurangnya satu data terlebih dahulu!");
+                return;
+            }
+            let csv = "Jisim m (g),Berat di udara WU (N),Berat di dalam air WA (N),Berat air yang disesarkan WS (N),Daya apungan FB (N)\n";
+            Array.from(recorded.values()).sort((a, b) => a.m - b.m).forEach(r => {
+                csv += `${r.m},${r.WU.toFixed(2)},${r.WA.toFixed(2)},${r.WS.toFixed(2)},${r.FB.toFixed(2)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Eksperimen_2_3_Prinsip_Archimedes.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function toggleLang() {
+            isEng = !isEng;
+            document.getElementById('mainTitle').innerText = isEng
+                ? "Experiment 2.3 (Form 5): Archimedes' Principle (Buoyant Force)"
+                : "Eksperimen 2.3: Prinsip Archimedes (Daya Apungan)";
+            drawApparatus();
+        }
+
+        selectMass(100);
+        drawGraph([]);
+    </script>
+
+    <!-- Firebase Activity Tracking -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+            authDomain: "velocity-valley-edu.firebaseapp.com",
+            projectId: "velocity-valley-edu",
+            storageBucket: "velocity-valley-edu.firebasestorage.app",
+            messagingSenderId: "340043533038",
+            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function recordStationVisit(user) {
+            const stationItem = {
+                id: "f5_exp2_3",
+                title: "Form 5 Exp 2.3: Archimedes' Principle (F_B = W_S)",
+                category: "Form 5 • Chapter 2",
+                webUrl: "/form5experiment4",
+                fileUrl: "form5eksperimen4.html",
+                timestamp: new Date().toLocaleString('en-GB')
+            };
+            try {
+                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
+            } catch (e) {}
+
+            if (!user) return;
+            const pageID = "visited_f5_exp2_3";
+            const isFirst = !sessionStorage.getItem(pageID);
+            sessionStorage.setItem(pageID, "true");
+
+            db.collection("users").doc(user.uid).get().then(doc => {
+                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                let payload = { recentActivities: updated };
+                if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+                db.collection("users").doc(user.uid).set(payload, { merge: true });
+            });
+        }
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            recordStationVisit(user);
+        });
+    </script>
+</body>
+</html>

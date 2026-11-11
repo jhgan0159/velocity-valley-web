@@ -6,7 +6,7 @@
     <title>Velocity Valley | Interactive KSSM Physics Simulations</title>
     <meta name="google-site-verification" content="PTafZAKSBlnBKS0SCm3PQF4kbbotggv1pJdNcm18R08" />
     <meta name="description" content="Velocity Valley is an interactive physics experiment simulation platform and an educational board game specifically for the Form 4 and 5 KSSM Physics syllabus in Malaysia.">
-    <meta name="keywords" content="Fizik KSSM, eksperimen fizik tingkatan 4, simulasi fizik, belajar fizik online, Velocity Valley, amali fizik, KSSM Physics, Form 4 physics experiment, physics simulation, learning physics online, educational physics game, physics practical">
+    <meta name="keywords" content="Fizik KSSM, eksperimen fizik tingkatan 4, eksperimen fizik tingkatan 5, simulasi fizik, belajar fizik online, Velocity Valley, amali fizik, KSSM Physics">
     <meta name="robots" content="index, follow">
     <style>
         *, *::before, *::after { box-sizing: border-box; }
@@ -870,8 +870,8 @@
             display: none;
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.82);
-            z-index: 10000;
+            background-color: rgba(0, 0, 0, 0.84);
+            z-index: 28000;
             justify-content: center;
             align-items: center;
             animation: fadeIn 0.3s ease;
@@ -879,24 +879,24 @@
         .promo-modal {
             background: white;
             color: #333;
-            border-radius: 16px;
+            border-radius: 18px;
             overflow: hidden;
             text-align: center;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            max-width: 480px;
+            width: 92%;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.45);
             position: relative;
         }
         .promo-image {
             width: 100%;
-            max-height: 240px;
+            max-height: 260px;
             object-fit: contain;
             background-color: #f8f9fa;
             border-bottom: 4px solid #f39c12;
         }
-        .promo-content { padding: 24px 28px; }
-        .promo-content h2 { color: #d35400; margin-top: 0; font-size: 1.5rem; }
-        .promo-content p { color: #555; font-size: 1rem; line-height: 1.5; margin-bottom: 20px; }
+        .promo-content { padding: 22px 26px; }
+        .promo-content h2 { color: #0f172a; margin-top: 0; font-size: 1.45rem; }
+        .promo-content p { color: #475569; font-size: 0.96rem; line-height: 1.55; margin-bottom: 18px; }
         .close-btn {
             position: absolute;
             top: 10px;
@@ -1123,7 +1123,7 @@
 
     <!-- FLOATING DR. VECTOR AVATAR WITH COMIC SPEECH BUBBLE -->
     <button class="dr-vector-comic-fab" onclick="openAiTutorModal()" aria-label="Ask Prof. Vector AI Tutor">
-        <div class="comic-speech-bubble">💬 Ask Dr. Vector!</div>
+        <div class="comic-speech-bubble">💬 Ask Dr. Vector! <span style="background:#f59e0b; color:#fff; font-size:0.68rem; padding:1px 6px; border-radius:8px; margin-left:3px;">PRO</span></div>
         <div class="dr-vector-avatar-wrap">
             <img src="/static/images/scientist_guide.jpg" alt="Prof. Vector" onerror="this.src='/static/images/logo.png'">
             <span class="dr-vector-online-dot"></span>
@@ -1131,17 +1131,16 @@
     </button>
 
     <!-- ======================================================== -->
-    <!-- MESSENGER-STYLE AI TUTOR MODAL (z-index: 20000)          -->
+    <!-- MESSENGER-STYLE AI TUTOR MODAL (PRO USERS ONLY)          -->
     <!-- ======================================================== -->
     <div id="aiTutorModal" class="scientist-modal-overlay" style="z-index: 20000;">
         <div class="messenger-modal-card">
-            <!-- Messenger Top Header -->
             <div class="messenger-top-bar">
                 <div class="messenger-top-left">
                     <button class="messenger-back-btn" onclick="document.getElementById('aiTutorModal').style.display='none'" title="Back">‹</button>
                     <img src="/static/images/scientist_guide.jpg" alt="Prof. Vector" class="messenger-header-avatar" onerror="this.src='/static/images/logo.png'">
                     <div class="messenger-header-info">
-                        <span class="messenger-header-name">Prof. Vector</span>
+                        <span class="messenger-header-name">Prof. Vector <span style="background:#7c3aed; color:#fff; font-size:0.65rem; padding:1px 6px; border-radius:8px;">PRO AI</span></span>
                         <span id="messengerSyllabusSub" class="messenger-header-sub">AI Physics Guide • KSSM</span>
                     </div>
                 </div>
@@ -1153,10 +1152,8 @@
                 </div>
             </div>
 
-            <!-- Messenger Chat Stream (Persisted across logins) -->
             <div id="aiChatHistory" class="messenger-chat-feed"></div>
 
-            <!-- Messenger Input Footer -->
             <div class="messenger-input-bar">
                 <input type="text" id="aiQuestionInput" class="messenger-text-input" placeholder="Message Prof. Vector..." onkeydown="if(event.key==='Enter'){sendAiTutorQuestion();}">
                 <button onclick="sendAiTutorQuestion()" id="aiSendBtn" class="messenger-send-btn" title="Send">➤</button>
@@ -1191,8 +1188,8 @@
                     <option value="F4_B5">Form 4 • Bab 5: Gelombang</option>
                     <option value="F4_B6">Form 4 • Bab 6: Cahaya & Optik</option>
                     <option value="F5_B1">Form 5 • Bab 1: Daya & Gerakan II</option>
-                    <option value="F5_B2">Form 5 • Bab 2: Elektrik</option>
-                    <option value="F5_B3">Form 5 • Bab 3: Keelektromagnetan</option>
+                    <option value="F5_B2">Form 5 • Bab 2: Tekanan & Archimedes</option>
+                    <option value="F5_B3">Form 5 • Bab 3: Elektrik & Keelektromagnetan</option>
                     <option value="F5_B4">Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum</option>
                 </select>
                 <button onclick="saveSyllabusChoice()" style="width:100%; padding:13px; background:linear-gradient(135deg, #2ecc71, #27ae60); color:white; border:none; border-radius:10px; font-weight:800; font-size:1.02rem; cursor:pointer;">
@@ -1202,18 +1199,25 @@
         </div>
     </div>
 
-    <!-- PROMO POP-UP MODAL -->
+    <!-- ======================================================== -->
+    <!-- PRO UPGRADE ADVERTISEMENT POP-UP MODAL (RM10/MONTH)      -->
+    <!-- ======================================================== -->
     <div id="promo-popup" class="promo-overlay">
         <div class="promo-modal">
             <button class="close-btn" onclick="closePromo()">✖</button>
-            <img src="/static/images/advertise.png" alt="Promosi Velocity Valley" class="promo-image">
+            <img src="/static/images/advertise.png" alt="Velocity Valley Pro RM10/month" class="promo-image">
             <div class="promo-content">
-                <h2>Unlock Your Full Potential!</h2>
-                <p>Upgrade to <strong>Pro Account (RM5/month)</strong> now to become the admin of the game! Customize questions, create live rooms, and track students' performance!</p>
-                <button onclick="upgradePrompt()" style="background-color: #f39c12; color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; width: 100%;">
-                    Upgrade to Pro Now
+                <h2>Level Up with Velocity Valley Pro!</h2>
+                <p>
+                    Upgrade to a <strong>Pro Account (RM10/month)</strong> to unlock:<br>
+                    🤖 <strong>24/7 AI Physics Tutor (Prof. Vector)</strong> for step-by-step KSSM help<br>
+                    ⚙️ <strong>Teacher Admin Panel</strong> to customize game questions<br>
+                    👥 <strong>Student Breakout & Game Rooms</strong> to track live performance!
+                </p>
+                <button onclick="upgradePrompt()" style="background: linear-gradient(135deg, #16a34a, #15803d); color: white; padding: 13px 25px; border: none; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 1.05rem; width: 100%; box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);">
+                    👑 Upgrade to Pro Now (RM10 / month)
                 </button>
-                <p style="font-size: 0.85rem; color: #95a5a6; margin-top: 15px; margin-bottom: 0;">
+                <p style="font-size: 0.85rem; color: #95a5a6; margin-top: 14px; margin-bottom: 0;">
                     <a href="javascript:void(0)" onclick="closePromo()" style="color: #95a5a6; text-decoration: underline;">Maybe later (close)</a>
                 </p>
             </div>
@@ -1239,7 +1243,7 @@
                 <img src="/static/images/scientist_guide.jpg" alt="Prof. Vector" class="scientist-portrait" onerror="this.src='/static/images/logo.png'">
                 <div class="scientist-speech-bubble">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-                        <span class="scientist-name-tag">👨‍🔬 PROF. VECTOR • AI DAILY CHALLENGE</span>
+                        <span class="scientist-name-tag">👨‍🔬 PROF. VECTOR • DAILY CHALLENGE</span>
                         <button onclick="openSyllabusModal()" style="background:rgba(255,255,255,0.12); border:1px solid #7dd3fc; color:#bae6fd; border-radius:12px; padding:3px 10px; font-size:0.74rem; cursor:pointer; font-weight:bold;">
                             📚 Change Chapter
                         </button>
@@ -1292,13 +1296,13 @@
         <!-- Daily Challenge Banner (Automatically hides until tomorrow once completed) -->
         <div id="daily-challenge-banner" class="section-container" style="text-align: center; background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); padding: 24px 20px; border-radius: 18px; box-shadow: 0 12px 28px rgba(230, 126, 34, 0.35); color: white; margin-top: -10px; margin-bottom: 1.8rem; position: relative; z-index: 10; border: 1px solid rgba(255,255,255,0.25);">
             <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-                <span style="background:rgba(0,0,0,0.25); padding:5px 12px; border-radius:20px; font-size:0.78rem; font-weight:bold;">🔥 AI DAILY CHALLENGE</span>
+                <span style="background:rgba(0,0,0,0.25); padding:5px 12px; border-radius:20px; font-size:0.78rem; font-weight:bold;">🔥 DAILY KSSM CHALLENGE</span>
                 <button onclick="openSyllabusModal()" id="hero-syllabus-pill" style="background:rgba(255,255,255,0.22); border:1px solid white; color:white; padding:5px 12px; border-radius:20px; font-size:0.78rem; font-weight:bold; cursor:pointer;">
                     📚 Chapter: Form 4 • Bab 2 (Change)
                 </button>
             </div>
             <h2 style="margin: 0 0 8px 0; font-size: 1.7rem; color: white;">Daily KSSM Physics Challenge</h2>
-            <p style="font-size: 0.96rem; opacity: 0.95; margin: 0 auto 16px auto; max-width: 520px; line-height: 1.45;">Prof. Vector generates a daily physics challenge matched to your current school chapter!</p>
+            <p style="font-size: 0.96rem; opacity: 0.95; margin: 0 auto 16px auto; max-width: 520px; line-height: 1.45;">Test your understanding with a daily physics challenge matched to your current school chapter!</p>
             <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
                 <button onclick="checkAndShowDailyQuestion(true)" style="background-color: white; color: #d35400; padding: 11px 26px; font-size: 1rem; font-weight: 800; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
                     ⚡ Start Today's Challenge
@@ -1326,7 +1330,7 @@
             <div class="home-menu-card" onclick="openAiTutorModal()">
                 <span class="card-emoji">💬</span>
                 <span class="card-title">Chat with Prof. Vector</span>
-                <span class="card-sub">AI Physics Guide (ILMU)</span>
+                <span class="card-sub">Pro AI Physics Tutor</span>
             </div>
         </div>
     </div>
@@ -1348,7 +1352,7 @@
                 <div class="guide-text-box">
                     <h4>👋 Welcome to the Velocity Valley Lab!</h4>
                     <p>
-                        Switch between the three categories below to explore interactive concept simulations and compulsory KSSM Physics practicals:
+                        Switch between the three categories below to explore interactive concept simulations and compulsory KSSM Form 4 & Form 5 Physics practicals:
                     </p>
                     <div class="guide-pill-row">
                         <span class="guide-mini-pill">⚡ Mini Simulation</span>
@@ -1375,7 +1379,7 @@
                 <button id="btn-cat-form5" class="sim-cat-btn" onclick="selectSimCategory('form5')">
                     <span class="cat-icon">🚀</span>
                     <span>Form 5 Experiment</span>
-                    <span class="cat-count">Syllabus Preview</span>
+                    <span class="cat-count">5 KSSM Labs</span>
                 </button>
             </div>
 
@@ -1503,24 +1507,48 @@
                 </div>
             </div>
 
-            <!-- PANEL 3: FORM 5 EXPERIMENTS -->
+            <!-- PANEL 3: FORM 5 EXPERIMENTS (ALL 5 READY TO USE!) -->
             <div id="panel-cat-form5" class="sim-category-panel">
                 <div class="menu-grid">
-                    <a href="javascript:void(0)" onclick="showComingSoon('Experiment 1.1 (Form 5): Hooke\'s Law', 'Investigate the relationship between force (F) and extension of a spring (x) to determine the spring constant (k).', 'Formula: F = kx (Hooke\'s Law)')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.88)), url('/static/images/Inprogress.png');">
+                    <a href="/form5experiment1" onclick="handleSimClick(event, '/form5experiment1', 'form5eksperimen1.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment1.jpg');">
                         <div>
                             <h2>Form 5 Exp 1.1: Hooke's Law</h2>
-                            <p>Investigate spring extension against applied load and calculate elastic potential energy.</p>
-                            <span class="formula-pill">F = kx | E_p = ½kx²</span>
+                            <p>Determine the relationship between force (F) and extension of a spring (x = l - l₀) using slotted weights.</p>
+                            <span class="formula-pill">F = kx (x = l - l₀)</span>
                         </div>
-                        <span class="status-badge status-building">Preview Principle</span>
+                        <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="javascript:void(0)" onclick="showComingSoon('Experiment 2.2 (Form 5): Ohm\'s Law & Resistivity', 'Investigate potential difference (V) vs current (I) for ohmic and non-ohmic conductors, and wire length/area effects.', 'Formula: V = IR | R = ρl / A')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.88)), url('/static/images/Inprogress.png');">
+                    <a href="/form5experiment2" onclick="handleSimClick(event, '/form5experiment2', 'form5eksperimen2.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment6.jpg');">
                         <div>
-                            <h2>Form 5 Exp 2.2: Ohm's Law & Resistance</h2>
-                            <p>Explore how wire length, cross-sectional area, and material affect electrical resistance.</p>
+                            <h2>Form 5 Exp 2.1: Liquid Pressure & Depth</h2>
+                            <p>Investigate the relationship between liquid depth (h) and pressure difference (D) in a U-tube manometer.</p>
+                            <span class="formula-pill">P = hρg (D ∝ h)</span>
+                        </div>
+                        <span class="status-badge">Ready to Use</span>
+                    </a>
+                    <a href="/form5experiment3" onclick="handleSimClick(event, '/form5experiment3', 'form5eksperimen3.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment10.jpg');">
+                        <div>
+                            <h2>Form 5 Exp 2.2: Liquid Pressure & Density</h2>
+                            <p>Compare U-tube pressure height difference (D) across Alcohol (790), Water (1000), and Glycerine (1300 kg m⁻³).</p>
+                            <span class="formula-pill">P = hρg (D ∝ ρ)</span>
+                        </div>
+                        <span class="status-badge">Ready to Use</span>
+                    </a>
+                    <a href="/form5experiment4" onclick="handleSimClick(event, '/form5experiment4', 'form5eksperimen4.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment3.jpg');">
+                        <div>
+                            <h2>Form 5 Exp 2.3: Archimedes' Principle</h2>
+                            <p>Determine the relationship between buoyant force (F_B = W_U - W_A) and weight of water displaced (W_S) using a Eureka can.</p>
+                            <span class="formula-pill">F_B = W_U - W_A = W_S</span>
+                        </div>
+                        <span class="status-badge">Ready to Use</span>
+                    </a>
+                    <a href="/form5experiment5" onclick="handleSimClick(event, '/form5experiment5', 'form5eksperimen5.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment4.jpg');">
+                        <div>
+                            <h2>Form 5 Exp 3.1: Ohm's Law (Ohmic & Bulb)</h2>
+                            <p>Study V vs I for an Ohmic conductor (constantan wire, Jadual 3.2) and a Non-Ohmic filament bulb (Jadual 3.3).</p>
                             <span class="formula-pill">V = IR</span>
                         </div>
-                        <span class="status-badge status-building">Preview Principle</span>
+                        <span class="status-badge">Ready to Use</span>
                     </a>
                 </div>
             </div>
@@ -1553,22 +1581,27 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 4: PRO (Teacher Admin)                               -->
+    <!-- TAB 4: PRO (Teacher Admin & AI Access)                   -->
     <!-- ======================================================== -->
     <div id="tab-pro" class="mobile-tab">
         <div class="section-container">
-            <h2 class="section-title">👑 Teacher Admin & Custom Rooms</h2>
+            <h2 class="section-title">👑 Pro Account: AI Tutor, Teacher Admin & Breakout Rooms</h2>
             <div id="free-user-box" style="display: none; text-align: center; padding: 26px; background-image: linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.92)), url('/static/images/journey_bg.png'); border: 2px dashed #e67e22; border-radius: 14px;">
-                <h3 style="color: #f39c12; margin-top:0;">Pro Feature: Generate Custom Questions for Any Subject!</h3>
-                <p style="color: white;">Upgrade to a Pro account to create custom multiplayer question rooms, set timers, and monitor live student scores!</p>
-                <button onclick="upgradePrompt()" style="background-color: #e67e22; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    Upgrade to Pro Account
+                <h3 style="color: #f39c12; margin-top:0;">Unlock Velocity Valley Pro (RM10 / month)!</h3>
+                <p style="color: white; line-height: 1.6;">
+                    Upgrade to a Pro account to unlock:<br>
+                    • <strong>24/7 Prof. Vector AI Physics Tutor</strong><br>
+                    • <strong>Teacher Admin Panel</strong> to customize questions for any subject<br>
+                    • <strong>Student Breakout & Game Rooms</strong> to monitor live scores!
+                </p>
+                <button onclick="upgradePrompt()" style="background-color: #16a34a; color: white; padding: 12px 26px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                    👑 Upgrade to Pro Account (RM10/month)
                 </button>
             </div>
 
             <div id="pro-user-box" style="display: none; text-align: center; padding: 30px; background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('/static/images/journey_bg.png'); background-size: cover; background-position: center; border: 2px solid #f39c12; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.35);">
-                <h3 style="color: #f39c12; font-size: 1.8rem; margin-top: 0;">Welcome to Teacher Admin!</h3>
-                <p style="color: white; font-size: 1.05rem; margin-bottom: 20px;">Create custom question rooms, set timers, and track your students' performance on the live dashboard!</p>
+                <h3 style="color: #f39c12; font-size: 1.8rem; margin-top: 0;">Welcome to Velocity Valley Pro!</h3>
+                <p style="color: white; font-size: 1.05rem; margin-bottom: 20px;">You have full access to 24/7 Prof. Vector AI Tutor, custom question rooms, and student breakout rooms!</p>
                 <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
                     <a href="/tcadminwest" onclick="handleSimClick(event, '/tcadminwest', 'tcadminwest.html')" style="background-color: #f39c12; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
                         ⚔️ Journey to the West Admin
@@ -1597,8 +1630,8 @@
             <div class="about-card reverse">
                 <div class="about-content">
                     <h3>Meet the Founder</h3>
-                    <p>Hello! I am Gan Jun Heng, the founder of Velocity Valley Education Simulation Games, a passionate Physics educator and almuni of Universiti Teknologi Malaysia (UTM) specializing in Physics Education.</p>
-                    <p>By integrating modern web technologies, Velocity Valley helps students visualize and master complex physics concepts beyond rote memorization.</p>
+                    <p>Hello! I am Gan Jun Heng, the founder of Velocity Valley Education Simulation Games, a passionate Physics educator and student at Universiti Teknologi Malaysia (UTM) specializing in Physics Education.</p>
+                    <p>By integrating modern web technologies and Constructivist learning theories, Velocity Valley helps students visualize and master complex physics concepts beyond rote memorization.</p>
                 </div>
                 <img src="/static/images/founder.png" alt="Founder Velocity Valley" class="about-image founder-img">
             </div>
@@ -1670,12 +1703,13 @@
             "F4_B5": "Form 4 • Bab 5: Gelombang",
             "F4_B6": "Form 4 • Bab 6: Cahaya & Optik",
             "F5_B1": "Form 5 • Bab 1: Daya & Gerakan II",
-            "F5_B2": "Form 5 • Bab 2: Elektrik",
-            "F5_B3": "Form 5 • Bab 3: Keelektromagnetan",
+            "F5_B2": "Form 5 • Bab 2: Tekanan & Archimedes",
+            "F5_B3": "Form 5 • Bab 3: Elektrik & Keelektromagnetan",
             "F5_B4": "Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum"
         };
 
         const db = firebase.firestore();
+        window.isCurrentUserPro = false;
 
         function isMobileAppEnv() {
             return window.location.protocol === 'file:' || Boolean(window.Capacitor) || (window.location.hostname === 'localhost' && !window.location.port);
@@ -1699,9 +1733,6 @@
             }
         }
 
-        // ============================================================
-        // 1. KSSM SYLLABUS PROGRESS TRACKING & CONFIRMATION
-        // ============================================================
         function getCurrentSyllabusCode() {
             return localStorage.getItem('vv_current_syllabus') || 'F4_B2';
         }
@@ -1737,9 +1768,6 @@
             }
         }
 
-        // ============================================================
-        // 2. CLEAN FORMATTER FOR AI REPLIES (NO RAW SYMBOLS)
-        // ============================================================
         function formatAiMessageHtml(rawText) {
             if (!rawText) return '';
             let s = String(rawText);
@@ -1786,9 +1814,6 @@
             return s;
         }
 
-        // ============================================================
-        // 3. PERSISTENT MESSENGER CHAT HISTORY (LOCALSTORAGE + FIREBASE)
-        // ============================================================
         function getRecentActivitiesLocal() {
             try {
                 return JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
@@ -1902,7 +1927,15 @@
             historyBox.scrollTop = historyBox.scrollHeight;
         }
 
+        // ============================================================
+        // PRO-ONLY GATE FOR AI TUTOR (0 TOKENS USED ON CLICK!)
+        // ============================================================
         function openAiTutorModal() {
+            // If user is NOT a Pro account, show the RM10/month Pro Advertisement Popup!
+            if (!window.isCurrentUserPro) {
+                document.getElementById('promo-popup').style.display = 'flex';
+                return;
+            }
             if (!localStorage.getItem('vv_syllabus_confirmed')) {
                 openSyllabusModal();
                 return;
@@ -1920,6 +1953,10 @@
         }
 
         function sendAiTutorQuestion() {
+            if (!window.isCurrentUserPro) {
+                document.getElementById('promo-popup').style.display = 'flex';
+                return;
+            }
             const inputEl = document.getElementById('aiQuestionInput');
             const sendBtn = document.getElementById('aiSendBtn');
             const historyBox = document.getElementById('aiChatHistory');
@@ -1941,8 +1978,8 @@
             const payload = {
                 question: q,
                 syllabus: getCurrentSyllabusCode(),
-                recentActivities: getRecentActivitiesLocal(),
-                chatHistory: priorHistory.slice(-6)
+                recentActivities: getRecentActivitiesLocal().slice(0, 1),
+                chatHistory: priorHistory.slice(-2)
             };
 
             fetch(getApiBaseUrl() + '/api/ilmu/ask-tutor', {
@@ -1961,14 +1998,13 @@
                 sendBtn.disabled = false;
             })
             .catch(err => {
-                const errText = `⚠️ 网络请求失败 (${err.message || 'Connection Error'})，请确认本地 python app.py 正在运行后重试。`;
+                const errText = `⚠️ 网络请求失败 (${err.message || 'Connection Error'})，请确认服务正在运行后重试。`;
                 aiBubble.innerHTML = formatAiMessageHtml(errText);
                 historyBox.scrollTop = historyBox.scrollHeight;
                 sendBtn.disabled = false;
             });
         }
 
-        // Simulation 3-Category Switcher
         function selectSimCategory(catKey) {
             ['mini', 'form4', 'form5'].forEach(k => {
                 const btn = document.getElementById('btn-cat-' + k);
@@ -2019,9 +2055,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ============================================================
-        // 4. AUTO-HIDE DAILY CHALLENGE BANNER ONCE COMPLETED TODAY
-        // ============================================================
         function getTodayDateString() {
             return new Date().toISOString().split('T')[0];
         }
@@ -2060,7 +2093,6 @@
             }
         });
 
-        // Auth & Pro Status Management
         const loginBtn = document.getElementById('btn-login');
         const adminBtn = document.getElementById('btn-admin');
         const logoutBtn = document.getElementById('btn-logout');
@@ -2076,6 +2108,8 @@
                 db.collection("users").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const userData = doc.data();
+                        window.isCurrentUserPro = Boolean(userData.isPro === true);
+
                         if (userData.currentSyllabus) {
                             localStorage.setItem('vv_current_syllabus', userData.currentSyllabus);
                             localStorage.setItem('vv_syllabus_confirmed', 'true');
@@ -2117,12 +2151,14 @@
                             }
                         }
                     } else {
+                        window.isCurrentUserPro = false;
                         if (freeBox) freeBox.style.display = 'block';
                     }
                 }).catch((error) => {
                     console.error("Error fetching user data:", error);
                 });
             } else {
+                window.isCurrentUserPro = false;
                 loginBtn.style.display = 'inline-block';
                 adminBtn.style.display = 'none';
                 logoutBtn.style.display = 'none';
@@ -2135,9 +2171,6 @@
         function closePromo() {
             document.getElementById('promo-popup').style.display = 'none';
             sessionStorage.setItem('seenPromo', 'true');
-            if (!isDailyChallengeCompletedToday()) {
-                checkAndShowDailyQuestion(false);
-            }
         }
 
         function logoutUser() {
@@ -2147,12 +2180,9 @@
         }
 
         function upgradePrompt() {
-            alert("The RM5 Payment System is under maintenance. Please contact the Teacher / Admin via WhatsApp (+60182660152) to activate Pro access!");
+            alert("To activate Velocity Valley Pro (RM10/month — includes 24/7 Prof. Vector AI Tutor, Teacher Admin & Student Breakout Rooms), please contact the Admin via WhatsApp (+60182660152)!");
         }
 
-        // ============================================================
-        // 5. SYLLABUS-MATCHED AI DAILY PHYSICS CHALLENGE
-        // ============================================================
         let activeDailyQuestionObj = null;
 
         function renderDailyModalState(todayQ, todayStr, answeredData) {
@@ -2239,8 +2269,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    syllabus: syllabusCode,
-                    recentActivities: getRecentActivitiesLocal()
+                    syllabus: syllabusCode
                 })
             })
             .then(r => r.json())

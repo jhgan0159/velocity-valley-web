@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimen 3.1 (Tingkatan 5): Hukum Ohm (Konduktor Ohm & Bukan Ohm) | Velocity Valley</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .top-bar-wrapper {
+            width: 100%;
+            max-width: 1280px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .btn-back-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
+        }
+        .lang-switch-btn {
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.88rem;
+        }
+        h1 { text-align: center; color: #0f172a; margin: 0 0 6px 0; font-size: 1.75rem; }
+        .subtitle { text-align: center; color: #475569; margin: 0 0 16px 0; font-size: 0.98rem; }
+        .principle-banner {
+            width: 100%;
+            max-width: 1280px;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border-left: 5px solid #0284c7;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            color: #0f172a;
+            font-size: 0.93rem;
+            line-height: 1.55;
+        }
+        .mode-switcher {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            width: 100%;
+            max-width: 1280px;
+            flex-wrap: wrap;
+        }
+        .mode-tab-btn {
+            flex: 1;
+            min-width: 260px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid #cbd5e1;
+            background: white;
+            color: #1e293b;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mode-tab-btn.active-mode {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: white;
+            border-color: #38bdf8;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1280px;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        canvas {
+            border: 1.5px solid #cbd5e1;
+            background-color: #ffffff;
+            display: block;
+            margin: 0 auto 14px auto;
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .control-group {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 14px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .curr-btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .curr-btn {
+            flex: 1;
+            min-width: 72px;
+            padding: 9px 10px;
+            background: #e2e8f0;
+            color: #1e293b;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.86rem;
+        }
+        .curr-btn.active-i {
+            background: #0284c7;
+            color: white;
+            border-color: #38bdf8;
+        }
+        .student-input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .student-input-row input {
+            flex: 1;
+            min-width: 120px;
+            padding: 9px 12px;
+            border: 1.5px solid #94a3b8;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .btn-excel {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+        }
+        .reminder {
+            font-weight: bold;
+            text-align: center;
+            padding: 9px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+        .reminder.warning { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .reminder.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .table-scroll { width: 100%; overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 9px 8px;
+            text-align: center;
+        }
+        th { background: #0f4c81; color: white; }
+        .discussion-box {
+            margin-top: 16px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+            body { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar-wrapper">
+        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:' || window.Capacitor || (window.location.hostname==='localhost' && !window.location.port)){this.href='index.html';}">← Back to Main Menu</a>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-weight: bold; color: #1e3a8a;">🚀 KSSM Tingkatan 5 • Eksperimen 3.1</span>
+            <button class="lang-switch-btn" onclick="toggleLang()">🌐 English / BM</button>
+        </div>
+    </div>
+
+    <h1 id="mainTitle">Eksperimen 3.1: Hukum Ohm (Konduktor Ohm & Bukan Ohm)</h1>
+    <p class="subtitle" id="subTitle">Mengkaji hubungan antara arus, I dengan beza keupayaan, V bagi dawai konstantan (A) dan mentol berfilamen (B) (Rajah 3.12)</p>
+
+    <div class="principle-banner">
+        <strong>📘 Inferens & Hipotesis (Hukum Ohm, V = IR):</strong> Beza keupayaan, <em>V</em> yang merentasi suatu konduktor bergantung pada arus, <em>I</em> yang mengalir. Bagi <strong>Konduktor Ohm (Dawai konstantan)</strong>, graf <em>V</em> melawan <em>I</em> ialah garis lurus melalui asalan (rintangan <em>R</em> malar). Bagi <strong>Konduktor Bukan Ohm (Mentol berfilamen)</strong>, apabila arus bertambah, suhu filamen meningkat dan rintangan bertambah (graf melengkung ke atas).
+    </div>
+
+    <div class="mode-switcher">
+        <button class="mode-tab-btn active-mode" id="mode-A" onclick="switchMode('A')">
+            🅰 Konduktor Ohm: Dawai Konstantan (Jadual 3.2)
+        </button>
+        <button class="mode-tab-btn" id="mode-B" onclick="switchMode('B')">
+            🅱 Konduktor Bukan Ohm: Mentol Berfilamen (Jadual 3.3)
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- LEFT PANEL -->
+        <div class="panel">
+            <canvas id="simCanvas" width="530" height="390"></canvas>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label><strong id="lblRheostat">1. Hidupkan suis & laraskan Reostat untuk menetapkan bacaan Ammeter, I:</strong></label>
+                    <div class="curr-btn-row" id="currentButtonsRow"></div>
+                </div>
+
+                <div class="control-group">
+                    <label><strong>2. Catatkan bacaan Voltmeter, V (V) ke dalam Jadual:</strong></label>
+                    <div class="student-input-row">
+                        <input type="number" step="0.01" id="inputVoltV" placeholder="Bacaan V (V)">
+                        <button class="btn-primary" onclick="rekodData()">➕ Rekod ke Jadual</button>
+                    </div>
+                </div>
+
+                <div id="reminderText" class="reminder warning">⚠️ Sila rekodkan bacaan Voltmeter V untuk arus semasa!</div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="panel">
+            <h3 style="margin-top:0;" id="tableHeaderTitle">Jadual 3.2: Konduktor Ohm (Dawai Konstantan s.w.g. 24, 20 cm)</h3>
+            <div class="table-scroll">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Arus, <i>I</i> / A</th>
+                            <th>Beza keupayaan, <i>V</i> / V</th>
+                            <th>Rintangan, <i>R = V / I</i> / Ω</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h4 style="margin: 18px 0 8px 0; color:#0f172a;" id="graphTitle">📈 Graf Beza Keupayaan, V (V) melawan Arus, I (A)</h4>
+            <canvas id="graphCanvas" width="520" height="220"></canvas>
+
+            <button class="btn-excel" onclick="muatTurunExcel()">⬇ Muat Turun Jadual 3.2 & 3.3 (Excel / CSV)</button>
+
+            <div class="discussion-box">
+                <strong>⚠️ Langkah Berjaga-jaga (Rajah 3.12):</strong><br>
+                • Pastikan dawai penyambung disambungkan dengan ketat.<br>
+                • Elakkan ralat paralaks semasa mengambil bacaan ammeter dan voltmeter.<br>
+                • <strong>Matikan suis sebaik sahaja bacaan diambil</strong> supaya suhu dawai konstantan kekal malar sepanjang eksperimen dijalankan.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const gctx = graphCanvas.getContext('2d');
+
+        // Experiment A: Constantan wire (R = 2.0 Ohm constant) -> Jadual 3.2: I = 0.2, 0.3, 0.4, 0.5, 0.6 A
+        const DATA_A = [
+            { I: 0.20, V: 0.40 },
+            { I: 0.30, V: 0.60 },
+            { I: 0.40, V: 0.80 },
+            { I: 0.50, V: 1.00 },
+            { I: 0.60, V: 1.20 }
+        ];
+        // Experiment B: Filament bulb (Non-Ohmic, R increases with T) -> Jadual 3.3: I = 0.14, 0.16, 0.18, 0.20, 0.22 A
+        const DATA_B = [
+            { I: 0.14, V: 0.35 },
+            { I: 0.16, V: 0.48 },
+            { I: 0.18, V: 0.66 },
+            { I: 0.20, V: 0.90 },
+            { I: 0.22, V: 1.22 }
+        ];
+
+        let currentMode = 'A'; // 'A' or 'B'
+        let selectedIdx = 0;
+        let recordedA = new Map();
+        let recordedB = new Map();
+        let isEng = false;
+
+        function switchMode(m) {
+            currentMode = m;
+            selectedIdx = 0;
+            document.getElementById('mode-A').classList.toggle('active-mode', m === 'A');
+            document.getElementById('mode-B').classList.toggle('active-mode', m === 'B');
+            document.getElementById('tableHeaderTitle').innerText = m === 'A'
+                ? 'Jadual 3.2: Konduktor Ohm (Dawai Konstantan s.w.g. 24, 20 cm)'
+                : 'Jadual 3.3: Konduktor Bukan Ohm (Mentol Berfilamen 2.5 V, 3 W)';
+            buildCurrentButtons();
+            selectCurrentIndex(0);
+            renderTableAndGraph();
+        }
+
+        function buildCurrentButtons() {
+            const row = document.getElementById('currentButtonsRow');
+            row.innerHTML = '';
+            const list = currentMode === 'A' ? DATA_A : DATA_B;
+            list.forEach((item, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'curr-btn' + (idx === selectedIdx ? ' active-i' : '');
+                btn.id = 'ibtn-' + idx;
+                btn.innerText = `I = ${currentMode === 'A' ? item.I.toFixed(1) : item.I.toFixed(2)} A`;
+                btn.onclick = () => selectCurrentIndex(idx);
+                row.appendChild(btn);
+            });
+        }
+
+        function selectCurrentIndex(idx) {
+            selectedIdx = idx;
+            const list = currentMode === 'A' ? DATA_A : DATA_B;
+            const item = list[idx];
+            document.getElementById('inputVoltV').value = item.V.toFixed(2);
+            list.forEach((_, i) => {
+                const b = document.getElementById('ibtn-' + i);
+                if (b) b.classList.toggle('active-i', i === idx);
+            });
+            updateReminderUI();
+            drawCircuit();
+        }
+
+        function updateReminderUI() {
+            const rem = document.getElementById('reminderText');
+            const list = currentMode === 'A' ? DATA_A : DATA_B;
+            const map = currentMode === 'A' ? recordedA : recordedB;
+            const item = list[selectedIdx];
+            const iStr = currentMode === 'A' ? item.I.toFixed(1) : item.I.toFixed(2);
+
+            if (map.has(item.I)) {
+                rem.className = 'reminder success';
+                rem.innerText = `✓ Bacaan I = ${iStr} A (V = ${item.V.toFixed(2)} V) telah direkodkan dalam ${currentMode === 'A' ? 'Jadual 3.2' : 'Jadual 3.3'}!`;
+            } else {
+                rem.className = 'reminder warning';
+                rem.innerText = `⚠️ Sila rekodkan V = ${item.V.toFixed(2)} V bagi arus I = ${iStr} A!`;
+            }
+        }
+
+        function drawCircuit() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const list = currentMode === 'A' ? DATA_A : DATA_B;
+            const item = list[selectedIdx];
+            const iStr = currentMode === 'A' ? item.I.toFixed(1) : item.I.toFixed(2);
+
+            // Main Circuit Loop Coordinates (matching Rajah 3.12)
+            const leftX = 85, rightX = 445, topY = 75, botY = 310;
+            const loadLeftX = 195, loadRightX = 335;
+
+            ctx.strokeStyle = "#1e293b";
+            ctx.lineWidth = 2.5;
+
+            // Top wire with Switch & 1.5 V Dry Cell
+            ctx.beginPath();
+            ctx.moveTo(leftX, topY);
+            ctx.lineTo(155, topY); // to switch
+            ctx.moveTo(195, topY);
+            ctx.lineTo(265, topY); // to battery
+            ctx.moveTo(285, topY);
+            ctx.lineTo(rightX, topY);
+            ctx.stroke();
+
+            // Closed Switch (Suis)
+            ctx.fillStyle = "#1e293b";
+            ctx.beginPath(); ctx.arc(155, topY, 3.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(195, topY, 3.5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = "#16a34a";
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(155, topY); ctx.lineTo(195, topY - 4); ctx.stroke();
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 12px Segoe UI";
+            ctx.fillText("Suis (ON)", 148, topY - 14);
+
+            // 1.5 V Dry Cell (Sel kering 1.5 V)
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(265, topY - 18); ctx.lineTo(265, topY + 18); // Long line (+)
+            ctx.lineWidth = 4.5;
+            ctx.moveTo(278, topY - 10); ctx.lineTo(278, topY + 10); // Short thick line (-)
+            ctx.stroke();
+            ctx.fillText("Sel kering 1.5 V", 232, topY - 24);
+
+            // Left vertical wire with Ammeter (A)
+            const amY = (topY + botY) / 2;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(leftX, topY); ctx.lineTo(leftX, amY - 22);
+            ctx.moveTo(leftX, amY + 22); ctx.lineTo(leftX, botY);
+            ctx.stroke();
+
+            ctx.fillStyle = "#eff6ff";
+            ctx.strokeStyle = "#2563eb";
+            ctx.beginPath();
+            ctx.arc(leftX, amY, 22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#1e3a8a";
+            ctx.font = "bold 16px Segoe UI";
+            ctx.fillText("A", leftX - 6, amY + 6);
+            ctx.font = "bold 12px Segoe UI";
+            ctx.fillText(`Ammeter`, 14, amY - 6);
+            ctx.fillStyle = "#dc2626";
+            ctx.fillText(`I = ${iStr} A`, 14, amY + 12);
+
+            // Right vertical wire with Rheostat (Reostat)
+            const rhY = (topY + botY) / 2;
+            ctx.strokeStyle = "#1e293b";
+            ctx.beginPath();
+            ctx.moveTo(rightX, topY); ctx.lineTo(rightX, rhY - 28);
+            ctx.moveTo(rightX, rhY + 28); ctx.lineTo(rightX, botY);
+            ctx.stroke();
+
+            // Rheostat box + diagonal arrow
+            ctx.fillStyle = "#f8fafc";
+            ctx.strokeStyle = "#334155";
+            ctx.fillRect(rightX - 10, rhY - 28, 20, 56);
+            ctx.strokeRect(rightX - 10, rhY - 28, 20, 56);
+            ctx.strokeStyle = "#7c3aed";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(rightX - 18, rhY + 22);
+            ctx.lineTo(rightX + 18, rhY - 22);
+            ctx.stroke();
+            ctx.fillStyle = "#0f172a";
+            ctx.fillText("Reostat", rightX + 18, rhY + 4);
+
+            // Bottom wire connecting to Load (Constantan wire OR Filament bulb)
+            ctx.strokeStyle = "#1e293b";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(leftX, botY); ctx.lineTo(loadLeftX, botY);
+            ctx.moveTo(loadRightX, botY); ctx.lineTo(rightX, botY);
+            ctx.stroke();
+
+            // Parallel Voltmeter (V) above the load
+            const voltY = 205;
+            const voltX = (loadLeftX + loadRightX) / 2;
+            ctx.beginPath();
+            ctx.moveTo(loadLeftX, botY); ctx.lineTo(loadLeftX, voltY); ctx.lineTo(voltX - 22, voltY);
+            ctx.moveTo(voltX + 22, voltY); ctx.lineTo(loadRightX, voltY); ctx.lineTo(loadRightX, botY);
+            ctx.stroke();
+
+            ctx.fillStyle = "#fef2f2";
+            ctx.strokeStyle = "#dc2626";
+            ctx.beginPath();
+            ctx.arc(voltX, voltY, 22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#991b1b";
+            ctx.font = "bold 16px Segoe UI";
+            ctx.fillText("V", voltX - 6, voltY + 6);
+            ctx.font = "bold 12px Segoe UI";
+            ctx.fillText(`Voltmeter: V = ${item.V.toFixed(2)} V`, voltX - 62, voltY - 30);
+
+            // Draw the Load between loadLeftX and loadRightX at botY
+            if (currentMode === 'A') {
+                // Curved Constantan Wire (Dawai konstantan s.w.g. 24) as in Rajah 3.12
+                ctx.strokeStyle = "#b45309";
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(voltX, botY + 12, (loadRightX - loadLeftX) / 2, Math.PI * 1.08, Math.PI * 1.92, false);
+                ctx.stroke();
+
+                ctx.fillStyle = "#0f172a";
+                ctx.beginPath(); ctx.arc(loadLeftX, botY, 4.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(loadRightX, botY, 4.5, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = "#92400e";
+                ctx.font = "bold 12px Segoe UI";
+                ctx.fillText("Dawai konstantan (s.w.g. 24, 20 cm)", voltX - 95, botY + 38);
+            } else {
+                // Filament Bulb (Mentol berfilamen) that glows brighter with higher current!
+                ctx.strokeStyle = "#1e293b";
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(loadLeftX, botY); ctx.lineTo(voltX - 24, botY);
+                ctx.moveTo(voltX + 24, botY); ctx.lineTo(loadRightX, botY);
+                ctx.stroke();
+
+                // Glow intensity based on selectedIdx
+                const glowAlpha = 0.25 + (selectedIdx / 4) * 0.65;
+                ctx.fillStyle = `rgba(250, 204, 21, ${glowAlpha})`;
+                ctx.beginPath();
+                ctx.arc(voltX, botY, 28 + selectedIdx * 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#fef9c3";
+                ctx.strokeStyle = "#ca8a04";
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.arc(voltX, botY, 22, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Filament loop inside bulb
+                ctx.strokeStyle = "#dc2626";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(voltX - 10, botY + 12);
+                ctx.lineTo(voltX - 5, botY - 8);
+                ctx.lineTo(voltX + 5, botY - 8);
+                ctx.lineTo(voltX + 10, botY + 12);
+                ctx.stroke();
+
+                ctx.fillStyle = "#854d0e";
+                ctx.font = "bold 12px Segoe UI";
+                ctx.fillText("Mentol berfilamen (Suhu meningkat → R bertambah)", voltX - 135, botY + 44);
+            }
+        }
+
+        function rekodData() {
+            const list = currentMode === 'A' ? DATA_A : DATA_B;
+            const map = currentMode === 'A' ? recordedA : recordedB;
+            const item = list[selectedIdx];
+            const val = parseFloat(document.getElementById('inputVoltV').value);
+            const usedV = !isNaN(val) ? +val.toFixed(2) : item.V;
+
+            map.set(item.I, { I: item.I, V: usedV, R: +(usedV / item.I).toFixed(2) });
+            renderTableAndGraph();
+            updateReminderUI();
+        }
+
+        function renderTableAndGraph() {
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = '';
+            const map = currentMode === 'A' ? recordedA : recordedB;
+            const sorted = Array.from(map.values()).sort((a, b) => a.I - b.I);
+            sorted.forEach(r => {
+                const tr = document.createElement('tr');
+                const iFormatted = currentMode === 'A' ? r.I.toFixed(1) : r.I.toFixed(2);
+                tr.innerHTML = `
+                    <td>${iFormatted}</td>
+                    <td><strong style="color:#0284c7;">${r.V.toFixed(2)}</strong></td>
+                    <td>${r.R.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            drawGraph(sorted);
+        }
+
+        function drawGraph(points) {
+            gctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+            const padL = 55, padB = 36, padT = 18, padR = 25;
+            const w = graphCanvas.width - padL - padR;
+            const h = graphCanvas.height - padT - padB;
+
+            const maxI = currentMode === 'A' ? 0.65 : 0.25;
+            const maxV = 1.40;
+
+            gctx.strokeStyle = "#e2e8f0";
+            gctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const gx = padL + (i / 5) * w;
+                const gy = padT + (i / 5) * h;
+                gctx.beginPath(); gctx.moveTo(gx, padT); gctx.lineTo(gx, padT + h); gctx.stroke();
+                gctx.beginPath(); gctx.moveTo(padL, gy); gctx.lineTo(padL + w, gy); gctx.stroke();
+
+                gctx.fillStyle = "#475569";
+                gctx.font = "11px Segoe UI";
+                gctx.fillText(((i / 5) * maxI).toFixed(2), gx - 12, padT + h + 15);
+                gctx.fillText((((5 - i) / 5) * maxV).toFixed(2), padL - 32, gy + 4);
+            }
+
+            gctx.strokeStyle = "#0f172a";
+            gctx.lineWidth = 2;
+            gctx.beginPath();
+            gctx.moveTo(padL, padT);
+            gctx.lineTo(padL, padT + h);
+            gctx.lineTo(padL + w, padT + h);
+            gctx.stroke();
+
+            gctx.fillStyle = "#0f172a";
+            gctx.font = "bold 12px Segoe UI";
+            gctx.fillText("Arus, I / A", padL + w / 2 - 30, graphCanvas.height - 5);
+            gctx.save();
+            gctx.translate(15, padT + h / 2 + 20);
+            gctx.rotate(-Math.PI / 2);
+            gctx.fillText("V / V", 0, 0);
+            gctx.restore();
+
+            if (points.length === 0) return;
+
+            gctx.strokeStyle = currentMode === 'A' ? "#0284c7" : "#d97706";
+            gctx.lineWidth = 2.5;
+            gctx.beginPath();
+            gctx.moveTo(padL, padT + h);
+            points.forEach(p => {
+                const px = padL + (p.I / maxI) * w;
+                const py = padT + h - (p.V / maxV) * h;
+                gctx.lineTo(px, py);
+            });
+            gctx.stroke();
+
+            points.forEach(p => {
+                const px = padL + (p.I / maxI) * w;
+                const py = padT + h - (p.V / maxV) * h;
+                gctx.fillStyle = "#dc2626";
+                gctx.beginPath();
+                gctx.arc(px, py, 4.5, 0, Math.PI * 2);
+                gctx.fill();
+            });
+        }
+
+        function muatTurunExcel() {
+            if (recordedA.size === 0 && recordedB.size === 0) {
+                alert("Sila rekodkan sekurang-kurangnya satu data terlebih dahulu!");
+                return;
+            }
+            let csv = "Kategori,Arus I (A),Beza keupayaan V (V),Rintangan R (Ohm)\n";
+            Array.from(recordedA.values()).sort((a, b) => a.I - b.I).forEach(r => {
+                csv += `Konduktor Ohm (Dawai Konstantan),${r.I.toFixed(1)},${r.V.toFixed(2)},${r.R.toFixed(2)}\n`;
+            });
+            Array.from(recordedB.values()).sort((a, b) => a.I - b.I).forEach(r => {
+                csv += `Konduktor Bukan Ohm (Mentol Berfilamen),${r.I.toFixed(2)},${r.V.toFixed(2)},${r.R.toFixed(2)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Eksperimen_3_1_Hukum_Ohm.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function toggleLang() {
+            isEng = !isEng;
+            document.getElementById('mainTitle').innerText = isEng
+                ? "Experiment 3.1 (Form 5): Ohm's Law (Ohmic & Non-Ohmic Conductors)"
+                : "Eksperimen 3.1: Hukum Ohm (Konduktor Ohm & Bukan Ohm)";
+            drawCircuit();
+        }
+
+        switchMode('A');
+    </script>
+
+    <!-- Firebase Activity Tracking -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+            authDomain: "velocity-valley-edu.firebaseapp.com",
+            projectId: "velocity-valley-edu",
+            storageBucket: "velocity-valley-edu.firebasestorage.app",
+            messagingSenderId: "340043533038",
+            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function recordStationVisit(user) {
+            const stationItem = {
+                id: "f5_exp3_1",
+                title: "Form 5 Exp 3.1: Ohmic & Non-Ohmic Conductors (V = IR)",
+                category: "Form 5 • Chapter 2/3",
+                webUrl: "/form5experiment5",
+                fileUrl: "form5eksperimen5.html",
+                timestamp: new Date().toLocaleString('en-GB')
+            };
+            try {
+                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
+            } catch (e) {}
+
+            if (!user) return;
+            const pageID = "visited_f5_exp3_1";
+            const isFirst = !sessionStorage.getItem(pageID);
+            sessionStorage.setItem(pageID, "true");
+
+            db.collection("users").doc(user.uid).get().then(doc => {
+                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                let payload = { recentActivities: updated };
+                if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+                db.collection("users").doc(user.uid).set(payload, { merge: true });
+            });
+        }
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            recordStationVisit(user);
+        });
+    </script>
+</body>
+</html>
