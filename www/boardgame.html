@@ -144,7 +144,7 @@
     </style>
 </head>
 <body>
-    <a id="floating-back-menu" href="/" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+    <a id="floating-back-menu" href="index.html" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
 
     <div id="intro-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:black; z-index:9999; display:flex; justify-content:center; align-items:center;">
         <video id="intro-video" width="100%" height="100%" style="object-fit:contain; position:absolute; top:0; left:0;" playsinline>
@@ -176,7 +176,7 @@
             <input type="number" id="round-count-input" value="10" min="1" max="50" style="width: 100%; padding: 10px; font-size: 1.1em; margin-top: 5px; box-sizing: border-box;">
             <div id="player-inputs-container"></div>
             <button id="start-game-btn">Start Game</button>
-            <button onclick="window.location.href=(window.location.protocol==='file:'?'index.html':'/')" style="background:#7f8c8d; margin-top:10px;">← Back to Main Menu</button>
+            <button onclick="window.location.href=(true?'index.html':'/')" style="background:#7f8c8d; margin-top:10px;">← Back to Main Menu</button>
         </div>
     </div>
 
@@ -243,7 +243,7 @@
             <p>Thanks for playing!</p>
             <button id="export-btn" style="background-color: #2196F3; margin-top: 20px;">Export Results to Excel (.xls)</button>
             <button onclick="location.reload()" style="background-color: #666; margin-top: 10px;">Play Again</button>
-            <button onclick="window.location.href=(window.location.protocol==='file:'?'index.html':'/')" style="background-color: #1e3c72; margin-top: 10px;">← Back to Main Menu</button>
+            <button onclick="window.location.href=(true?'index.html':'/')" style="background-color: #1e3c72; margin-top: 10px;">← Back to Main Menu</button>
         </div>
     </div>
 
@@ -317,7 +317,7 @@
                 id: "boardgame",
                 title: "Physics Monopoly: Ultimate Edition",
                 category: "Educational Game",
-                webUrl: "/boardgame",
+                webUrl: "boardgame.html",
                 fileUrl: "boardgame.html",
                 timestamp: new Date().toLocaleString('en-GB')
             };
@@ -346,7 +346,7 @@
             if (user) {
                 recordStationVisit(user);
             } else {
-                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+                window.location.replace(true ? 'login.html' : 'login.html');
             }
         });
     </script>

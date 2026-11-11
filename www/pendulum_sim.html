@@ -166,7 +166,7 @@
 <body>
 
 <div class="top-bar-wrapper">
-    <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+    <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
     <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Form 4 • Experiment 1.1</span>
 </div>
 
@@ -461,7 +461,7 @@
             id: "pendulum",
             title: "Experiment 1.1: Simple Pendulum",
             category: "Form 4 • Chapter 1",
-            webUrl: "/pendulum",
+            webUrl: "pendulum_sim.html",
             fileUrl: "pendulum_sim.html",
             timestamp: new Date().toLocaleString('en-GB')
         };
@@ -490,7 +490,7 @@
         if (user) {
             recordStationVisit(user);
         } else {
-            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+            window.location.replace(true ? 'login.html' : 'login.html');
         }
     });
 </script>

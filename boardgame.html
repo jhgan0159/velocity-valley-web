@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Physics Monopoly: Ultimate Edition</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Floating Back to Main Menu Button */
+        #floating-back-menu {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 9500;
+            background: rgba(30, 60, 114, 0.92);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
+        }
+        #floating-back-menu:hover { transform: scale(1.05); }
+
+        @media (max-width: 950px) {
+            .modal-content {
+                width: 95% !important;
+                max-width: 400px !important;
+                padding: 20px !important;
+                max-height: 85vh !important;
+                overflow-y: auto !important;
+            }
+            #game-setup-modal h2 { font-size: 1.5rem !important; margin-top: 0 !important; }
+            #question-level { font-size: 1.2rem !important; margin-top: 0 !important; }
+            #question-image { max-height: 120px !important; }
+            
+            #leaderboard-container {
+                display: none !important;
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                background: white !important;
+                z-index: 10000 !important;
+                width: 90% !important;
+                max-width: 350px !important;
+                padding: 20px !important;
+                border-radius: 15px !important;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+            }
+            #leaderboard-container.mobile-show {
+                display: block !important;
+                animation: popUp 0.3s ease-out forwards;
+            }
+
+            #mobile-leaderboard-btn {
+                display: block !important;
+                background-color: #f1c40f;
+                color: #333;
+                border: 2px solid #f39c12;
+                padding: 12px !important;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+                width: 100%;
+                cursor: pointer;
+            }
+            #close-leaderboard-btn {
+                display: block !important;
+                background-color: #e74c3c;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                cursor: pointer;
+                width: 100%;
+                font-weight: bold;
+            }
+
+            body { align-items: center !important; justify-content: flex-start !important; overflow-x: hidden; }
+            #app-wrapper { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; padding: 0 !important; overflow: visible !important; }
+            .game-container { width: 100vw !important; display: flex !important; flex-direction: column !important; align-items: center !important; overflow: visible !important; }
+            
+            .controls {
+                width: 95% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                z-index: 10 !important;
+                padding-bottom: 30px !important;
+            }
+
+            #skip-intro-btn {
+                padding: 8px 15px !important;
+                font-size: 1rem !important;
+                bottom: 15px !important;
+                right: 15px !important;
+            }
+        }
+
+        @media (max-width: 950px) and (orientation: landscape) {
+            #app-wrapper {
+                flex-direction: row !important;
+                height: 100vh !important;
+                overflow: visible !important;
+            }
+            .game-container {
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: center !important;
+                height: 100vh !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+            .controls {
+                order: -1 !important;
+                width: 25% !important;
+                min-width: 170px !important;
+                max-width: 200px !important;
+                height: 100vh !important;
+                justify-content: center !important;
+                padding: 10px !important;
+                background: rgba(255, 255, 255, 0.9) !important;
+                border-right: 3px solid #3498db;
+                margin-bottom: 0 !important;
+                box-sizing: border-box !important;
+                overflow-y: auto !important;
+            }
+            #game-board { margin: 0 auto !important; }
+            #mobile-leaderboard-btn { font-size: 0.85rem !important; padding: 8px !important; }
+        }
+
+        @media (min-width: 951px) {
+            #mobile-leaderboard-btn, #close-leaderboard-btn { display: none !important; }
+        }
+
+        @keyframes popUp { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <a id="floating-back-menu" href="/" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+
+    <div id="intro-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:black; z-index:9999; display:flex; justify-content:center; align-items:center;">
+        <video id="intro-video" width="100%" height="100%" style="object-fit:contain; position:absolute; top:0; left:0;" playsinline>
+            <source src="/static/images/montage.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <button id="start-intro-btn" style="z-index:10001; padding:20px 40px; font-size:2em; background:#2196F3; color:white; border:none; border-radius:10px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+            Starts The Game
+        </button>
+        <button id="skip-intro-btn" style="position:absolute; bottom:30px; right:30px; padding:10px 20px; font-size:1.2em; background:rgba(255,255,255,0.8); border:none; cursor:pointer; border-radius:5px; z-index:10001; display:none;">Skip Intro</button>
+    </div>
+
+    <video autoplay muted loop id="video-background" style="position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:-1000;">
+        <source src="/static/images/background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div id="game-setup-modal">
+        <div class="modal-content">
+            <h2>Game Setup</h2>
+            <label for="player-count-select">Select Number of Players:</label>
+            <select id="player-count-select">
+                <option value="1">1 Player</option>
+                <option value="2">2 Players</option>
+                <option value="3">3 Players</option>
+                <option value="4" selected>4 Players</option>
+            </select>
+            <label for="round-count-input" style="display:block; margin-top:15px;">Number of Rounds:</label>
+            <input type="number" id="round-count-input" value="10" min="1" max="50" style="width: 100%; padding: 10px; font-size: 1.1em; margin-top: 5px; box-sizing: border-box;">
+            <div id="player-inputs-container"></div>
+            <button id="start-game-btn">Start Game</button>
+            <button onclick="window.location.href=(window.location.protocol==='file:'?'index.html':'/')" style="background:#7f8c8d; margin-top:10px;">← Back to Main Menu</button>
+        </div>
+    </div>
+
+    <div id="app-wrapper">
+        <div id="leaderboard-container" class="hidden">
+            <button id="close-leaderboard-btn" onclick="toggleMobileLeaderboard()">❌ Close Leaderboard</button>
+            <h2>Leaderboard</h2>
+            <ol id="score-list"></ol>
+            <div id="round-counter">Round: 1 / 20</div>
+            <div id="game-timer">Time: 00:00</div>
+        </div>
+
+        <div class="game-container hidden">
+            <div class="controls">
+                <button id="mobile-leaderboard-btn" onclick="toggleMobileLeaderboard()">🏆 Show Leaderboard</button>
+                <div class="current-player-info">
+                    Current Player: <span id="current-player-color"></span> <span id="current-player-name"></span>
+                </div>
+                <div class="dice-area">
+                    <img id="dice-image" src="/static/images/dice-1.png" alt="Dice">
+                </div>
+                <button id="roll-dice-btn">Roll Dice</button>
+                <div id="game-log">Select players to start.</div>
+            </div>
+
+            <div id="game-board"></div>
+        </div>
+    </div>
+
+    <div id="question-modal" class="hidden">
+        <div class="modal-content">
+            <h3 id="question-level"></h3>
+            <img id="question-image" src="" alt="Question Image" class="hidden">
+            <p id="question-text"></p>
+            <input type="text" id="answer-box" placeholder="Type your answer here (A, B, C)...">
+            <button id="submit-answer-btn">Submit Answer</button>
+        </div>
+    </div>
+
+    <div id="explanation-modal" class="hidden">
+        <div class="modal-content">
+            <h3 id="explanation-title"></h3>
+            <p id="explanation-correct-answer"></p>
+            <p id="explanation-text"></p>
+            <button id="continue-game-btn">Continue Game</button>
+        </div>
+    </div>
+
+    <div id="powerup-modal" class="hidden">
+        <div class="modal-content" style="text-align: center;">
+            <h2 style="color: #FF9800;">3-STREAK! POWER UP!</h2>
+            <p>You answered 3 in a row! Spin for a reward!</p>
+            <div id="wheel-display" style="font-size: 2em; font-weight: bold; margin: 20px 0; padding: 20px; border: 3px dashed #333; border-radius: 10px; background: #fff3e0;">???</div>
+            <button id="spin-btn" style="background-color: #FF9800;">SPIN THE WHEEL</button>
+            <button id="close-powerup-btn" class="hidden">Continue</button>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="hidden">
+        <div class="modal-content">
+            <h2>Game Over!</h2>
+            <h3 id="final-winner"></h3>
+            <p id="final-average"></p>
+            <p>Thanks for playing!</p>
+            <button id="export-btn" style="background-color: #2196F3; margin-top: 20px;">Export Results to Excel (.xls)</button>
+            <button onclick="location.reload()" style="background-color: #666; margin-top: 10px;">Play Again</button>
+            <button onclick="window.location.href=(window.location.protocol==='file:'?'index.html':'/')" style="background-color: #1e3c72; margin-top: 10px;">← Back to Main Menu</button>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+
+    <script>
+        function toggleMobileLeaderboard() {
+            const lb = document.getElementById('leaderboard-container');
+            if (lb) lb.classList.toggle('mobile-show');
+        }
+
+        function resizeBoardForMobile() {
+            const board = document.getElementById('game-board');
+            if (!board) return;
+
+            if (window.innerWidth <= 950) {
+                board.style.transform = 'none';
+                board.style.zoom = '1';
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                const boardOriginalWidth = 700;
+                const boardOriginalHeight = 700;
+
+                if (screenWidth > screenHeight) {
+                    const leftControlsWidth = Math.max(screenWidth * 0.25, 170);
+                    const availableWidth = screenWidth - leftControlsWidth - 20;
+                    const availableHeight = screenHeight - 20;
+                    const scaleW = availableWidth / boardOriginalWidth;
+                    const scaleH = availableHeight / boardOriginalHeight;
+                    const scaleFactor = Math.min(scaleW, scaleH);
+                    board.style.zoom = scaleFactor;
+                    board.style.margin = '0 auto';
+                } else {
+                    const scaleFactor = (screenWidth * 0.95) / boardOriginalWidth;
+                    board.style.zoom = scaleFactor < 1 ? scaleFactor : '1';
+                    board.style.margin = '0 auto';
+                }
+            } else {
+                board.style.transform = 'none';
+                board.style.zoom = '1';
+                board.style.margin = '0';
+            }
+        }
+
+        window.addEventListener('load', resizeBoardForMobile);
+        window.addEventListener('resize', resizeBoardForMobile);
+        setTimeout(resizeBoardForMobile, 1000);
+        setTimeout(resizeBoardForMobile, 3000);
+    </script>
+
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
+            authDomain: "velocity-valley-edu.firebaseapp.com",
+            projectId: "velocity-valley-edu",
+            storageBucket: "velocity-valley-edu.firebasestorage.app",
+            messagingSenderId: "340043533038",
+            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        function recordStationVisit(user) {
+            const stationItem = {
+                id: "boardgame",
+                title: "Physics Monopoly: Ultimate Edition",
+                category: "Educational Game",
+                webUrl: "/boardgame",
+                fileUrl: "boardgame.html",
+                timestamp: new Date().toLocaleString('en-GB')
+            };
+            try {
+                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
+            } catch (e) {}
+
+            const pageID = "visited_boardgame";
+            const isFirstInSession = !sessionStorage.getItem(pageID);
+            sessionStorage.setItem(pageID, "true");
+
+            db.collection("users").doc(user.uid).get().then(doc => {
+                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
+                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
+                let payload = { recentActivities: updated };
+                if (isFirstInSession) {
+                    payload.simsExplored = firebase.firestore.FieldValue.increment(1);
+                }
+                db.collection("users").doc(user.uid).set(payload, { merge: true });
+            });
+        }
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                recordStationVisit(user);
+            } else {
+                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+            }
+        });
+    </script>
+</body>
+</html>

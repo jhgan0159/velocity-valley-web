@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Velocity Valley</string>
+    <string name="title_activity_main">Velocity Valley</string>
+    <string name="package_name">com.gan.velocityvalley</string>
+    <string name="custom_url_scheme">com.gan.velocityvalley</string>
+</resources>

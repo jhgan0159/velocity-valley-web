@@ -1,0 +1,6 @@
+{
+  "appId": "com.gan.velocityvalley",
+  "appName": "Velocity Valley",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

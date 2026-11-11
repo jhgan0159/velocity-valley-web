@@ -125,7 +125,7 @@
 
     <div class="container">
         <div class="top-nav-row">
-            <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+            <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
             <span style="font-size: 0.85rem; color: #7f8c8d; font-weight: bold;">⚡ Mini Simulation • Mechanics</span>
         </div>
 
@@ -302,7 +302,7 @@
                 id: "newton",
                 title: "Mini Simulation: Newton's Second Law (F = ma)",
                 category: "Mini Simulation",
-                webUrl: "/newton",
+                webUrl: "newton.html",
                 fileUrl: "newton.html",
                 timestamp: new Date().toLocaleString('en-GB')
             };
@@ -331,7 +331,7 @@
             if (user) {
                 recordStationVisit(user);
             } else {
-                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+                window.location.replace(true ? 'login.html' : 'login.html');
             }
         });
     </script>

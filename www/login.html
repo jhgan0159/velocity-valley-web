@@ -113,7 +113,7 @@
 <body>
 
     <div class="back-nav">
-        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
     </div>
 
     <div class="login-card">
@@ -151,7 +151,7 @@
         const errorText = document.getElementById('error-message');
 
         function goHome() {
-            window.location.replace(window.location.protocol === 'file:' ? 'index.html' : '/');
+            window.location.replace(true ? 'index.html' : '/');
         }
 
         function loginUser() {

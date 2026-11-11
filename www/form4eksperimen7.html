@@ -46,7 +46,7 @@
 </head>
 <body>
 <div class="top-bar-wrapper">
-    <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+    <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
     <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 4.5</span>
 </div>
 <div class="principle-banner">
@@ -130,7 +130,7 @@
     const db = firebase.firestore();
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-            const stationItem = { id: "exp4_5", title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment7", fileUrl: "form4eksperimen7.html", timestamp: new Date().toLocaleString('en-GB') };
+            const stationItem = { id: "exp4_5", title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen7.html", fileUrl: "form4eksperimen7.html", timestamp: new Date().toLocaleString('en-GB') };
             try {
                 let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
                 localStorage.setItem('vv_recent_activities', JSON.stringify([stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5)));
@@ -145,7 +145,7 @@
                 db.collection("users").doc(user.uid).set(payload, { merge: true });
             });
         } else {
-            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+            window.location.replace(true ? 'login.html' : 'login.html');
         }
     });
 </script>

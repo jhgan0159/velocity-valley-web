@@ -79,7 +79,7 @@
 
 <div class="container" id="main-content" style="display: none;">
     <div class="top-nav-row">
-        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
         <span style="font-weight: bold; color: #d35400;">👑 Pro Teacher Room Manager</span>
     </div>
 
@@ -159,12 +159,12 @@
                     addQuestionBlock();
                 } else {
                     alert("Access Denied 🛑: This area is for Pro Teachers only.");
-                    window.location.href = window.location.protocol === 'file:' ? 'index.html' : '/';
+                    window.location.href = true ? 'index.html' : '/';
                 }
-            }).catch(() => { window.location.href = window.location.protocol === 'file:' ? 'index.html' : '/'; });
+            }).catch(() => { window.location.href = true ? 'index.html' : '/'; });
         } else {
             alert("Please Sign In first to access Teacher Admin!");
-            window.location.href = window.location.protocol === 'file:' ? 'login.html' : '/login';
+            window.location.href = true ? 'login.html' : 'login.html';
         }
     });
 

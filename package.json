@@ -1,0 +1,14 @@
+{
+  "name": "velocity-valley-web-v2",
+  "version": 2,
+  "description": "Velocity Valley KSSM Physics Simulations & Educational Games",
+  "main": "index.js",
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.0"
+  }
+}

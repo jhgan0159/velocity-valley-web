@@ -31,6 +31,7 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         .dashboard-wrapper {
             width: 100%;
@@ -38,8 +39,8 @@
             display: flex;
             flex-direction: column;
             gap: 24px;
+            min-width: 0;
         }
-        /* Top Nav Bar */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -77,9 +78,6 @@
             font-size: 0.92rem;
         }
 
-        /* ===================================================
-           PROFILE HERO CARD WITH BOY / GIRL AI AVATAR PICKER
-           =================================================== */
         .profile-hero {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.95));
             border: 1px solid rgba(56, 189, 248, 0.3);
@@ -91,18 +89,24 @@
             flex-wrap: wrap;
             gap: 20px;
             box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+            width: 100%;
+            overflow: hidden;
         }
         .profile-identity {
             display: flex;
             align-items: center;
             gap: 20px;
             flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
+            width: 100%;
         }
         .avatar-column {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
         }
         .avatar-circle-img {
             width: 92px;
@@ -111,7 +115,6 @@
             object-fit: cover;
             border: 3px solid #38bdf8;
             box-shadow: 0 0 22px rgba(14, 165, 233, 0.55);
-            transition: transform 0.25s ease, border-color 0.25s ease;
         }
         .avatar-switcher {
             display: flex;
@@ -148,29 +151,61 @@
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
         }
 
+        .profile-meta {
+            flex: 1;
+            min-width: 0;
+            max-width: 100%;
+        }
         .profile-meta h1 {
-            margin: 0 0 4px 0;
-            font-size: 1.6rem;
+            margin: 0 0 6px 0;
+            font-size: 1.55rem;
             color: #ffffff;
+            word-break: break-word;
+            line-height: 1.25;
         }
         .profile-meta p {
-            margin: 3px 0;
+            margin: 4px 0;
             color: #94a3b8;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+        .syllabus-selector-box {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            width: 100%;
+            max-width: 100%;
+        }
+        .syllabus-selector-box select {
+            background: #0f172a;
+            color: #7dd3fc;
+            border: 1.5px solid #38bdf8;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-weight: 700;
+            font-size: 0.86rem;
+            cursor: pointer;
+            width: 100%;
+            max-width: 360px;
+            min-width: 0;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
         .account-pill {
             background: rgba(14, 165, 233, 0.18);
             border: 1px solid #38bdf8;
             color: #7dd3fc;
-            padding: 6px 14px;
+            padding: 7px 14px;
             border-radius: 20px;
             font-weight: 700;
             font-size: 0.85rem;
+            flex-shrink: 0;
         }
 
-        /* ===================================================
-           TOP-TO-BOTTOM ROCKET PROGRESS TRACK (LAST 5 LABS)
-           =================================================== */
+        /* ROCKET PROGRESS TRACK */
         .transit-card {
             background: rgba(30, 41, 59, 0.88);
             border: 1px solid rgba(255, 255, 255, 0.14);
@@ -206,7 +241,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Vertical Flight Track & Stations (Top to Bottom) */
         .station-timeline {
             position: relative;
             padding-left: 54px;
@@ -214,7 +248,6 @@
             flex-direction: column;
             gap: 18px;
         }
-        /* Vertical Trajectory Track Line */
         .station-timeline::before {
             content: '';
             position: absolute;
@@ -254,8 +287,6 @@
             border: 2px solid #f59e0b;
             background: linear-gradient(90deg, rgba(245, 158, 11, 0.14), rgba(15, 23, 42, 0.92));
         }
-
-        /* Station Circular Node on the Track */
         .station-node {
             position: absolute;
             left: -44px;
@@ -275,7 +306,6 @@
             z-index: 2;
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
         }
-        /* Downward Rocket Ship Image Node */
         .station-stop.latest-stop .station-node {
             width: 46px;
             height: 46px;
@@ -298,7 +328,7 @@
             100% { transform: translateY(-42%); }
         }
 
-        .station-info { flex: 1; }
+        .station-info { flex: 1; min-width: 0; }
         .station-code {
             font-size: 0.75rem;
             font-weight: 700;
@@ -313,10 +343,7 @@
             font-weight: 700;
             color: #f8fafc;
         }
-        .station-time {
-            font-size: 0.8rem;
-            color: #94a3b8;
-        }
+        .station-time { font-size: 0.8rem; color: #94a3b8; }
         .btn-review-station {
             background: linear-gradient(135deg, #0ea5e9, #2563eb);
             color: white;
@@ -330,16 +357,8 @@
             align-items: center;
             gap: 6px;
             box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
-            transition: transform 0.15s, opacity 0.2s;
-        }
-        .btn-review-station:hover {
-            transform: scale(1.04);
-            opacity: 0.95;
         }
 
-        /* ===================================================
-           CUSTOM SHOWCASE BADGES (SIMS EXPLORED & STREAK)
-           =================================================== */
         .badges-showcase-card {
             background: rgba(30, 41, 59, 0.88);
             border: 1px solid rgba(255, 255, 255, 0.14);
@@ -358,8 +377,6 @@
             border-radius: 16px;
             padding: 24px 20px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
             border: 2px solid rgba(56, 189, 248, 0.35);
             box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
@@ -375,7 +392,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
             box-shadow: 0 0 25px rgba(14, 165, 233, 0.45);
             background: radial-gradient(circle, #0284c7 0%, #1e3a8a 100%);
             border: 4px solid #7dd3fc;
@@ -428,7 +444,36 @@
         }
 
         @media (max-width: 768px) {
-            .profile-hero { flex-direction: column; align-items: flex-start; padding: 20px; }
+            .profile-hero {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px 16px;
+                gap: 16px;
+            }
+            .profile-identity {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                width: 100%;
+            }
+            .profile-meta {
+                width: 100%;
+            }
+            .profile-meta h1 {
+                font-size: 1.4rem;
+            }
+            .syllabus-selector-box {
+                align-items: stretch;
+                width: 100%;
+            }
+            .syllabus-selector-box select {
+                max-width: 100%;
+                width: 100%;
+            }
+            .account-pill {
+                align-self: center;
+                text-align: center;
+            }
             .transit-card, .badges-showcase-card { padding: 20px 16px; }
             .station-stop { flex-direction: column; align-items: flex-start; }
             .btn-review-station { width: 100%; justify-content: center; }
@@ -439,18 +484,16 @@
 <body>
 
     <div class="dashboard-wrapper">
-        <!-- Top Navigation -->
         <div class="top-bar">
-            <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+            <a href="index.html" class="btn-back-menu" onclick="if(true || window.Capacitor || (window.location.hostname==='localhost' && !window.location.port)){this.href='index.html';}">← Back to Main Menu</a>
             <button class="btn-logout" onclick="logoutUser()">Sign Out</button>
         </div>
 
-        <!-- User Identity Card with Boy / Girl AI Avatar Selector -->
         <div class="profile-hero">
             <div class="profile-identity">
                 <div class="avatar-column">
                     <img id="profile-avatar-img" src="./static/images/avatar_boy.jpg" alt="Student Avatar" class="avatar-circle-img" onerror="this.src='./static/images/logo.png'">
-                    <div class="avatar-switcher" aria-label="Choose Profile Picture">
+                    <div class="avatar-switcher">
                         <button type="button" id="btn-avatar-boy" class="avatar-choice-btn active-avatar" onclick="selectAvatar('boy')">
                             <img src="./static/images/avatar_boy.jpg" alt="Boy" onerror="this.style.display='none'"> 👦 Boy
                         </button>
@@ -463,13 +506,26 @@
                     <h1>Welcome back, <span id="display-name" style="color: #38bdf8;">Explorer</span>!</h1>
                     <p><strong>Email:</strong> <span id="display-email">Loading...</span></p>
                     <p><strong>Last Login:</strong> <span id="display-last-login">Loading...</span> • <strong>Total Logins:</strong> <span id="display-login-count">0</span></p>
-                    <p style="font-size: 0.8rem; color: #38bdf8; margin-top: 6px;">✨ Tap <strong>Boy</strong> or <strong>Girl</strong> under your photo to switch your AI Cadet Avatar!</p>
+                    <div class="syllabus-selector-box">
+                        <span style="font-size:0.85rem; color:#cbd5e1; font-weight:bold;">📚 Current KSSM Chapter:</span>
+                        <select id="profile-syllabus-select" onchange="updateProfileSyllabus(this.value)">
+                            <option value="F4_B1">Form 4 • Bab 1: Pengukuran</option>
+                            <option value="F4_B2">Form 4 • Bab 2: Daya & Gerakan I</option>
+                            <option value="F4_B3">Form 4 • Bab 3: Kegravitian</option>
+                            <option value="F4_B4">Form 4 • Bab 4: Haba</option>
+                            <option value="F4_B5">Form 4 • Bab 5: Gelombang</option>
+                            <option value="F4_B6">Form 4 • Bab 6: Cahaya & Optik</option>
+                            <option value="F5_B1">Form 5 • Bab 1: Daya & Gerakan II</option>
+                            <option value="F5_B2">Form 5 • Bab 2: Elektrik</option>
+                            <option value="F5_B3">Form 5 • Bab 3: Keelektromagnetan</option>
+                            <option value="F5_B4">Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="account-pill" id="account-tier-pill">🎓 KSSM Physics Cadet</div>
         </div>
 
-        <!-- ROCKET TRAJECTORY PROGRESS MAP (TOP TO BOTTOM - LAST 5 SIMULATIONS) -->
         <div class="transit-card">
             <div class="transit-header">
                 <h2>🚀 Velocity Rocket Trajectory: Recent 5 Stations</h2>
@@ -478,20 +534,15 @@
             <p style="color: #94a3b8; font-size: 0.92rem; margin-top: 0; margin-bottom: 20px;">
                 Your downward-flying rocket marks your latest physics mission, followed by your previous 4 stops below. Click <strong>Review Simulation</strong> beside any station to revisit!
             </p>
-
-            <div class="station-timeline" id="station-timeline-container">
-                <!-- Populated dynamically by JS -->
-            </div>
+            <div class="station-timeline" id="station-timeline-container"></div>
         </div>
 
-        <!-- CUSTOM SHOWCASE BADGES BELOW PROGRESS TRACK -->
         <div class="badges-showcase-card">
             <div class="transit-header" style="margin-bottom: 8px;">
                 <h2>🏅 Physics Mastery & Momentum Badges</h2>
             </div>
 
             <div class="badges-grid">
-                <!-- BADGE 1: SIMULATIONS EXPLORED -->
                 <div class="custom-badge-card">
                     <div class="badge-crest">
                         <span class="crest-number" id="display-sims-explored">0</span>
@@ -504,7 +555,6 @@
                     </div>
                 </div>
 
-                <!-- BADGE 2: LOGIN & DAILY CHALLENGE STREAK -->
                 <div class="custom-badge-card streak-theme">
                     <div class="badge-crest">
                         <span class="crest-number" id="displayStreak">0</span>
@@ -518,7 +568,6 @@
                 </div>
             </div>
 
-            <!-- Special 50-Day & 100-Day Milestone Trophy Shelf -->
             <div id="badgeContainer" style="display: flex; justify-content: center; gap: 18px; margin-top: 20px; align-items: center; flex-wrap: wrap;"></div>
         </div>
     </div>
@@ -526,11 +575,14 @@
     <script>
         const db = firebase.firestore();
 
-        function getStaticPrefix() {
-            return window.location.protocol === 'file:' ? './static/images/' : './static/images/';
+        function isMobileAppEnv() {
+            return true || Boolean(window.Capacitor) || (window.location.hostname === 'localhost' && !window.location.port);
         }
 
-        // Boy / Girl AI Avatar Switcher Logic
+        function getStaticPrefix() {
+            return isMobileAppEnv() ? './static/images/' : './static/images/';
+        }
+
         function applyAvatarVisual(gender) {
             const prefix = getStaticPrefix();
             const imgEl = document.getElementById('profile-avatar-img');
@@ -550,45 +602,51 @@
 
         function selectAvatar(gender) {
             applyAvatarVisual(gender);
-            try {
-                localStorage.setItem('vv_avatar_choice', gender);
-            } catch (e) {}
-
+            try { localStorage.setItem('vv_avatar_choice', gender); } catch (e) {}
             const user = firebase.auth().currentUser;
             if (user) {
-                db.collection("users").doc(user.uid).set({
-                    avatarChoice: gender
-                }, { merge: true });
+                db.collection("users").doc(user.uid).set({ avatarChoice: gender }, { merge: true });
             }
         }
 
-        // Initialize avatar from localStorage immediately on load
-        (function initSavedAvatar() {
+        function updateProfileSyllabus(code) {
             try {
-                const saved = localStorage.getItem('vv_avatar_choice') || 'boy';
-                applyAvatarVisual(saved);
+                localStorage.setItem('vv_current_syllabus', code);
+                localStorage.setItem('vv_syllabus_confirmed', 'true');
+            } catch (e) {}
+            const user = firebase.auth().currentUser;
+            if (user) {
+                db.collection("users").doc(user.uid).set({ currentSyllabus: code }, { merge: true });
+            }
+        }
+
+        (function initSavedPreferences() {
+            try {
+                applyAvatarVisual(localStorage.getItem('vv_avatar_choice') || 'boy');
+                const savedSyl = localStorage.getItem('vv_current_syllabus') || 'F4_B2';
+                document.getElementById('profile-syllabus-select').value = savedSyl;
             } catch (e) {}
         })();
 
         const simulationCatalog = {
-            newton: { title: "Mini Simulation: Newton's Second Law (F = ma)", category: "Mini Simulation", webUrl: "/newton", fileUrl: "newton.html" },
-            pendulum: { title: "Experiment 1.1: Simple Pendulum", category: "Form 4 • Chapter 1", webUrl: "/pendulum", fileUrl: "pendulum_sim.html" },
-            exp2_1: { title: "Experiment 2.1: Gravitational Acceleration (g)", category: "Form 4 • Chapter 2", webUrl: "/tingkatan4experiment2", fileUrl: "Tingkatan4eksperimen2.html" },
-            exp2_2: { title: "Experiment 2.2: Mass & Inertia", category: "Form 4 • Chapter 2", webUrl: "/form4experiment3", fileUrl: "form4eksperimen3.html" },
-            exp4_1: { title: "Experiment 4.1 & 4.2: Specific Heat Capacity", category: "Form 4 • Chapter 4", webUrl: "/form4experiment4", fileUrl: "form4eksperimen4.html" },
-            exp4_3: { title: "Experiment 4.3: Specific Latent Heat", category: "Form 4 • Chapter 4", webUrl: "/form4experiment5", fileUrl: "form4eksperimen5.html" },
-            exp4_4: { title: "Experiment 4.4: Boyle's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment6", fileUrl: "form4eksperimen6.html" },
-            exp4_5: { title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment7", fileUrl: "form4eksperimen7.html" },
-            exp4_6: { title: "Experiment 4.6: Gay-Lussac's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment8", fileUrl: "form4eksperimen8.html" },
-            exp6_1: { title: "Experiment 6.1: Snell's Law (Glass Block)", category: "Form 4 • Chapter 6", webUrl: "/form4experiment9", fileUrl: "form4eksperimen9.html" },
-            exp6_2: { title: "Experiment 6.2: Real & Apparent Depth (Water)", category: "Form 4 • Chapter 6", webUrl: "/form4experiment10", fileUrl: "form4eksperimen10.html" },
-            exp6_3: { title: "Experiment 6.3: Convex Lens Formula", category: "Form 4 • Chapter 6", webUrl: "/form4experiment11", fileUrl: "form4eksperimen11.html" },
-            boardgame: { title: "Physics Monopoly: Ultimate Edition", category: "Educational Game", webUrl: "/boardgame", fileUrl: "boardgame.html" },
-            journey: { title: "Journey to the West: Physics Quiz RPG", category: "Educational Game", webUrl: "/journey", fileUrl: "journey.html" }
+            newton: { title: "Mini Simulation: Newton's Second Law (F = ma)", category: "Mini Simulation", webUrl: "newton.html", fileUrl: "newton.html" },
+            pendulum: { title: "Experiment 1.1: Simple Pendulum", category: "Form 4 • Chapter 1", webUrl: "pendulum_sim.html", fileUrl: "pendulum_sim.html" },
+            exp2_1: { title: "Experiment 2.1: Gravitational Acceleration (g)", category: "Form 4 • Chapter 2", webUrl: "Tingkatan4eksperimen2.html", fileUrl: "Tingkatan4eksperimen2.html" },
+            exp2_2: { title: "Experiment 2.2: Mass & Inertia", category: "Form 4 • Chapter 2", webUrl: "form4eksperimen3.html", fileUrl: "form4eksperimen3.html" },
+            exp4_1: { title: "Experiment 4.1 & 4.2: Specific Heat Capacity", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen4.html", fileUrl: "form4eksperimen4.html" },
+            exp4_3: { title: "Experiment 4.3: Specific Latent Heat", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen5.html", fileUrl: "form4eksperimen5.html" },
+            exp4_4: { title: "Experiment 4.4: Boyle's Law", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen6.html", fileUrl: "form4eksperimen6.html" },
+            exp4_5: { title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen7.html", fileUrl: "form4eksperimen7.html" },
+            exp4_6: { title: "Experiment 4.6: Gay-Lussac's Law", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen8.html", fileUrl: "form4eksperimen8.html" },
+            exp6_1: { title: "Experiment 6.1: Snell's Law (Glass Block)", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen9.html", fileUrl: "form4eksperimen9.html" },
+            exp6_2: { title: "Experiment 6.2: Real & Apparent Depth (Water)", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen10.html", fileUrl: "form4eksperimen10.html" },
+            exp6_3: { title: "Experiment 6.3: Convex Lens Formula", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen11.html", fileUrl: "form4eksperimen11.html" },
+            boardgame: { title: "Physics Monopoly: Ultimate Edition", category: "Educational Game", webUrl: "boardgame.html", fileUrl: "boardgame.html" },
+            journey: { title: "Journey to the West: Physics Quiz RPG", category: "Educational Game", webUrl: "journey.html", fileUrl: "journey.html" }
         };
 
         function resolveLink(webUrl, fileUrl) {
-            return window.location.protocol === 'file:' ? fileUrl : webUrl;
+            return isMobileAppEnv() ? fileUrl : webUrl;
         }
 
         function renderRocketStations(activitiesList) {
@@ -705,7 +763,10 @@
                             applyAvatarVisual(userData.avatarChoice);
                             try { localStorage.setItem('vv_avatar_choice', userData.avatarChoice); } catch (e) {}
                         }
-
+                        if (userData.currentSyllabus) {
+                            document.getElementById('profile-syllabus-select').value = userData.currentSyllabus;
+                            try { localStorage.setItem('vv_current_syllabus', userData.currentSyllabus); } catch (e) {}
+                        }
                         if (userData.isPro) {
                             document.getElementById('account-tier-pill').innerText = "👑 Pro Teacher Account";
                         }
@@ -721,13 +782,13 @@
                     renderRocketStations([]);
                 });
             } else {
-                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+                window.location.replace(isMobileAppEnv() ? 'login.html' : 'login.html');
             }
         });
 
         function logoutUser() {
             firebase.auth().signOut().then(() => {
-                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+                window.location.replace(isMobileAppEnv() ? 'login.html' : 'login.html');
             });
         }
     </script>

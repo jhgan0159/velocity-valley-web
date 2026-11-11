@@ -1,6 +1,9 @@
 venv/
 __pycache__/
+*.pyc
+.env
+ilmu_key.txt
 node_modules/
-venv/
 android/.gradle/
+android/build/
 android/app/build/

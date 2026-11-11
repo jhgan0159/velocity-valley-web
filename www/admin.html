@@ -44,9 +44,9 @@
 
 <div class="container">
     <div class="top-nav-bar">
-        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
         <div style="display:flex; gap:10px;">
-            <a href="/boardgame" onclick="if(window.location.protocol==='file:'){this.href='boardgame.html';}" style="padding: 10px 16px; background: #2ecc71; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">🎲 Go to Board Game</a>
+            <a href="boardgame.html" onclick="if(true){this.href='boardgame.html';}" style="padding: 10px 16px; background: #2ecc71; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">🎲 Go to Board Game</a>
             <button onclick="firebase.auth().signOut()" style="padding: 10px 16px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 0; width: auto;">
                 Sign Out
             </button>
@@ -85,7 +85,7 @@
         if (user) {
             console.log("Teacher logged in: " + user.email);
         } else {
-            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+            window.location.replace(true ? 'login.html' : 'login.html');
         }
     });
 </script>

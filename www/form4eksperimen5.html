@@ -256,7 +256,7 @@
 
 <div class="container">
     <div class="top-nav-row">
-        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
         <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 4.3</span>
     </div>
 
@@ -595,7 +595,7 @@
             id: "exp4_3",
             title: "Experiment 4.3: Specific Latent Heat",
             category: "Form 4 • Chapter 4",
-            webUrl: "/form4experiment5",
+            webUrl: "form4eksperimen5.html",
             fileUrl: "form4eksperimen5.html",
             timestamp: new Date().toLocaleString('en-GB')
         };
@@ -624,7 +624,7 @@
         if (user) {
             recordStationVisit(user);
         } else {
-            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+            window.location.replace(true ? 'login.html' : 'login.html');
         }
     });
 </script>

@@ -9,10 +9,7 @@
     <meta name="keywords" content="Fizik KSSM, eksperimen fizik tingkatan 4, simulasi fizik, belajar fizik online, Velocity Valley, amali fizik, KSSM Physics, Form 4 physics experiment, physics simulation, learning physics online, educational physics game, physics practical">
     <meta name="robots" content="index, follow">
     <style>
-        /* --- CORE RESET & BOX SIZING --- */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
 
         :root {
             --bg-deep: #0b132b;
@@ -76,7 +73,6 @@
             100% { transform: translateY(10px) rotate(-2deg); opacity: 0.14; }
         }
 
-        /* --- HEADER & LOGO --- */
         header {
             background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(14px);
@@ -122,7 +118,6 @@
             color: #bdc3c7;
         }
 
-        /* --- LAYOUT & SECTIONS --- */
         .mobile-tab {
             position: relative;
             z-index: 2;
@@ -220,70 +215,98 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- FIRST-TIME GUIDE DIALOGUE ANIMATION --- */
+        /* --- CLEAN, BALANCED LAB GUIDE CARD --- */
         .sim-guide-bubble {
             display: none;
             background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
             color: #1e293b;
-            border: 3px solid #0ea5e9;
-            border-radius: 16px;
-            padding: 18px 20px;
+            border: 2.5px solid #0ea5e9;
+            border-radius: 18px;
+            padding: 20px 22px;
             margin-bottom: 22px;
-            box-shadow: 0 12px 30px rgba(14, 165, 233, 0.35);
+            box-shadow: 0 12px 28px rgba(14, 165, 233, 0.28);
             position: relative;
-            animation: guideBounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: guideBounceIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .sim-guide-bubble.show-guide {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
         }
         @keyframes guideBounceIn {
-            0% { opacity: 0; transform: scale(0.85) translateY(-15px); }
-            70% { transform: scale(1.03) translateY(3px); }
+            0% { opacity: 0; transform: scale(0.92) translateY(-10px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
         .guide-avatar-img {
-            width: 64px;
-            height: 64px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #0ea5e9;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
-            animation: avatarFloat 2s ease-in-out infinite alternate;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+            animation: avatarFloat 2.2s ease-in-out infinite alternate;
         }
         @keyframes avatarFloat {
             from { transform: translateY(0); }
-            to { transform: translateY(-6px); }
+            to { transform: translateY(-5px); }
         }
-        .guide-text-box { flex: 1; }
-        .guide-text-box h4 {
-            margin: 0 0 6px 0;
-            color: #0369a1;
-            font-size: 1.05rem;
+        .guide-text-box {
+            flex: 1;
             display: flex;
-            align-items: center;
-            gap: 6px;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .guide-text-box h4 {
+            margin: 0;
+            color: #0369a1;
+            font-size: 1.12rem;
+            font-weight: 800;
+            line-height: 1.35;
         }
         .guide-text-box p {
-            margin: 0 0 10px 0;
-            font-size: 0.92rem;
-            line-height: 1.45;
+            margin: 0;
+            font-size: 0.94rem;
+            line-height: 1.6;
             color: #334155;
         }
-        .guide-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .guide-pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 2px 0 4px 0;
+        }
+        .guide-mini-pill {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .guide-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 2px;
+        }
         .guide-btn {
-            padding: 6px 14px;
-            border-radius: 20px;
+            padding: 8px 20px;
+            border-radius: 22px;
             border: none;
             font-weight: 700;
-            font-size: 0.82rem;
+            font-size: 0.86rem;
             cursor: pointer;
-            transition: transform 0.15s;
+            transition: transform 0.15s, box-shadow 0.15s;
         }
-        .guide-btn-primary { background: #0ea5e9; color: white; }
-        .guide-btn-dismiss { background: #e2e8f0; color: #475569; }
+        .guide-btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: white;
+            box-shadow: 0 4px 10px rgba(14, 165, 233, 0.35);
+        }
+        .guide-btn-primary:hover {
+            transform: translateY(-1px);
+        }
 
         /* --- SIMULATION CARDS --- */
         .sim-card {
@@ -342,12 +365,12 @@
         }
         .status-building { background: linear-gradient(135deg, #f39c12, #d35400); }
 
-        /* --- SCIENTIST CHARACTER DAILY QUESTION DIALOGUE MODAL --- */
+        /* --- SCIENTIST MODAL (DAILY CHALLENGE & SYLLABUS) --- */
         .scientist-modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(6, 11, 25, 0.86);
+            background: rgba(6, 11, 25, 0.84);
             backdrop-filter: blur(8px);
             z-index: 20000;
             justify-content: center;
@@ -359,13 +382,13 @@
             border: 2px solid #38bdf8;
             border-radius: 22px;
             width: 100%;
-            max-width: 680px;
+            max-width: 650px;
             max-height: 92vh;
             overflow-y: auto;
             box-shadow: 0 20px 50px rgba(0, 210, 255, 0.3);
             padding: 24px;
             color: #f8fafc;
-            animation: guideBounceIn 0.4s ease-out;
+            animation: guideBounceIn 0.35s ease-out;
         }
         .scientist-header-row {
             display: flex;
@@ -378,8 +401,8 @@
             margin-bottom: 18px;
         }
         .scientist-portrait {
-            width: 105px;
-            height: 105px;
+            width: 88px;
+            height: 88px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #38bdf8;
@@ -387,10 +410,7 @@
             flex-shrink: 0;
             animation: avatarFloat 2.4s ease-in-out infinite alternate;
         }
-        .scientist-speech-bubble {
-            flex: 1;
-            position: relative;
-        }
+        .scientist-speech-bubble { flex: 1; position: relative; }
         .scientist-name-tag {
             display: inline-block;
             background: linear-gradient(90deg, #0ea5e9, #2563eb);
@@ -416,7 +436,7 @@
             margin-bottom: 16px;
         }
         .daily-q-text {
-            font-size: 1.12rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #ffffff;
             margin: 0 0 14px 0;
@@ -431,7 +451,7 @@
             border-radius: 10px;
             font-weight: 700;
             cursor: pointer;
-            font-size: 0.98rem;
+            font-size: 0.96rem;
             text-align: left;
             transition: all 0.2s ease;
         }
@@ -440,9 +460,7 @@
             border-color: #38bdf8;
             transform: translateX(4px);
         }
-        .daily-opt-btn:disabled {
-            cursor: default;
-        }
+        .daily-opt-btn:disabled { cursor: default; }
         .daily-opt-btn.opt-correct {
             background: rgba(46, 204, 113, 0.25) !important;
             border-color: #2ecc71 !important;
@@ -477,6 +495,313 @@
             background: rgba(239, 68, 68, 0.25);
             color: #fff;
             border-color: #ef4444;
+        }
+
+        /* --- FLOATING DR. VECTOR AVATAR + COMIC SPEECH BUBBLE --- */
+        .dr-vector-comic-fab {
+            position: fixed;
+            bottom: 24px;
+            right: 22px;
+            z-index: 9990;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+            background: transparent;
+            border: none;
+            padding: 0;
+            transition: transform 0.2s ease;
+        }
+        .dr-vector-comic-fab:hover {
+            transform: translateY(-4px) scale(1.03);
+        }
+        .comic-speech-bubble {
+            position: relative;
+            background: #ffffff;
+            color: #0f172a;
+            border: 2.5px solid #0f172a;
+            border-radius: 18px;
+            padding: 7px 13px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            box-shadow: 3px 4px 0px #0ea5e9, 0 6px 16px rgba(0,0,0,0.35);
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+            animation: comicPulse 3s ease-in-out infinite;
+        }
+        .comic-speech-bubble::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            border-left: 10px solid #0f172a;
+        }
+        .comic-speech-bubble::before {
+            content: '';
+            position: absolute;
+            right: -7px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 8px solid #ffffff;
+            z-index: 1;
+        }
+        @keyframes comicPulse {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        .dr-vector-avatar-wrap {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, #00d2ff, #4f46e5);
+            box-shadow: 0 8px 22px rgba(14, 165, 233, 0.6);
+            flex-shrink: 0;
+        }
+        .dr-vector-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            display: block;
+        }
+        .dr-vector-online-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 13px;
+            height: 13px;
+            background: #22c55e;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+        }
+
+        /* --- MESSENGER-STYLE AI CHAT WINDOW --- */
+        .messenger-modal-card {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 26px;
+            width: 100%;
+            max-width: 430px;
+            height: 82vh;
+            max-height: 680px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+            animation: guideBounceIn 0.3s ease-out;
+        }
+        .messenger-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+            flex-shrink: 0;
+            gap: 8px;
+        }
+        .messenger-top-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+        .messenger-back-btn {
+            background: transparent;
+            border: none;
+            color: #6366f1;
+            font-size: 1.8rem;
+            line-height: 1;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0 6px 2px 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .messenger-header-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        .messenger-header-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .messenger-header-name {
+            font-weight: 800;
+            font-size: 0.98rem;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+        .messenger-header-sub {
+            font-size: 0.72rem;
+            color: #64748b;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .messenger-top-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .messenger-clear-btn {
+            background: #f1f5f9;
+            color: #64748b;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+        .messenger-clear-btn:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+        .messenger-chapter-pill {
+            background: #7c3aed;
+            color: #ffffff;
+            border: none;
+            border-radius: 18px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+        }
+        .messenger-chat-feed {
+            flex: 1;
+            background: #ffffff;
+            padding: 16px 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .messenger-time-divider {
+            text-align: center;
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 600;
+            margin: 2px 0 6px 0;
+        }
+        .msg-row-ai {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            max-width: 88%;
+            align-self: flex-start;
+        }
+        .msg-row-ai-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid #cbd5e1;
+        }
+        .msg-ai-bubbles-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .msg-bubble-ai {
+            background: #f1f3f5;
+            color: #111827;
+            padding: 11px 15px;
+            border-radius: 18px 18px 18px 6px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .msg-bubble-user {
+            background: #4752f5;
+            color: #ffffff;
+            padding: 11px 15px;
+            border-radius: 18px 18px 6px 18px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            max-width: 82%;
+            align-self: flex-end;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(71, 82, 245, 0.25);
+        }
+        .messenger-input-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px 14px 14px;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+            flex-shrink: 0;
+        }
+        .messenger-text-input {
+            flex: 1;
+            background: #f1f3f5;
+            color: #0f172a;
+            border: 1.5px solid transparent;
+            border-radius: 24px;
+            padding: 11px 16px;
+            font-size: 0.93rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .messenger-text-input:focus {
+            background: #ffffff;
+            border-color: #6366f1;
+        }
+        .messenger-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #4752f5;
+            color: #ffffff;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(71, 82, 245, 0.35);
+            transition: transform 0.15s;
+        }
+        .messenger-send-btn:hover:not(:disabled) {
+            transform: scale(1.06);
+        }
+        .messenger-send-btn:disabled {
+            opacity: 0.55;
+            cursor: default;
         }
 
         /* --- ABOUT SECTION STYLES --- */
@@ -541,7 +866,6 @@
         .advantage-item strong { font-size: 1.35rem; margin-bottom: 8px; color: #fff; }
         .advantage-item span { font-size: 1rem; line-height: 1.5; }
 
-        /* --- PROMO & COMING SOON POP-UP STYLES --- */
         .promo-overlay {
             display: none;
             position: fixed;
@@ -597,9 +921,6 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* =========================================
-           DESKTOP VS MOBILE TAB LOGIC
-           ========================================= */
         @media (min-width: 769px) {
             .home-main-buttons { display: none; }
             .mobile-tab { display: flex !important; }
@@ -610,6 +931,19 @@
             body {
                 padding-bottom: 82px;
                 background-attachment: scroll;
+            }
+            .dr-vector-comic-fab {
+                bottom: 78px;
+                right: 14px;
+                gap: 10px;
+            }
+            .dr-vector-avatar-wrap {
+                width: 54px;
+                height: 54px;
+            }
+            .comic-speech-bubble {
+                font-size: 0.78rem;
+                padding: 6px 11px;
             }
             .mobile-tab { display: none; width: 100%; }
             .mobile-tab.active-tab {
@@ -643,19 +977,29 @@
             }
             .sim-cat-btn { padding: 10px 6px; font-size: 0.82rem; }
             .sim-cat-btn .cat-icon { font-size: 1.25rem; }
+
             .sim-guide-bubble.show-guide {
                 flex-direction: column;
                 text-align: center;
-                padding: 15px;
+                padding: 18px 16px;
+                gap: 12px;
             }
-            .guide-actions { justify-content: center; }
+            .guide-pill-row { justify-content: center; }
+            .guide-actions { justify-content: center; width: 100%; }
+            .guide-btn-primary { width: 100%; max-width: 240px; padding: 10px 20px; }
 
             .scientist-header-row {
                 flex-direction: column;
                 text-align: center;
                 padding: 14px;
             }
-            .scientist-portrait { width: 88px; height: 88px; }
+            .scientist-portrait { width: 80px; height: 80px; }
+
+            .messenger-modal-card {
+                height: 86vh;
+                max-height: none;
+                border-radius: 22px;
+            }
 
             .menu-grid { grid-template-columns: 1fr; gap: 1rem; }
             .sim-card { min-height: 195px; padding: 20px 16px; }
@@ -667,7 +1011,6 @@
                 width: 100%;
             }
 
-            /* Mobile Main Menu Grid Cards */
             .home-main-buttons {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -708,7 +1051,6 @@
             }
             .home-menu-card.primary-sim .card-sub { color: #e0f2fe; }
 
-            /* Mobile Bottom Navigation Bar */
             .bottom-nav {
                 display: flex;
                 position: fixed;
@@ -771,13 +1113,93 @@
 </head>
 <body>
 
-    <!-- Animated Floating Physics Formulas Background Layer -->
     <div class="physics-bg-decor" aria-hidden="true">
         <span class="floating-formula" style="top: 12%; left: 6%; font-size: 1.4rem;">F = ma</span>
         <span class="floating-formula" style="top: 24%; right: 8%; font-size: 1.2rem; animation-delay: -4s;">T = 2π√(l/g)</span>
         <span class="floating-formula" style="top: 52%; left: 4%; font-size: 1.25rem; animation-delay: -8s;">P₁V₁ = P₂V₂</span>
         <span class="floating-formula" style="top: 68%; right: 6%; font-size: 1.3rem; animation-delay: -12s;">1/f = 1/u + 1/v</span>
         <span class="floating-formula" style="top: 84%; left: 12%; font-size: 1.15rem; animation-delay: -6s;">n = sin i / sin r</span>
+    </div>
+
+    <!-- FLOATING DR. VECTOR AVATAR WITH COMIC SPEECH BUBBLE -->
+    <button class="dr-vector-comic-fab" onclick="openAiTutorModal()" aria-label="Ask Prof. Vector AI Tutor">
+        <div class="comic-speech-bubble">💬 Ask Dr. Vector!</div>
+        <div class="dr-vector-avatar-wrap">
+            <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" onerror="this.src='./static/images/logo.png'">
+            <span class="dr-vector-online-dot"></span>
+        </div>
+    </button>
+
+    <!-- ======================================================== -->
+    <!-- MESSENGER-STYLE AI TUTOR MODAL (z-index: 20000)          -->
+    <!-- ======================================================== -->
+    <div id="aiTutorModal" class="scientist-modal-overlay" style="z-index: 20000;">
+        <div class="messenger-modal-card">
+            <!-- Messenger Top Header -->
+            <div class="messenger-top-bar">
+                <div class="messenger-top-left">
+                    <button class="messenger-back-btn" onclick="document.getElementById('aiTutorModal').style.display='none'" title="Back">‹</button>
+                    <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" class="messenger-header-avatar" onerror="this.src='./static/images/logo.png'">
+                    <div class="messenger-header-info">
+                        <span class="messenger-header-name">Prof. Vector</span>
+                        <span id="messengerSyllabusSub" class="messenger-header-sub">AI Physics Guide • KSSM</span>
+                    </div>
+                </div>
+                <div class="messenger-top-actions">
+                    <button class="messenger-clear-btn" onclick="clearAiChatHistory()" title="Clear Chat History">🗑️</button>
+                    <button class="messenger-chapter-pill" onclick="openSyllabusModal()" title="Change KSSM Chapter">
+                        ✓ ▾
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messenger Chat Stream (Persisted across logins) -->
+            <div id="aiChatHistory" class="messenger-chat-feed"></div>
+
+            <!-- Messenger Input Footer -->
+            <div class="messenger-input-bar">
+                <input type="text" id="aiQuestionInput" class="messenger-text-input" placeholder="Message Prof. Vector..." onkeydown="if(event.key==='Enter'){sendAiTutorQuestion();}">
+                <button onclick="sendAiTutorQuestion()" id="aiSendBtn" class="messenger-send-btn" title="Send">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- KSSM SYLLABUS MODAL (z-index: 30000 -> ON TOP OF CHAT)   -->
+    <!-- ======================================================== -->
+    <div id="syllabusConfirmModal" class="scientist-modal-overlay" style="z-index: 30000;">
+        <div class="scientist-dialogue-card" style="max-width: 520px; position: relative;">
+            <div class="scientist-header-row">
+                <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" class="scientist-portrait" onerror="this.src='./static/images/logo.png'">
+                <div class="scientist-speech-bubble">
+                    <span class="scientist-name-tag">📚 KSSM SYLLABUS CHECK-IN</span>
+                    <p class="scientist-speech-text">
+                        "Welcome, Cadet! Before I generate your <strong>Daily Physics Challenge</strong> and personalize your <strong>AI Physics Tutor</strong>, which chapter are you currently studying in school?"
+                    </p>
+                </div>
+            </div>
+
+            <div class="daily-q-box">
+                <label for="syllabusSelectDropdown" style="display:block; font-weight:bold; margin-bottom:10px; color:#38bdf8;">
+                    Select Your Current KSSM Physics Chapter:
+                </label>
+                <select id="syllabusSelectDropdown" style="width:100%; max-width:100%; padding:12px 10px; border-radius:10px; border:2px solid #38bdf8; background:#0f172a; color:#fff; font-size:0.95rem; font-weight:bold; margin-bottom:14px; text-overflow:ellipsis; overflow:hidden;">
+                    <option value="F4_B1">Form 4 • Bab 1: Pengukuran</option>
+                    <option value="F4_B2" selected>Form 4 • Bab 2: Daya & Gerakan I</option>
+                    <option value="F4_B3">Form 4 • Bab 3: Kegravitian</option>
+                    <option value="F4_B4">Form 4 • Bab 4: Haba</option>
+                    <option value="F4_B5">Form 4 • Bab 5: Gelombang</option>
+                    <option value="F4_B6">Form 4 • Bab 6: Cahaya & Optik</option>
+                    <option value="F5_B1">Form 5 • Bab 1: Daya & Gerakan II</option>
+                    <option value="F5_B2">Form 5 • Bab 2: Elektrik</option>
+                    <option value="F5_B3">Form 5 • Bab 3: Keelektromagnetan</option>
+                    <option value="F5_B4">Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum</option>
+                </select>
+                <button onclick="saveSyllabusChoice()" style="width:100%; padding:13px; background:linear-gradient(135deg, #2ecc71, #27ae60); color:white; border:none; border-radius:10px; font-weight:800; font-size:1.02rem; cursor:pointer;">
+                    ✅ Confirm My Current Chapter
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- PROMO POP-UP MODAL -->
@@ -811,21 +1233,29 @@
     </div>
 
     <!-- AI SCIENTIST CHARACTER DAILY PHYSICS CHALLENGE MODAL -->
-    <div id="dailyQuestionModal" class="scientist-modal-overlay">
+    <div id="dailyQuestionModal" class="scientist-modal-overlay" style="z-index: 22000;">
         <div class="scientist-dialogue-card">
             <div class="scientist-header-row">
                 <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" class="scientist-portrait" onerror="this.src='./static/images/logo.png'">
                 <div class="scientist-speech-bubble">
-                    <span class="scientist-name-tag">👨‍🔬 PROF. VECTOR • CHIEF PHYSICS SCIENTIST</span>
-                    <p id="scientistSpeechText" class="scientist-speech-text">
-                        "Greetings, Cadet! Here is today's Daily Physics Challenge. Remember: you only get <strong>ONE attempt</strong> per day—think carefully, or close this conversation to answer later!"
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                        <span class="scientist-name-tag">👨‍🔬 PROF. VECTOR • AI DAILY CHALLENGE</span>
+                        <button onclick="openSyllabusModal()" style="background:rgba(255,255,255,0.12); border:1px solid #7dd3fc; color:#bae6fd; border-radius:12px; padding:3px 10px; font-size:0.74rem; cursor:pointer; font-weight:bold;">
+                            📚 Change Chapter
+                        </button>
+                    </div>
+                    <p id="scientistSpeechText" class="scientist-speech-text" style="margin-top:6px;">
+                        "Greetings, Cadet! Here is today's KSSM Daily Physics Challenge tailored to your current chapter!"
                     </p>
                 </div>
             </div>
 
             <div class="daily-q-box">
+                <div id="dailyChapterBadge" style="display:inline-block; background:rgba(14,165,233,0.2); border:1px solid #38bdf8; color:#7dd3fc; font-size:0.76rem; font-weight:bold; padding:3px 10px; border-radius:12px; margin-bottom:10px;">
+                    📚 Current Chapter: Form 4 • Bab 2
+                </div>
                 <img id="dailyQuestionImage" src="" alt="Gambar Soalan" style="display:none; width:100%; max-height:190px; object-fit:contain; border-radius:8px; margin-bottom:14px;">
-                <p id="dailyQuestionText" class="daily-q-text">Loading question...</p>
+                <p id="dailyQuestionText" class="daily-q-text">Generating question for your KSSM chapter...</p>
                 <div id="dailyOptionsBox" style="display:flex; flex-direction:column; gap:10px;"></div>
                 <div id="dailyResultFeedback" class="daily-feedback-banner"></div>
             </div>
@@ -837,16 +1267,16 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 1: HOME -->
+    <!-- TAB 1: HOME                                              -->
     <!-- ======================================================== -->
     <div id="tab-home" class="mobile-tab active-tab">
         <header>
             <img src="./static/images/logo.png" alt="Velocity Valley Circle Logo" class="top-right-logo">
             <div id="auth-menu" style="text-align: right; padding: 10px 15px;">
-                <button id="btn-login" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #008CBA, #005f7f); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;" onclick="navigateApp('/login', 'login.html')">
+                <button id="btn-login" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #008CBA, #005f7f); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;" onclick="navigateApp('login.html', 'login.html')">
                     Sign In
                 </button>
-                <button id="btn-admin" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; border-radius: 20px; cursor: pointer; margin-right: 5px; font-weight: bold;" onclick="navigateApp('/dashboard', 'dashboard.html')">
+                <button id="btn-admin" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; border-radius: 20px; cursor: pointer; margin-right: 5px; font-weight: bold;" onclick="navigateApp('dashboard.html', 'dashboard.html')">
                     🚀 My Profile
                 </button>
                 <button id="btn-logout" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;" onclick="logoutUser()">
@@ -856,20 +1286,27 @@
             <div class="title-wrapper">
                 <h1>Velocity Valley</h1>
             </div>
-            <p class="subtitle">Interactive KSSM Physics Simulations & Educational Games</p>
+            <p class="subtitle">Interactive KSSM Physics Simulations & AI-Powered Learning</p>
         </header>
 
-        <!-- Daily Challenge Hero Card -->
-        <div class="section-container" style="text-align: center; background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); padding: 28px 24px; border-radius: 18px; box-shadow: 0 12px 28px rgba(230, 126, 34, 0.35); color: white; margin-top: -10px; margin-bottom: 2rem; position: relative; z-index: 10; border: 1px solid rgba(255,255,255,0.25);">
-            <div style="display:inline-block; background:rgba(0,0,0,0.2); padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:bold; margin-bottom:8px;">🔥 DAILY STREAK CHALLENGE WITH PROF. VECTOR</div>
-            <h2 style="margin-top: 0; font-size: 1.9rem; color: white;">Daily Physics Challenge</h2>
-            <p style="font-size: 1.05rem; opacity: 0.95; margin-bottom: 18px;">Meet Prof. Vector, solve today's single-attempt physics challenge, and unlock achievement badges!</p>
-            <button onclick="checkAndShowDailyQuestion(true)" style="background-color: white; color: #d35400; padding: 12px 32px; font-size: 1.1rem; font-weight: bold; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s;">
-                ⚡ Talk to Prof. Vector
-            </button>
+        <!-- Daily Challenge Banner (Automatically hides until tomorrow once completed) -->
+        <div id="daily-challenge-banner" class="section-container" style="text-align: center; background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); padding: 24px 20px; border-radius: 18px; box-shadow: 0 12px 28px rgba(230, 126, 34, 0.35); color: white; margin-top: -10px; margin-bottom: 1.8rem; position: relative; z-index: 10; border: 1px solid rgba(255,255,255,0.25);">
+            <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+                <span style="background:rgba(0,0,0,0.25); padding:5px 12px; border-radius:20px; font-size:0.78rem; font-weight:bold;">🔥 AI DAILY CHALLENGE</span>
+                <button onclick="openSyllabusModal()" id="hero-syllabus-pill" style="background:rgba(255,255,255,0.22); border:1px solid white; color:white; padding:5px 12px; border-radius:20px; font-size:0.78rem; font-weight:bold; cursor:pointer;">
+                    📚 Chapter: Form 4 • Bab 2 (Change)
+                </button>
+            </div>
+            <h2 style="margin: 0 0 8px 0; font-size: 1.7rem; color: white;">Daily KSSM Physics Challenge</h2>
+            <p style="font-size: 0.96rem; opacity: 0.95; margin: 0 auto 16px auto; max-width: 520px; line-height: 1.45;">Prof. Vector generates a daily physics challenge matched to your current school chapter!</p>
+            <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <button onclick="checkAndShowDailyQuestion(true)" style="background-color: white; color: #d35400; padding: 11px 26px; font-size: 1rem; font-weight: 800; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    ⚡ Start Today's Challenge
+                </button>
+            </div>
         </div>
 
-        <!-- Mobile Main Menu Grid (Visible on Mobile Devices) -->
+        <!-- Mobile Main Menu Grid -->
         <div class="home-main-buttons">
             <div class="home-menu-card primary-sim" onclick="switchMobileTab('tab-simulations')">
                 <span class="card-emoji">🔬</span>
@@ -881,52 +1318,49 @@
                 <span class="card-title">Physics Games</span>
                 <span class="card-sub">Monopoly & Journey RPG</span>
             </div>
-            <div class="home-menu-card" onclick="navigateApp('/dashboard', 'dashboard.html')">
+            <div class="home-menu-card" onclick="navigateApp('dashboard.html', 'dashboard.html')">
                 <span class="card-emoji">🚀</span>
                 <span class="card-title">My Rocket Profile</span>
                 <span class="card-sub">Last 5 Labs & Badges</span>
             </div>
-            <div class="home-menu-card" onclick="switchMobileTab('tab-pro')">
-                <span class="card-emoji">👑</span>
-                <span class="card-title">Teacher Pro Hub</span>
-                <span class="card-sub">Create Custom Rooms</span>
-            </div>
-            <div class="home-menu-card" onclick="switchMobileTab('tab-about')">
-                <span class="card-emoji">💡</span>
-                <span class="card-title">About Us</span>
-                <span class="card-sub">Mission & Contact</span>
+            <div class="home-menu-card" onclick="openAiTutorModal()">
+                <span class="card-emoji">💬</span>
+                <span class="card-title">Chat with Prof. Vector</span>
+                <span class="card-sub">AI Physics Guide (ILMU)</span>
             </div>
         </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 2: SIMULATIONS (3-BUTTON SWITCHER + FIRST-TIME GUIDE) -->
+    <!-- TAB 2: SIMULATIONS (3-BUTTON SWITCHER + NEAT GUIDE CARD) -->
     <!-- ======================================================== -->
     <div id="tab-simulations" class="mobile-tab">
         <div class="section-container">
             <div class="section-title">
                 <span>🔬 Virtual Physics Laboratory</span>
                 <button onclick="triggerSimGuide(true)" style="background: #0ea5e9; color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer;">
-                    💡 How to Use Lab
+                    💡 Lab Guide
                 </button>
             </div>
 
-            <!-- Animated First-Time User Guide Dialogue -->
             <div id="sim-guide-box" class="sim-guide-bubble">
                 <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" class="guide-avatar-img" onerror="this.src='./static/images/logo.png'">
                 <div class="guide-text-box">
-                    <h4>👋 Welcome to the Velocity Valley Lab! <span id="guide-step-indicator" style="font-size:0.78rem; color:#64748b;">(Step 1 of 2)</span></h4>
-                    <p id="guide-dialogue-text">
-                        Select one of the <strong>3 categories below</strong> (<strong>Mini Simulation</strong>, <strong>Form 4 Experiment</strong>, or <strong>Form 5 Experiment</strong>) to filter your syllabus experiments!
+                    <h4>👋 Welcome to the Velocity Valley Lab!</h4>
+                    <p>
+                        Switch between the three categories below to explore interactive concept simulations and compulsory KSSM Physics practicals:
                     </p>
+                    <div class="guide-pill-row">
+                        <span class="guide-mini-pill">⚡ Mini Simulation</span>
+                        <span class="guide-mini-pill">🔬 Form 4 Experiment</span>
+                        <span class="guide-mini-pill">🚀 Form 5 Experiment</span>
+                    </div>
                     <div class="guide-actions">
-                        <button id="guide-next-btn" class="guide-btn guide-btn-primary" onclick="nextGuideStep()">Next Tip →</button>
-                        <button class="guide-btn guide-btn-dismiss" onclick="dismissSimGuide()">Got it, let me try!</button>
+                        <button class="guide-btn guide-btn-primary" onclick="dismissSimGuide()">Got it, let's explore!</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 3 Distinct Simulation Category Buttons -->
             <div class="sim-category-bar" role="tablist">
                 <button id="btn-cat-mini" class="sim-cat-btn active-cat" onclick="selectSimCategory('mini')">
                     <span class="cat-icon">⚡</span>
@@ -948,7 +1382,7 @@
             <!-- PANEL 1: MINI SIMULATION -->
             <div id="panel-cat-mini" class="sim-category-panel active-panel">
                 <div class="menu-grid">
-                    <a href="/newton" onclick="handleSimClick(event, '/newton', 'newton.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.85)), url('./static/images/newton.jpg');">
+                    <a href="newton.html" onclick="handleSimClick(event, 'newton.html', 'newton.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.85)), url('./static/images/newton.jpg');">
                         <div>
                             <h2>Mini Newton's Laws Simulation</h2>
                             <p>Explore inertia, net force, and acceleration through interactive mass and force sliders.</p>
@@ -978,7 +1412,7 @@
             <!-- PANEL 2: FORM 4 EXPERIMENTS -->
             <div id="panel-cat-form4" class="sim-category-panel">
                 <div class="menu-grid">
-                    <a href="/pendulum" onclick="handleSimClick(event, '/pendulum', 'pendulum_sim.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment1.jpg');">
+                    <a href="pendulum_sim.html" onclick="handleSimClick(event, 'pendulum_sim.html', 'pendulum_sim.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment1.jpg');">
                         <div>
                             <h2>Experiment 1.1: Simple Pendulum</h2>
                             <p>Investigate how the period of oscillation (T) of a simple pendulum depends on its length (l).</p>
@@ -986,7 +1420,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/tingkatan4experiment2" onclick="handleSimClick(event, '/tingkatan4experiment2', 'Tingkatan4eksperimen2.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment2.jpg');">
+                    <a href="Tingkatan4eksperimen2.html" onclick="handleSimClick(event, 'Tingkatan4eksperimen2.html', 'Tingkatan4eksperimen2.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment2.jpg');">
                         <div>
                             <h2>Experiment 2.1: Gravitational Acceleration</h2>
                             <p>Determine Earth's gravitational acceleration (g) using a dual-photogate free-fall timer system.</p>
@@ -994,7 +1428,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment3" onclick="handleSimClick(event, '/form4experiment3', 'form4eksperimen3.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment3.jpg');">
+                    <a href="form4eksperimen3.html" onclick="handleSimClick(event, 'form4eksperimen3.html', 'form4eksperimen3.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment3.jpg');">
                         <div>
                             <h2>Experiment 2.2: Mass & Inertia</h2>
                             <p>Investigate the relationship between plasticine mass (m) and period of oscillation (T) on a hacksaw blade.</p>
@@ -1002,7 +1436,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment4" onclick="handleSimClick(event, '/form4experiment4', 'form4eksperimen4.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment4.jpg');">
+                    <a href="form4eksperimen4.html" onclick="handleSimClick(event, 'form4eksperimen4.html', 'form4eksperimen4.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment4.jpg');">
                         <div>
                             <h2>Experiment 4.1 & 4.2: Specific Heat Capacity</h2>
                             <p>Determine the specific heat capacity (c) of water, oil, aluminium, steel, and copper using an immersion heater.</p>
@@ -1010,7 +1444,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment5" onclick="handleSimClick(event, '/form4experiment5', 'form4eksperimen5.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment5.jpg');">
+                    <a href="form4eksperimen5.html" onclick="handleSimClick(event, 'form4eksperimen5.html', 'form4eksperimen5.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment5.jpg');">
                         <div>
                             <h2>Experiment 4.3: Specific Latent Heat</h2>
                             <p>Determine the specific latent heat of fusion of ice (Part A) and vaporization of water (Part B).</p>
@@ -1018,7 +1452,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment6" onclick="handleSimClick(event, '/form4experiment6', 'form4eksperimen6.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment6.jpg');">
+                    <a href="form4eksperimen6.html" onclick="handleSimClick(event, 'form4eksperimen6.html', 'form4eksperimen6.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment6.jpg');">
                         <div>
                             <h2>Experiment 4.4: Boyle's Law</h2>
                             <p>Investigate the relationship between volume (V) and gas pressure (P) at constant temperature.</p>
@@ -1026,7 +1460,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment7" onclick="handleSimClick(event, '/form4experiment7', 'form4eksperimen7.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment7.jpg');">
+                    <a href="form4eksperimen7.html" onclick="handleSimClick(event, 'form4eksperimen7.html', 'form4eksperimen7.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment7.jpg');">
                         <div>
                             <h2>Experiment 4.5: Charles's Law</h2>
                             <p>Investigate the relationship between gas temperature (θ) and trapped air column length (L) at constant pressure.</p>
@@ -1034,7 +1468,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment8" onclick="handleSimClick(event, '/form4experiment8', 'form4eksperimen8.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment8.jpg');">
+                    <a href="form4eksperimen8.html" onclick="handleSimClick(event, 'form4eksperimen8.html', 'form4eksperimen8.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment8.jpg');">
                         <div>
                             <h2>Experiment 4.6: Gay-Lussac's Law</h2>
                             <p>Investigate the relationship between gas temperature and pressure at constant volume.</p>
@@ -1042,7 +1476,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment9" onclick="handleSimClick(event, '/form4experiment9', 'form4eksperimen9.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment9.jpg');">
+                    <a href="form4eksperimen9.html" onclick="handleSimClick(event, 'form4eksperimen9.html', 'form4eksperimen9.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment9.jpg');">
                         <div>
                             <h2>Experiment 6.1: Snell's Law (Glass Block)</h2>
                             <p>Determine the refractive index (n) of a glass block by measuring angle of incidence (i) and refraction (r).</p>
@@ -1050,7 +1484,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment10" onclick="handleSimClick(event, '/form4experiment10', 'form4eksperimen10.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment10.jpg');">
+                    <a href="form4eksperimen10.html" onclick="handleSimClick(event, 'form4eksperimen10.html', 'form4eksperimen10.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment10.jpg');">
                         <div>
                             <h2>Experiment 6.2: Real & Apparent Depth</h2>
                             <p>Determine the refractive index of water using the non-parallax pin method (H vs. h).</p>
@@ -1058,7 +1492,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="/form4experiment11" onclick="handleSimClick(event, '/form4experiment11', 'form4eksperimen11.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment11.jpg');">
+                    <a href="form4eksperimen11.html" onclick="handleSimClick(event, 'form4eksperimen11.html', 'form4eksperimen11.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment11.jpg');">
                         <div>
                             <h2>Experiment 6.3: Convex Lens Formula</h2>
                             <p>Examine the relationship between object distance (u) and image distance (v) for a convex lens.</p>
@@ -1094,20 +1528,20 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 3: GAME -->
+    <!-- TAB 3: GAME                                              -->
     <!-- ======================================================== -->
     <div id="tab-game" class="mobile-tab">
         <div class="section-container">
             <h2 class="section-title">🎮 Mini Physics Games</h2>
             <div class="menu-grid">
-                <a href="/boardgame" onclick="handleSimClick(event, '/boardgame', 'boardgame.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.82)), url('./static/images/boardgame.jpg');">
+                <a href="boardgame.html" onclick="handleSimClick(event, 'boardgame.html', 'boardgame.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.82)), url('./static/images/boardgame.jpg');">
                     <div>
                         <h2>Velocity Valley Board Game</h2>
                         <p>The interactive 1–4 player classroom Monopoly game! Land on C1–C4 tiles, spin 3-streak power-ups, and win.</p>
                     </div>
                     <span class="status-badge">Ready to Play</span>
                 </a>
-                <a href="/journey" onclick="handleSimClick(event, '/journey', 'journey.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.82)), url('./static/images/journey_bg.png');">
+                <a href="journey.html" onclick="handleSimClick(event, 'journey.html', 'journey.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.82)), url('./static/images/journey_bg.png');">
                     <div>
                         <h2>Journey to the West (Quiz RPG)</h2>
                         <p>Choose your hero (Wukong, Tang Seng, Bajie, Sha Wujing), use special skills, and defeat demon clones!</p>
@@ -1119,7 +1553,7 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 4: PRO (Teacher Admin) -->
+    <!-- TAB 4: PRO (Teacher Admin)                               -->
     <!-- ======================================================== -->
     <div id="tab-pro" class="mobile-tab">
         <div class="section-container">
@@ -1136,10 +1570,10 @@
                 <h3 style="color: #f39c12; font-size: 1.8rem; margin-top: 0;">Welcome to Teacher Admin!</h3>
                 <p style="color: white; font-size: 1.05rem; margin-bottom: 20px;">Create custom question rooms, set timers, and track your students' performance on the live dashboard!</p>
                 <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-                    <a href="/tcadminwest" onclick="handleSimClick(event, '/tcadminwest', 'tcadminwest.html')" style="background-color: #f39c12; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
+                    <a href="tcadminwest.html" onclick="handleSimClick(event, 'tcadminwest.html', 'tcadminwest.html')" style="background-color: #f39c12; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
                         ⚔️ Journey to the West Admin
                     </a>
-                    <a href="/teacher-admin" onclick="handleSimClick(event, '/teacher-admin', 'admin.html')" style="background-color: #3498db; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
+                    <a href="admin.html" onclick="handleSimClick(event, 'admin.html', 'admin.html')" style="background-color: #3498db; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
                         🎲 Board Game Question Manager
                     </a>
                 </div>
@@ -1148,7 +1582,7 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 5: ABOUT US -->
+    <!-- TAB 5: ABOUT US                                          -->
     <!-- ======================================================== -->
     <div id="tab-about" class="mobile-tab">
         <div class="section-container" id="about">
@@ -1163,8 +1597,8 @@
             <div class="about-card reverse">
                 <div class="about-content">
                     <h3>Meet the Founder</h3>
-                    <p>Hello! I am Gan Jun Heng, the founder of Velocity Valley Education Simulation Games, a passionate Physics educator and alumni of Universiti Teknologi Malaysia (UTM) specializing in Physics Education.</p>
-                    <p>By integrating modern web technologies, Velocity Valley helps students visualize and master complex physics experiments beyond rote memorization.</p>
+                    <p>Hello! I am Gan Jun Heng, the founder of Velocity Valley Education Simulation Games, a passionate Physics educator and almuni of Universiti Teknologi Malaysia (UTM) specializing in Physics Education.</p>
+                    <p>By integrating modern web technologies, Velocity Valley helps students visualize and master complex physics concepts beyond rote memorization.</p>
                 </div>
                 <img src="./static/images/founder.png" alt="Founder Velocity Valley" class="about-image founder-img">
             </div>
@@ -1186,8 +1620,8 @@
                             <span>Revision becomes an exciting challenge with Physics Monopoly and Journey to the West live teacher rooms.</span>
                         </div>
                         <div class="advantage-item" style="border-bottom-color: #f39c12; background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('./static/images/advantage4.png');">
-                            <strong>Rocket Flight Progress Tracking</strong>
-                            <span>Review your last 5 completed simulations at any time and unlock milestone streak badges on your profile.</span>
+                            <strong>AI-Powered & Rocket Progress</strong>
+                            <span>Get personalized KSSM answers from Prof. Vector (ILMU AI) based on your recent experiments and current chapter.</span>
                         </div>
                     </div>
                 </div>
@@ -1203,9 +1637,7 @@
         </div>
     </div>
 
-    <!-- ======================================================== -->
-    <!-- BOTTOM NAVIGATION (MOBILE ONLY - 5 TABS INCLUDING SIMS) -->
-    <!-- ======================================================== -->
+    <!-- BOTTOM NAVIGATION (MOBILE ONLY) -->
     <nav class="bottom-nav">
         <a href="javascript:void(0)" class="nav-item active" id="nav-tab-home" onclick="switchMobileTab('tab-home')">
             <span class="nav-icon">🏠</span>
@@ -1223,32 +1655,322 @@
             <span class="nav-icon">👑</span>
             <span class="nav-label">Pro</span>
         </a>
-        <a href="/dashboard" onclick="handleSimClick(event, '/dashboard', 'dashboard.html')" class="nav-item" id="nav-tab-profile">
+        <a href="dashboard.html" onclick="handleSimClick(event, 'dashboard.html', 'dashboard.html')" class="nav-item" id="nav-tab-profile">
             <span class="nav-icon">🚀</span>
             <span class="nav-label">Profile</span>
         </a>
     </nav>
 
     <script>
-        function navigateApp(webPath, filePath) {
-            if (window.location.protocol === 'file:') {
-                window.location.href = filePath;
-            } else {
-                window.location.href = webPath;
+        const SYLLABUS_LABELS = {
+            "F4_B1": "Form 4 • Bab 1: Pengukuran",
+            "F4_B2": "Form 4 • Bab 2: Daya & Gerakan I",
+            "F4_B3": "Form 4 • Bab 3: Kegravitian",
+            "F4_B4": "Form 4 • Bab 4: Haba",
+            "F4_B5": "Form 4 • Bab 5: Gelombang",
+            "F4_B6": "Form 4 • Bab 6: Cahaya & Optik",
+            "F5_B1": "Form 5 • Bab 1: Daya & Gerakan II",
+            "F5_B2": "Form 5 • Bab 2: Elektrik",
+            "F5_B3": "Form 5 • Bab 3: Keelektromagnetan",
+            "F5_B4": "Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum"
+        };
+
+        const db = firebase.firestore();
+
+        function isMobileAppEnv() {
+            return true || Boolean(window.Capacitor) || (window.location.hostname === 'localhost' && !window.location.port);
+        }
+
+        function getApiBaseUrl() {
+            if (isMobileAppEnv()) {
+                return 'https://velocity-valley.vercel.app';
             }
+            return '';
+        }
+
+        function navigateApp(webPath, filePath) {
+            window.location.href = isMobileAppEnv() ? filePath : webPath;
         }
 
         function handleSimClick(event, webPath, filePath) {
-            if (window.location.protocol === 'file:') {
+            if (isMobileAppEnv()) {
                 event.preventDefault();
                 window.location.href = filePath;
             }
         }
 
+        // ============================================================
+        // 1. KSSM SYLLABUS PROGRESS TRACKING & CONFIRMATION
+        // ============================================================
+        function getCurrentSyllabusCode() {
+            return localStorage.getItem('vv_current_syllabus') || 'F4_B2';
+        }
+
+        function updateSyllabusBadgesUI() {
+            const code = getCurrentSyllabusCode();
+            const label = SYLLABUS_LABELS[code] || SYLLABUS_LABELS['F4_B2'];
+            const heroPill = document.getElementById('hero-syllabus-pill');
+            const dailyBadge = document.getElementById('dailyChapterBadge');
+            const dropdown = document.getElementById('syllabusSelectDropdown');
+            const messengerSub = document.getElementById('messengerSyllabusSub');
+            if (heroPill) heroPill.innerText = `📚 ${label} (Change)`;
+            if (dailyBadge) dailyBadge.innerText = `📚 Current Chapter: ${label}`;
+            if (dropdown) dropdown.value = code;
+            if (messengerSub) messengerSub.innerText = label;
+        }
+
+        function openSyllabusModal() {
+            updateSyllabusBadgesUI();
+            document.getElementById('syllabusConfirmModal').style.display = 'flex';
+        }
+
+        function saveSyllabusChoice() {
+            const code = document.getElementById('syllabusSelectDropdown').value;
+            localStorage.setItem('vv_current_syllabus', code);
+            localStorage.setItem('vv_syllabus_confirmed', 'true');
+            updateSyllabusBadgesUI();
+            document.getElementById('syllabusConfirmModal').style.display = 'none';
+
+            const user = firebase.auth().currentUser;
+            if (user) {
+                db.collection("users").doc(user.uid).set({ currentSyllabus: code }, { merge: true });
+            }
+        }
+
+        // ============================================================
+        // 2. CLEAN FORMATTER FOR AI REPLIES (NO RAW SYMBOLS)
+        // ============================================================
+        function formatAiMessageHtml(rawText) {
+            if (!rawText) return '';
+            let s = String(rawText);
+
+            s = s.replace(/^\s*[-*_]{3,}\s*$/gm, '');
+            s = s.replace(/^\s*#{1,6}\s*/gm, '');
+            s = s.replace(/\\\[|\\\]|\\\(|\\\)|\$\$/g, '');
+            s = s.replace(/\\text\{([^}]*)\}/g, '$1');
+            s = s.replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '($1 / $2)');
+            s = s.replace(/\\sqrt\{([^}]*)\}/g, '√($1)');
+
+            const symMap = {
+                '\\times': '×',
+                '\\div': '÷',
+                '\\propto': '∝',
+                '\\approx': '≈',
+                '\\neq': '≠',
+                '\\leq': '≤',
+                '\\geq': '≥',
+                '\\pm': '±',
+                '\\Delta': 'Δ',
+                '\\theta': 'θ',
+                '\\pi': 'π',
+                '\\lambda': 'λ',
+                '\\rho': 'ρ',
+                '^{-1}': '⁻¹',
+                '^{-2}': '⁻²',
+                '^{-3}': '⁻³',
+                '^2': '²',
+                '^3': '³',
+                '_0': '₀',
+                '_1': '₁',
+                '_2': '₂'
+            };
+            for (const [k, v] of Object.entries(symMap)) {
+                s = s.split(k).join(v);
+            }
+            s = s.replace(/\$([^$\n]+)\$/g, '$1');
+            s = s.replace(/\n{3,}/g, '\n\n').trim();
+
+            s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            s = s.replace(/\n/g, '<br>');
+            return s;
+        }
+
+        // ============================================================
+        // 3. PERSISTENT MESSENGER CHAT HISTORY (LOCALSTORAGE + FIREBASE)
+        // ============================================================
+        function getRecentActivitiesLocal() {
+            try {
+                return JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function getSavedChatHistory() {
+            try {
+                const raw = localStorage.getItem('vv_ai_chat_history');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) return parsed;
+                }
+            } catch (e) {}
+            return [];
+        }
+
+        function saveChatHistoryEntry(role, text) {
+            const history = getSavedChatHistory();
+            history.push({
+                role: role,
+                text: text,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            const trimmed = history.slice(-40);
+            try {
+                localStorage.setItem('vv_ai_chat_history', JSON.stringify(trimmed));
+            } catch (e) {}
+
+            const user = firebase.auth().currentUser;
+            if (user) {
+                db.collection("users").doc(user.uid).set({ aiChatHistory: trimmed }, { merge: true });
+            }
+        }
+
+        function clearAiChatHistory() {
+            if (!confirm("Clear your chat history with Prof. Vector?")) return;
+            try {
+                localStorage.removeItem('vv_ai_chat_history');
+            } catch (e) {}
+            const user = firebase.auth().currentUser;
+            if (user) {
+                db.collection("users").doc(user.uid).set({ aiChatHistory: [] }, { merge: true });
+            }
+            renderChatFeedFromStorage();
+        }
+
+        function appendAiBubbleRow(messagesArray) {
+            const historyBox = document.getElementById('aiChatHistory');
+            const row = document.createElement('div');
+            row.className = 'msg-row-ai';
+
+            const avatar = document.createElement('img');
+            avatar.src = './static/images/scientist_guide.jpg';
+            avatar.alt = 'Prof. Vector';
+            avatar.className = 'msg-row-ai-avatar';
+            avatar.onerror = function() { this.src = './static/images/logo.png'; };
+
+            const col = document.createElement('div');
+            col.className = 'msg-ai-bubbles-col';
+
+            const bubbleRefs = [];
+            messagesArray.forEach(msgText => {
+                const b = document.createElement('div');
+                b.className = 'msg-bubble-ai';
+                b.innerHTML = formatAiMessageHtml(msgText);
+                col.appendChild(b);
+                bubbleRefs.push(b);
+            });
+
+            row.appendChild(avatar);
+            row.appendChild(col);
+            historyBox.appendChild(row);
+            historyBox.scrollTop = historyBox.scrollHeight;
+            return bubbleRefs[bubbleRefs.length - 1];
+        }
+
+        function renderChatFeedFromStorage() {
+            const historyBox = document.getElementById('aiChatHistory');
+            if (!historyBox) return;
+            historyBox.innerHTML = '';
+
+            const savedMessages = getSavedChatHistory();
+            const nowTime = savedMessages.length > 0 && savedMessages[0].time
+                ? savedMessages[0].time
+                : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'messenger-time-divider';
+            timeDiv.innerText = nowTime;
+            historyBox.appendChild(timeDiv);
+
+            appendAiBubbleRow([
+                "It's good to see you! 👋",
+                "Welcome back to Velocity Valley. It's me, **Prof. Vector**, your AI Physics guide. What can I help you with?"
+            ]);
+
+            savedMessages.forEach(item => {
+                if (item.role === 'user') {
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'msg-bubble-user';
+                    userDiv.innerText = item.text;
+                    historyBox.appendChild(userDiv);
+                } else if (item.role === 'ai') {
+                    appendAiBubbleRow([item.text]);
+                }
+            });
+
+            historyBox.scrollTop = historyBox.scrollHeight;
+        }
+
+        function openAiTutorModal() {
+            if (!localStorage.getItem('vv_syllabus_confirmed')) {
+                openSyllabusModal();
+                return;
+            }
+            updateSyllabusBadgesUI();
+            renderChatFeedFromStorage();
+
+            document.getElementById('aiTutorModal').style.display = 'flex';
+            setTimeout(() => {
+                const historyBox = document.getElementById('aiChatHistory');
+                if (historyBox) historyBox.scrollTop = historyBox.scrollHeight;
+                const inputEl = document.getElementById('aiQuestionInput');
+                if (inputEl) inputEl.focus();
+            }, 120);
+        }
+
+        function sendAiTutorQuestion() {
+            const inputEl = document.getElementById('aiQuestionInput');
+            const sendBtn = document.getElementById('aiSendBtn');
+            const historyBox = document.getElementById('aiChatHistory');
+            const q = inputEl.value.trim();
+            if (!q) return;
+
+            const priorHistory = getSavedChatHistory();
+
+            const userDiv = document.createElement('div');
+            userDiv.className = 'msg-bubble-user';
+            userDiv.innerText = q;
+            historyBox.appendChild(userDiv);
+            inputEl.value = '';
+            saveChatHistoryEntry('user', q);
+
+            const aiBubble = appendAiBubbleRow(['Thinking...']);
+            sendBtn.disabled = true;
+
+            const payload = {
+                question: q,
+                syllabus: getCurrentSyllabusCode(),
+                recentActivities: getRecentActivitiesLocal(),
+                chatHistory: priorHistory.slice(-6)
+            };
+
+            fetch(getApiBaseUrl() + '/api/ilmu/ask-tutor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(data => {
+                const replyText = data.answer || 'Here is the KSSM explanation for your question.';
+                aiBubble.innerHTML = formatAiMessageHtml(replyText);
+                if (data.source === 'ILMU AI') {
+                    saveChatHistoryEntry('ai', replyText);
+                }
+                historyBox.scrollTop = historyBox.scrollHeight;
+                sendBtn.disabled = false;
+            })
+            .catch(err => {
+                const errText = `⚠️ 网络请求失败 (${err.message || 'Connection Error'})，请确认本地 python app.py 正在运行后重试。`;
+                aiBubble.innerHTML = formatAiMessageHtml(errText);
+                historyBox.scrollTop = historyBox.scrollHeight;
+                sendBtn.disabled = false;
+            });
+        }
+
         // Simulation 3-Category Switcher
         function selectSimCategory(catKey) {
-            const keys = ['mini', 'form4', 'form5'];
-            keys.forEach(k => {
+            ['mini', 'form4', 'form5'].forEach(k => {
                 const btn = document.getElementById('btn-cat-' + k);
                 const panel = document.getElementById('panel-cat-' + k);
                 if (btn) btn.classList.toggle('active-cat', k === catKey);
@@ -1256,37 +1978,12 @@
             });
         }
 
-        // First-time Interactive Guide Animation Logic
-        let currentGuideStep = 1;
         function triggerSimGuide(forceShow) {
             const guideBox = document.getElementById('sim-guide-box');
             if (!guideBox) return;
             if (forceShow || !localStorage.getItem('vv_sim_guide_seen')) {
-                currentGuideStep = 1;
-                updateGuideContent();
                 guideBox.classList.add('show-guide');
             }
-        }
-
-        function updateGuideContent() {
-            const stepInd = document.getElementById('guide-step-indicator');
-            const textEl = document.getElementById('guide-dialogue-text');
-            const nextBtn = document.getElementById('guide-next-btn');
-            if (currentGuideStep === 1) {
-                stepInd.innerText = '(Step 1 of 2)';
-                textEl.innerHTML = 'Use the <strong>3 category buttons below</strong> (<strong>⚡ Mini Simulation</strong>, <strong>🔬 Form 4 Experiment</strong>, or <strong>🚀 Form 5 Experiment</strong>) to switch cleanly between concept labs and syllabus practicals.';
-                nextBtn.style.display = 'inline-block';
-                nextBtn.innerText = 'Next Tip →';
-            } else {
-                stepInd.innerText = '(Step 2 of 2)';
-                textEl.innerHTML = 'Tap any <strong>experiment card</strong> to launch the virtual apparatus! Every lab tracks your rocket progress on your <strong>Profile</strong> so you can revisit and review it anytime.';
-                nextBtn.style.display = 'none';
-            }
-        }
-
-        function nextGuideStep() {
-            currentGuideStep = 2;
-            updateGuideContent();
         }
 
         function dismissSimGuide() {
@@ -1302,7 +1999,6 @@
             document.getElementById('comingSoonModal').style.display = 'flex';
         }
 
-        // Mobile Tab Switching
         function switchMobileTab(tabId) {
             if (window.innerWidth > 768) {
                 if (tabId === 'tab-simulations') {
@@ -1311,26 +2007,55 @@
                 }
                 return;
             }
-            document.querySelectorAll('.mobile-tab').forEach(tab => {
-                tab.classList.remove('active-tab');
-            });
+            document.querySelectorAll('.mobile-tab').forEach(tab => tab.classList.remove('active-tab'));
             const target = document.getElementById(tabId);
             if (target) target.classList.add('active-tab');
 
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             const activeIcon = document.getElementById('nav-' + tabId);
             if (activeIcon) activeIcon.classList.add('active');
 
-            if (tabId === 'tab-simulations') {
-                triggerSimGuide(false);
-            }
+            if (tabId === 'tab-simulations') triggerSimGuide(false);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // ============================================================
+        // 4. AUTO-HIDE DAILY CHALLENGE BANNER ONCE COMPLETED TODAY
+        // ============================================================
+        function getTodayDateString() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function isDailyChallengeCompletedToday() {
+            const todayStr = getTodayDateString();
+            if (localStorage.getItem('vv_daily_done_' + todayStr) === 'true') {
+                return true;
+            }
+            const syllabusCode = getCurrentSyllabusCode();
+            const attemptKey = 'vv_daily_attempt_' + todayStr + '_' + syllabusCode;
+            if (localStorage.getItem(attemptKey)) {
+                return true;
+            }
+            return false;
+        }
+
+        function updateDailyBannerVisibility() {
+            const banner = document.getElementById('daily-challenge-banner');
+            if (!banner) return;
+            if (isDailyChallengeCompletedToday()) {
+                banner.style.display = 'none';
+            } else {
+                banner.style.display = 'block';
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            if (window.innerWidth > 768 && !localStorage.getItem('vv_sim_guide_seen')) {
+            updateSyllabusBadgesUI();
+            updateDailyBannerVisibility();
+            renderChatFeedFromStorage();
+            if (!localStorage.getItem('vv_syllabus_confirmed')) {
+                setTimeout(openSyllabusModal, 600);
+            } else if (window.innerWidth > 768 && !localStorage.getItem('vv_sim_guide_seen')) {
                 triggerSimGuide(false);
             }
         });
@@ -1341,7 +2066,6 @@
         const logoutBtn = document.getElementById('btn-logout');
         const freeBox = document.getElementById('free-user-box');
         const proBox = document.getElementById('pro-user-box');
-        const db = firebase.firestore();
 
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
@@ -1352,11 +2076,32 @@
                 db.collection("users").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const userData = doc.data();
+                        if (userData.currentSyllabus) {
+                            localStorage.setItem('vv_current_syllabus', userData.currentSyllabus);
+                            localStorage.setItem('vv_syllabus_confirmed', 'true');
+                            updateSyllabusBadgesUI();
+                        }
+                        if (Array.isArray(userData.recentActivities) && userData.recentActivities.length > 0) {
+                            localStorage.setItem('vv_recent_activities', JSON.stringify(userData.recentActivities));
+                        }
+                        if (Array.isArray(userData.aiChatHistory) && userData.aiChatHistory.length > 0) {
+                            const localHist = getSavedChatHistory();
+                            if (userData.aiChatHistory.length >= localHist.length) {
+                                localStorage.setItem('vv_ai_chat_history', JSON.stringify(userData.aiChatHistory));
+                                renderChatFeedFromStorage();
+                            }
+                        }
+                        const todayStr = getTodayDateString();
+                        if (userData.lastDailyDate === todayStr) {
+                            localStorage.setItem('vv_daily_done_' + todayStr, 'true');
+                        }
+                        updateDailyBannerVisibility();
+
                         const promoBox = document.getElementById('promo-popup');
                         if (userData.isPro === true) {
                             if (proBox) proBox.style.display = 'block';
                             if (freeBox) freeBox.style.display = 'none';
-                            if (!sessionStorage.getItem('seenDailyQ')) {
+                            if (!sessionStorage.getItem('seenDailyQ') && !isDailyChallengeCompletedToday()) {
                                 setTimeout(() => {
                                     checkAndShowDailyQuestion(false);
                                     sessionStorage.setItem('seenDailyQ', 'true');
@@ -1383,20 +2128,21 @@
                 logoutBtn.style.display = 'none';
                 if (proBox) proBox.style.display = 'none';
                 if (freeBox) freeBox.style.display = 'block';
+                updateDailyBannerVisibility();
             }
         });
 
         function closePromo() {
             document.getElementById('promo-popup').style.display = 'none';
             sessionStorage.setItem('seenPromo', 'true');
-            checkAndShowDailyQuestion(false);
+            if (!isDailyChallengeCompletedToday()) {
+                checkAndShowDailyQuestion(false);
+            }
         }
 
         function logoutUser() {
             firebase.auth().signOut().then(() => {
                 window.location.reload();
-            }).catch((error) => {
-                console.error(error);
             });
         }
 
@@ -1405,47 +2151,12 @@
         }
 
         // ============================================================
-        // AI SCIENTIST DAILY QUESTION (SINGLE-ATTEMPT + EXPLANATION)
+        // 5. SYLLABUS-MATCHED AI DAILY PHYSICS CHALLENGE
         // ============================================================
-        const dailyQuestionsPool = [
-            {
-                q: "According to Newton's Second Law (F = ma), what is the acceleration of a 4 kg block acted upon by a net force of 20 N?",
-                options: ["2 m s⁻²", "5 m s⁻²", "16 m s⁻²", "80 m s⁻²"],
-                correct: 1,
-                explanation: "Using F = ma → a = F / m = 20 N / 4 kg = 5 m s⁻²."
-            },
-            {
-                q: "In Experiment 1.1 (Simple Pendulum), if the length l of the pendulum is increased, what happens to its period of oscillation T?",
-                options: ["Decreases", "Remains unchanged", "Increases", "Becomes zero"],
-                correct: 2,
-                explanation: "From T = 2π√(l/g), period T is directly proportional to √l. Increasing length l increases the period T."
-            },
-            {
-                q: "Which gas law states that pressure is inversely proportional to volume (P ∝ 1/V) at constant temperature?",
-                options: ["Boyle's Law", "Charles's Law", "Gay-Lussac's Law", "Snell's Law"],
-                correct: 0,
-                explanation: "Boyle's Law states that P₁V₁ = P₂V₂ (P ∝ 1/V) for a fixed mass of gas at constant temperature."
-            },
-            {
-                q: "What is the SI unit for Specific Heat Capacity (c)?",
-                options: ["J kg⁻¹", "J °C⁻¹", "J kg⁻¹ °C⁻¹", "W m⁻¹ K⁻¹"],
-                correct: 2,
-                explanation: "From c = Q / (mΔθ), the SI unit of specific heat capacity is J kg⁻¹ °C⁻¹ (or J kg⁻¹ K⁻¹)."
-            },
-            {
-                q: "According to Snell's Law, the refractive index n of a glass block is given by:",
-                options: ["sin r / sin i", "sin i / sin r", "cos i / cos r", "H × h"],
-                correct: 1,
-                explanation: "Snell's Law defines refractive index as n = sin i / sin r, where i is the angle of incidence in air and r is the angle of refraction."
-            }
-        ];
-
-        function getTodayQuestion() {
-            const dayIndex = new Date().getDate() % dailyQuestionsPool.length;
-            return dailyQuestionsPool[dayIndex];
-        }
+        let activeDailyQuestionObj = null;
 
         function renderDailyModalState(todayQ, todayStr, answeredData) {
+            activeDailyQuestionObj = todayQ;
             const modal = document.getElementById('dailyQuestionModal');
             const qText = document.getElementById('dailyQuestionText');
             const optBox = document.getElementById('dailyOptionsBox');
@@ -1454,12 +2165,13 @@
             const closeBtn = document.getElementById('dailyCloseBtn');
             const labels = ['A', 'B', 'C', 'D'];
 
+            updateSyllabusBadgesUI();
             qText.innerText = todayQ.q;
             optBox.innerHTML = '';
             feedbackEl.style.display = 'none';
 
             if (!answeredData) {
-                speechEl.innerHTML = `"Greetings, Cadet! Here is today's KSSM Physics Challenge. You only get <strong>ONE attempt</strong>—choose carefully, or close this conversation to answer later!"`;
+                speechEl.innerHTML = `"Greetings, Cadet! Here is today's challenge for <strong>${SYLLABUS_LABELS[getCurrentSyllabusCode()]}</strong>. You only get <strong>ONE attempt</strong>—choose carefully, or close this conversation to answer later!"`;
                 closeBtn.innerText = "💬 Close Conversation (Answer Later)";
             }
 
@@ -1486,7 +2198,6 @@
             const labels = ['A', 'B', 'C', 'D'];
             const isCorrect = (selectedIdx === todayQ.correct);
 
-            // Lock all option buttons so user cannot retry
             for (let i = 0; i < todayQ.options.length; i++) {
                 const btn = document.getElementById('daily-opt-' + i);
                 if (!btn) continue;
@@ -1503,12 +2214,12 @@
             feedbackEl.style.display = 'block';
             if (isCorrect) {
                 speechEl.innerHTML = isAlreadyAnsweredEarlier
-                    ? `"🎉 You already aced today's challenge! Review the explanation below and come back tomorrow for a new question!"`
+                    ? `"🎉 You already aced today's challenge! Come back tomorrow for a brand new question!"`
                     : `"🎉 Brilliant work, Cadet! That is <strong>CORRECT</strong>! +1 Day has been added to your Physics Momentum Streak!"`;
                 feedbackEl.style.background = 'rgba(46, 204, 113, 0.18)';
                 feedbackEl.style.border = '1px solid #2ecc71';
                 feedbackEl.style.color = '#d1fae5';
-                feedbackEl.innerHTML = `<strong>✅ Correct! (${labels[todayQ.correct]}. ${todayQ.options[todayQ.correct]})</strong><br>${todayQ.explanation}`;
+                feedbackEl.innerHTML = `<strong>✅ Correct! (${labels[todayQ.correct]}. ${todayQ.options[todayQ.correct]})</strong><br>${formatAiMessageHtml(todayQ.explanation)}`;
             } else {
                 speechEl.innerHTML = isAlreadyAnsweredEarlier
                     ? `"📘 You already attempted today's challenge. Study the correct answer below and try again tomorrow!"`
@@ -1516,79 +2227,117 @@
                 feedbackEl.style.background = 'rgba(231, 76, 60, 0.18)';
                 feedbackEl.style.border = '1px solid #e74c3c';
                 feedbackEl.style.color = '#fee2e2';
-                feedbackEl.innerHTML = `<strong>❌ Incorrect. The correct answer is ${labels[todayQ.correct]}: ${todayQ.options[todayQ.correct]}</strong><br>📘 <em>Explanation:</em> ${todayQ.explanation}`;
+                feedbackEl.innerHTML = `<strong>❌ Incorrect. The correct answer is ${labels[todayQ.correct]}: ${todayQ.options[todayQ.correct]}</strong><br>📘 <em>Explanation:</em> ${formatAiMessageHtml(todayQ.explanation)}`;
             }
 
-            closeBtn.innerText = "✅ Close Conversation";
+            closeBtn.innerText = "✅ Done (Hide Until Tomorrow)";
+        }
+
+        function fetchSyllabusDailyQuestion(callback) {
+            const syllabusCode = getCurrentSyllabusCode();
+            fetch(getApiBaseUrl() + '/api/ilmu/daily-question', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    syllabus: syllabusCode,
+                    recentActivities: getRecentActivitiesLocal()
+                })
+            })
+            .then(r => r.json())
+            .then(qObj => callback(qObj))
+            .catch(() => {
+                callback({
+                    q: "According to Newton's Second Law (F = ma), what is the acceleration of a 4 kg block acted upon by a net force of 20 N?",
+                    options: ["2 m s⁻²", "5 m s⁻²", "16 m s⁻²", "80 m s⁻²"],
+                    correct: 1,
+                    explanation: "Using F = ma → a = F / m = 20 N / 4 kg = 5 m s⁻²."
+                });
+            });
         }
 
         function checkAndShowDailyQuestion(forceManual) {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const todayQ = getTodayQuestion();
+            if (!localStorage.getItem('vv_syllabus_confirmed')) {
+                openSyllabusModal();
+                return;
+            }
+            const todayStr = getTodayDateString();
+            if (!forceManual && isDailyChallengeCompletedToday()) {
+                updateDailyBannerVisibility();
+                return;
+            }
+            const syllabusCode = getCurrentSyllabusCode();
+            const attemptKey = 'vv_daily_attempt_' + todayStr + '_' + syllabusCode;
 
-            // Check local record first
             let localAttempt = null;
             try {
-                const raw = localStorage.getItem('vv_daily_attempt_' + todayStr);
+                const raw = localStorage.getItem(attemptKey);
                 if (raw) localAttempt = JSON.parse(raw);
             } catch (e) {}
 
-            const user = firebase.auth().currentUser;
-            if (user) {
-                db.collection("users").doc(user.uid).get().then(doc => {
-                    const data = doc.exists ? doc.data() : {};
-                    if (data.lastDailyDate === todayStr) {
-                        if (forceManual) {
-                            const selIdx = typeof data.lastDailySelected === 'number' ? data.lastDailySelected : (localAttempt ? localAttempt.selectedIdx : todayQ.correct);
-                            renderDailyModalState(todayQ, todayStr, { selectedIdx: selIdx, isReview: true });
+            fetchSyllabusDailyQuestion(todayQ => {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    db.collection("users").doc(user.uid).get().then(doc => {
+                        const data = doc.exists ? doc.data() : {};
+                        if (data.lastDailyDate === todayStr) {
+                            localStorage.setItem('vv_daily_done_' + todayStr, 'true');
+                            updateDailyBannerVisibility();
+                            if (forceManual) {
+                                const selIdx = typeof data.lastDailySelected === 'number' ? data.lastDailySelected : (localAttempt ? localAttempt.selectedIdx : todayQ.correct);
+                                renderDailyModalState(data.lastDailyQuestionObj || todayQ, todayStr, { selectedIdx: selIdx, isReview: true });
+                            }
+                        } else if (localAttempt) {
+                            localStorage.setItem('vv_daily_done_' + todayStr, 'true');
+                            updateDailyBannerVisibility();
+                            if (forceManual) {
+                                renderDailyModalState(localAttempt.questionObj || todayQ, todayStr, { selectedIdx: localAttempt.selectedIdx, isReview: true });
+                            }
+                        } else {
+                            renderDailyModalState(todayQ, todayStr, null);
                         }
-                    } else if (localAttempt) {
-                        if (forceManual) {
-                            renderDailyModalState(todayQ, todayStr, { selectedIdx: localAttempt.selectedIdx, isReview: true });
-                        }
-                    } else {
-                        renderDailyModalState(todayQ, todayStr, null);
-                    }
-                }).catch(() => {
-                    renderDailyModalState(todayQ, todayStr, localAttempt ? { selectedIdx: localAttempt.selectedIdx, isReview: true } : null);
-                });
-            } else {
-                if (localAttempt && !forceManual) return;
-                renderDailyModalState(todayQ, todayStr, localAttempt ? { selectedIdx: localAttempt.selectedIdx, isReview: true } : null);
-            }
+                    }).catch(() => {
+                        renderDailyModalState(todayQ, todayStr, localAttempt ? { selectedIdx: localAttempt.selectedIdx, isReview: true } : null);
+                    });
+                } else {
+                    if (localAttempt && !forceManual) return;
+                    renderDailyModalState(localAttempt ? (localAttempt.questionObj || todayQ) : todayQ, todayStr, localAttempt ? { selectedIdx: localAttempt.selectedIdx, isReview: true } : null);
+                }
+            });
         }
 
         function submitDailyAnswer(selectedIdx, todayQ, todayStr) {
             const isCorrect = (selectedIdx === todayQ.correct);
+            const syllabusCode = getCurrentSyllabusCode();
+            const attemptKey = 'vv_daily_attempt_' + todayStr + '_' + syllabusCode;
 
-            // Save attempt locally so single-attempt rule is enforced immediately
             try {
-                localStorage.setItem('vv_daily_attempt_' + todayStr, JSON.stringify({
+                localStorage.setItem(attemptKey, JSON.stringify({
                     selectedIdx: selectedIdx,
                     isCorrect: isCorrect,
-                    date: todayStr
+                    date: todayStr,
+                    questionObj: todayQ
                 }));
+                localStorage.setItem('vv_daily_done_' + todayStr, 'true');
             } catch (e) {}
 
-            // Lock UI and reveal correct answer + explanation
+            updateDailyBannerVisibility();
             applyLockedAnswerUI(selectedIdx, todayQ, false);
 
-            // Save to Firestore if signed in
             const user = firebase.auth().currentUser;
             if (user) {
                 db.collection("users").doc(user.uid).get().then(doc => {
                     const data = doc.exists ? doc.data() : {};
-                    if (data.lastDailyDate !== todayStr) {
-                        const updatePayload = {
-                            lastDailyDate: todayStr,
-                            lastDailySelected: selectedIdx,
-                            lastDailyStatus: isCorrect ? 'correct' : 'wrong'
-                        };
-                        if (isCorrect) {
-                            updatePayload.streakCount = firebase.firestore.FieldValue.increment(1);
-                        }
-                        db.collection("users").doc(user.uid).set(updatePayload, { merge: true });
+                    const updatePayload = {
+                        lastDailyDate: todayStr,
+                        lastDailySyllabus: syllabusCode,
+                        lastDailySelected: selectedIdx,
+                        lastDailyStatus: isCorrect ? 'correct' : 'wrong',
+                        lastDailyQuestionObj: todayQ
+                    };
+                    if (isCorrect && data.lastDailyDate !== todayStr) {
+                        updatePayload.streakCount = firebase.firestore.FieldValue.increment(1);
                     }
+                    db.collection("users").doc(user.uid).set(updatePayload, { merge: true });
                 });
             }
         }

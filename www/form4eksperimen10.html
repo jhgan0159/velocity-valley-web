@@ -148,7 +148,7 @@
 <body>
 
     <div class="top-bar-wrapper">
-        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
+        <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
         <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 6.2</span>
     </div>
 
@@ -405,7 +405,7 @@
                 id: "exp6_2",
                 title: "Experiment 6.2: Real & Apparent Depth (Water)",
                 category: "Form 4 • Chapter 6",
-                webUrl: "/form4experiment10",
+                webUrl: "form4eksperimen10.html",
                 fileUrl: "form4eksperimen10.html",
                 timestamp: new Date().toLocaleString('en-GB')
             };
@@ -434,7 +434,7 @@
             if (user) {
                 recordStationVisit(user);
             } else {
-                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
+                window.location.replace(true ? 'login.html' : 'login.html');
             }
         });
     </script>
