@@ -41,7 +41,7 @@
                 radial-gradient(circle at 85% 30%, rgba(243, 156, 18, 0.15) 0%, transparent 42%),
                 radial-gradient(circle at 50% 85%, rgba(155, 89, 182, 0.18) 0%, transparent 50%),
                 linear-gradient(180deg, rgba(11, 19, 43, 0.86) 0%, rgba(28, 37, 65, 0.90) 60%, rgba(15, 23, 42, 0.95) 100%),
-                url('./static/images/bgimageindex.png');
+                url('/static/images/bgimageindex.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -497,7 +497,7 @@
             border-color: #ef4444;
         }
 
-        /* --- FLOATING DR. VECTOR AVATAR + COMIC SPEECH BUBBLE --- */
+        /* --- FLOATING DR. VECTOR AVATAR + LONG-PRESS VOICE RECORDING --- */
         .dr-vector-comic-fab {
             position: fixed;
             bottom: 24px;
@@ -508,6 +508,8 @@
             gap: 12px;
             cursor: pointer;
             user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
             background: transparent;
             border: none;
             padding: 0;
@@ -523,12 +525,20 @@
             border: 2.5px solid #0f172a;
             border-radius: 18px;
             padding: 7px 13px;
-            font-size: 0.84rem;
+            font-size: 0.82rem;
             font-weight: 800;
             box-shadow: 3px 4px 0px #0ea5e9, 0 6px 16px rgba(0,0,0,0.35);
             white-space: nowrap;
             letter-spacing: 0.2px;
             animation: comicPulse 3s ease-in-out infinite;
+            text-align: right;
+            line-height: 1.3;
+        }
+        .comic-speech-bubble .fab-sub-hint {
+            display: block;
+            font-size: 0.68rem;
+            color: #475569;
+            font-weight: 700;
         }
         .comic-speech-bubble::after {
             content: '';
@@ -561,13 +571,30 @@
         }
         .dr-vector-avatar-wrap {
             position: relative;
-            width: 60px;
-            height: 60px;
+            width: 62px;
+            height: 62px;
             border-radius: 50%;
             padding: 3px;
             background: linear-gradient(135deg, #00d2ff, #4f46e5);
             box-shadow: 0 8px 22px rgba(14, 165, 233, 0.6);
             flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .dr-vector-comic-fab.fab-recording .dr-vector-avatar-wrap {
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.32), 0 0 28px rgba(239, 68, 68, 0.85);
+            transform: scale(1.12);
+            animation: recRingPulse 1s infinite alternate;
+        }
+        .dr-vector-comic-fab.fab-recording .comic-speech-bubble {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #ef4444;
+            box-shadow: 3px 4px 0px #ef4444, 0 6px 18px rgba(239, 68, 68, 0.45);
+        }
+        @keyframes recRingPulse {
+            from { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3), 0 0 20px rgba(239, 68, 68, 0.7); }
+            to { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0.15), 0 0 32px rgba(239, 68, 68, 0.95); }
         }
         .dr-vector-avatar-wrap img {
             width: 100%;
@@ -576,27 +603,28 @@
             object-fit: cover;
             border: 2px solid #ffffff;
             display: block;
+            pointer-events: none;
         }
         .dr-vector-online-dot {
             position: absolute;
             bottom: 2px;
             right: 2px;
-            width: 13px;
-            height: 13px;
+            width: 14px;
+            height: 14px;
             background: #22c55e;
             border: 2px solid #ffffff;
             border-radius: 50%;
         }
 
-        /* --- MESSENGER-STYLE AI CHAT WINDOW --- */
+        /* --- MESSENGER-STYLE AI CHAT WINDOW (4-LANGUAGE ASR + TEXT REPLY) --- */
         .messenger-modal-card {
             background: #ffffff;
             color: #0f172a;
             border-radius: 26px;
             width: 100%;
-            max-width: 430px;
-            height: 82vh;
-            max-height: 680px;
+            max-width: 440px;
+            height: 84vh;
+            max-height: 700px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -607,7 +635,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 14px;
+            padding: 11px 14px;
             background: #ffffff;
             border-bottom: 1px solid #f1f5f9;
             flex-shrink: 0;
@@ -649,12 +677,12 @@
         }
         .messenger-header-name {
             font-weight: 800;
-            font-size: 0.98rem;
+            font-size: 0.96rem;
             color: #0f172a;
             line-height: 1.2;
         }
         .messenger-header-sub {
-            font-size: 0.72rem;
+            font-size: 0.71rem;
             color: #64748b;
             font-weight: 600;
             white-space: nowrap;
@@ -664,7 +692,7 @@
         .messenger-top-actions {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             flex-shrink: 0;
         }
         .messenger-clear-btn {
@@ -690,8 +718,8 @@
             color: #ffffff;
             border: none;
             border-radius: 18px;
-            padding: 6px 12px;
-            font-size: 0.75rem;
+            padding: 6px 11px;
+            font-size: 0.74rem;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
@@ -699,10 +727,50 @@
             gap: 4px;
             box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
         }
+
+        /* 4-LANGUAGE BAR (BM / EN / 中文 / தமிழ்) FOR MALAYSIAN VOICE RECOGNITION */
+        .messenger-lang-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            padding: 7px 12px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .lang-bar-label {
+            font-size: 0.71rem;
+            font-weight: 800;
+            color: #475569;
+        }
+        .lang-pills-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .lang-pill-btn {
+            background: #e2e8f0;
+            color: #334155;
+            border: 1.5px solid transparent;
+            border-radius: 14px;
+            padding: 4px 9px;
+            font-size: 0.73rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+        .lang-pill-btn.active-lang {
+            background: #4752f5;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(71, 82, 245, 0.35);
+        }
+
         .messenger-chat-feed {
             flex: 1;
             background: #ffffff;
-            padding: 16px 14px;
+            padding: 14px 14px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -719,7 +787,7 @@
             display: flex;
             align-items: flex-end;
             gap: 8px;
-            max-width: 88%;
+            max-width: 90%;
             align-self: flex-start;
         }
         .msg-row-ai-avatar {
@@ -738,9 +806,9 @@
         .msg-bubble-ai {
             background: #f1f3f5;
             color: #111827;
-            padding: 11px 15px;
+            padding: 11px 14px;
             border-radius: 18px 18px 18px 6px;
-            font-size: 0.92rem;
+            font-size: 0.91rem;
             line-height: 1.5;
             word-wrap: break-word;
         }
@@ -756,14 +824,69 @@
             word-wrap: break-word;
             box-shadow: 0 2px 8px rgba(71, 82, 245, 0.25);
         }
+
+        /* LIVE VOICE STATUS BANNER INSIDE CHAT */
+        .voice-recording-banner {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            background: #fef2f2;
+            color: #b91c1c;
+            border-top: 1px solid #fecaca;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+        .voice-recording-banner.active-rec {
+            display: flex;
+        }
+        .rec-dot-pulse {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            background: #ef4444;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: blinkDot 0.8s infinite alternate;
+        }
+        @keyframes blinkDot {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0.3; transform: scale(1.25); }
+        }
+
         .messenger-input-bar {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 14px 14px 14px;
+            gap: 7px;
+            padding: 10px 12px 14px 12px;
             background: #ffffff;
             border-top: 1px solid #f1f5f9;
             flex-shrink: 0;
+        }
+        .messenger-mic-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid #cbd5e1;
+            background: #f8fafc;
+            color: #0f172a;
+            font-size: 1.08rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .messenger-mic-btn:hover {
+            background: #e2e8f0;
+        }
+        .messenger-mic-btn.mic-recording {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.25);
+            animation: recRingPulse 0.9s infinite alternate;
         }
         .messenger-text-input {
             flex: 1;
@@ -771,10 +894,11 @@
             color: #0f172a;
             border: 1.5px solid transparent;
             border-radius: 24px;
-            padding: 11px 16px;
-            font-size: 0.93rem;
+            padding: 11px 14px;
+            font-size: 0.91rem;
             outline: none;
             transition: border-color 0.2s, background 0.2s;
+            min-width: 0;
         }
         .messenger-text-input:focus {
             background: #ffffff;
@@ -942,7 +1066,7 @@
                 height: 54px;
             }
             .comic-speech-bubble {
-                font-size: 0.78rem;
+                font-size: 0.76rem;
                 padding: 6px 11px;
             }
             .mobile-tab { display: none; width: 100%; }
@@ -996,7 +1120,7 @@
             .scientist-portrait { width: 80px; height: 80px; }
 
             .messenger-modal-card {
-                height: 86vh;
+                height: 88vh;
                 max-height: none;
                 border-radius: 22px;
             }
@@ -1121,26 +1245,31 @@
         <span class="floating-formula" style="top: 84%; left: 12%; font-size: 1.15rem; animation-delay: -6s;">n = sin i / sin r</span>
     </div>
 
-    <!-- FLOATING DR. VECTOR AVATAR WITH COMIC SPEECH BUBBLE -->
-    <button class="dr-vector-comic-fab" onclick="openAiTutorModal()" aria-label="Ask Prof. Vector AI Tutor">
-        <div class="comic-speech-bubble">💬 Ask Dr. Vector! <span style="background:#f59e0b; color:#fff; font-size:0.68rem; padding:1px 6px; border-radius:8px; margin-left:3px;">PRO</span></div>
+    <!-- ======================================================== -->
+    <!-- FLOATING DR. VECTOR AVATAR (TAP = OPEN CHAT, HOLD = VOICE RECORD!) -->
+    <!-- ======================================================== -->
+    <button id="drVectorFab" class="dr-vector-comic-fab" aria-label="Tap to Chat or Hold to Record Voice Question">
+        <div id="fabSpeechBubble" class="comic-speech-bubble">
+            💬 Ask Dr. Vector! <span style="background:#f59e0b; color:#fff; font-size:0.66rem; padding:1px 6px; border-radius:8px; margin-left:3px;">PRO</span>
+            <span class="fab-sub-hint">🎙️ Hold avatar to record question!</span>
+        </div>
         <div class="dr-vector-avatar-wrap">
-            <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" onerror="this.src='./static/images/logo.png'">
+            <img src="/static/images/scientist_guide.jpg" alt="Prof. Vector" onerror="this.src='/static/images/logo.png'">
             <span class="dr-vector-online-dot"></span>
         </div>
     </button>
 
     <!-- ======================================================== -->
-    <!-- MESSENGER-STYLE AI TUTOR MODAL (PRO USERS ONLY)          -->
+    <!-- MESSENGER-STYLE AI TUTOR MODAL (4-LANGUAGE ASR + TEXT REPLY) -->
     <!-- ======================================================== -->
     <div id="aiTutorModal" class="scientist-modal-overlay" style="z-index: 20000;">
         <div class="messenger-modal-card">
             <div class="messenger-top-bar">
                 <div class="messenger-top-left">
                     <button class="messenger-back-btn" onclick="document.getElementById('aiTutorModal').style.display='none'" title="Back">‹</button>
-                    <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" class="messenger-header-avatar" onerror="this.src='./static/images/logo.png'">
+                    <img src="/static/images/scientist_guide.jpg" alt="Prof. Vector" class="messenger-header-avatar" onerror="this.src='/static/images/logo.png'">
                     <div class="messenger-header-info">
-                        <span class="messenger-header-name">Prof. Vector <span style="background:#7c3aed; color:#fff; font-size:0.65rem; padding:1px 6px; border-radius:8px;">PRO AI</span></span>
+                        <span class="messenger-header-name">Prof. Vector <span style="background:#7c3aed; color:#fff; font-size:0.64rem; padding:1px 6px; border-radius:8px;">PRO AI</span></span>
                         <span id="messengerSyllabusSub" class="messenger-header-sub">AI Physics Guide • KSSM</span>
                     </div>
                 </div>
@@ -1152,22 +1281,40 @@
                 </div>
             </div>
 
+            <!-- 4-LANGUAGE SELECTOR BAR (BM / EN / 中文 / தமிழ்) FOR MALAYSIAN ACCENT ASR -->
+            <div class="messenger-lang-bar">
+                <span class="lang-bar-label">🎙️ Voice / Reply Lang:</span>
+                <div class="lang-pills-group">
+                    <button class="lang-pill-btn" data-lang="ms-MY" onclick="setVoiceLanguage('ms-MY')">🇲🇾 BM</button>
+                    <button class="lang-pill-btn active-lang" data-lang="en-MY" onclick="setVoiceLanguage('en-MY')">🇬🇧 EN</button>
+                    <button class="lang-pill-btn" data-lang="zh-CN" onclick="setVoiceLanguage('zh-CN')">🇨🇳 中文</button>
+                    <button class="lang-pill-btn" data-lang="ta-MY" onclick="setVoiceLanguage('ta-MY')">🇮🇳 தமிழ்</button>
+                </div>
+            </div>
+
             <div id="aiChatHistory" class="messenger-chat-feed"></div>
 
+            <!-- LIVE RECORDING INDICATOR INSIDE CHAT -->
+            <div id="chatVoiceBanner" class="voice-recording-banner">
+                <span><span class="rec-dot-pulse"></span><span id="chatVoiceStatusText">Listening... Speak your question!</span></span>
+                <button onclick="stopChatVoiceRecording(true)" style="background:#ef4444; color:#fff; border:none; border-radius:12px; padding:4px 10px; font-size:0.74rem; font-weight:bold; cursor:pointer;">Done & Send</button>
+            </div>
+
             <div class="messenger-input-bar">
-                <input type="text" id="aiQuestionInput" class="messenger-text-input" placeholder="Message Prof. Vector..." onkeydown="if(event.key==='Enter'){sendAiTutorQuestion();}">
+                <button id="aiMicBtn" class="messenger-mic-btn" onclick="toggleChatVoiceRecording()" title="Record Voice Question (BM / EN / 中文 / தமிழ்)">🎙️</button>
+                <input type="text" id="aiQuestionInput" class="messenger-text-input" placeholder="Type or tap 🎙️ to ask Prof. Vector..." onkeydown="if(event.key==='Enter'){sendAiTutorQuestion();}">
                 <button onclick="sendAiTutorQuestion()" id="aiSendBtn" class="messenger-send-btn" title="Send">➤</button>
             </div>
         </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- KSSM SYLLABUS MODAL (z-index: 30000 -> ON TOP OF CHAT)   -->
+    <!-- KSSM SYLLABUS MODAL (z-index: 30000 -> ON TOP OF CHAT) -->
     <!-- ======================================================== -->
     <div id="syllabusConfirmModal" class="scientist-modal-overlay" style="z-index: 30000;">
         <div class="scientist-dialogue-card" style="max-width: 520px; position: relative;">
             <div class="scientist-header-row">
-                <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" class="scientist-portrait" onerror="this.src='./static/images/logo.png'">
+                <img src="/static/images/scientist_guide.jpg" alt="Prof. Vector" class="scientist-portrait" onerror="this.src='/static/images/logo.png'">
                 <div class="scientist-speech-bubble">
                     <span class="scientist-name-tag">📚 KSSM SYLLABUS CHECK-IN</span>
                     <p class="scientist-speech-text">
@@ -1189,8 +1336,8 @@
                     <option value="F4_B6">Form 4 • Bab 6: Cahaya & Optik</option>
                     <option value="F5_B1">Form 5 • Bab 1: Daya & Gerakan II</option>
                     <option value="F5_B2">Form 5 • Bab 2: Tekanan & Archimedes</option>
-                    <option value="F5_B3">Form 5 • Bab 3: Elektrik & Keelektromagnetan</option>
-                    <option value="F5_B4">Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum</option>
+                    <option value="F5_B3">Form 5 • Bab 3 & 4: Elektrik & Keelektromagnetan</option>
+                    <option value="F5_B4">Form 5 • Bab 5–7: Elektronik, Nuklear & Kuantum</option>
                 </select>
                 <button onclick="saveSyllabusChoice()" style="width:100%; padding:13px; background:linear-gradient(135deg, #2ecc71, #27ae60); color:white; border:none; border-radius:10px; font-weight:800; font-size:1.02rem; cursor:pointer;">
                     ✅ Confirm My Current Chapter
@@ -1200,17 +1347,17 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- PRO UPGRADE ADVERTISEMENT POP-UP MODAL (RM10/MONTH)      -->
+    <!-- PRO UPGRADE ADVERTISEMENT POP-UP MODAL (RM10/MONTH) -->
     <!-- ======================================================== -->
     <div id="promo-popup" class="promo-overlay">
         <div class="promo-modal">
             <button class="close-btn" onclick="closePromo()">✖</button>
-            <img src="./static/images/advertise.png" alt="Velocity Valley Pro RM10/month" class="promo-image">
+            <img src="/static/images/advertise.png" alt="Velocity Valley Pro RM10/month" class="promo-image">
             <div class="promo-content">
                 <h2>Level Up with Velocity Valley Pro!</h2>
                 <p>
                     Upgrade to a <strong>Pro Account (RM10/month)</strong> to unlock:<br>
-                    🤖 <strong>24/7 AI Physics Tutor (Prof. Vector)</strong> for step-by-step KSSM help<br>
+                    🤖 <strong>24/7 AI Physics Tutor (Prof. Vector)</strong> with 4-Language Voice Recognition<br>
                     ⚙️ <strong>Teacher Admin Panel</strong> to customize game questions<br>
                     👥 <strong>Student Breakout & Game Rooms</strong> to track live performance!
                 </p>
@@ -1240,7 +1387,7 @@
     <div id="dailyQuestionModal" class="scientist-modal-overlay" style="z-index: 22000;">
         <div class="scientist-dialogue-card">
             <div class="scientist-header-row">
-                <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" class="scientist-portrait" onerror="this.src='./static/images/logo.png'">
+                <img src="/static/images/scientist_guide.jpg" alt="Prof. Vector" class="scientist-portrait" onerror="this.src='/static/images/logo.png'">
                 <div class="scientist-speech-bubble">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                         <span class="scientist-name-tag">👨‍🔬 PROF. VECTOR • DAILY CHALLENGE</span>
@@ -1271,16 +1418,16 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 1: HOME                                              -->
+    <!-- TAB 1: HOME -->
     <!-- ======================================================== -->
     <div id="tab-home" class="mobile-tab active-tab">
         <header>
-            <img src="./static/images/logo.png" alt="Velocity Valley Circle Logo" class="top-right-logo">
+            <img src="/static/images/logo.png" alt="Velocity Valley Circle Logo" class="top-right-logo">
             <div id="auth-menu" style="text-align: right; padding: 10px 15px;">
-                <button id="btn-login" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #008CBA, #005f7f); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;" onclick="navigateApp('login.html', 'login.html')">
+                <button id="btn-login" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #008CBA, #005f7f); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;" onclick="navigateApp('/login', 'login.html')">
                     Sign In
                 </button>
-                <button id="btn-admin" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; border-radius: 20px; cursor: pointer; margin-right: 5px; font-weight: bold;" onclick="navigateApp('dashboard.html', 'dashboard.html')">
+                <button id="btn-admin" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; border-radius: 20px; cursor: pointer; margin-right: 5px; font-weight: bold;" onclick="navigateApp('/dashboard', 'dashboard.html')">
                     🚀 My Profile
                 </button>
                 <button id="btn-logout" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;" onclick="logoutUser()">
@@ -1315,22 +1462,22 @@
             <div class="home-menu-card primary-sim" onclick="switchMobileTab('tab-simulations')">
                 <span class="card-emoji">🔬</span>
                 <span class="card-title">Interactive Physics Simulations</span>
-                <span class="card-sub">Mini Sims • Form 4 Labs • Form 5 Labs</span>
+                <span class="card-sub">Mini Sims • 11 Form 4 Labs • 10 Form 5 Labs</span>
             </div>
             <div class="home-menu-card" onclick="switchMobileTab('tab-game')">
                 <span class="card-emoji">🎮</span>
                 <span class="card-title">Physics Games</span>
                 <span class="card-sub">Monopoly & Journey RPG</span>
             </div>
-            <div class="home-menu-card" onclick="navigateApp('dashboard.html', 'dashboard.html')">
+            <div class="home-menu-card" onclick="navigateApp('/dashboard', 'dashboard.html')">
                 <span class="card-emoji">🚀</span>
                 <span class="card-title">My Rocket Profile</span>
                 <span class="card-sub">Last 5 Labs & Badges</span>
             </div>
             <div class="home-menu-card" onclick="openAiTutorModal()">
-                <span class="card-emoji">💬</span>
-                <span class="card-title">Chat with Prof. Vector</span>
-                <span class="card-sub">Pro AI Physics Tutor</span>
+                <span class="card-emoji">🎙️</span>
+                <span class="card-title">Ask Prof. Vector</span>
+                <span class="card-sub">BM • EN • 中文 • தமிழ்</span>
             </div>
         </div>
     </div>
@@ -1348,7 +1495,7 @@
             </div>
 
             <div id="sim-guide-box" class="sim-guide-bubble">
-                <img src="./static/images/scientist_guide.jpg" alt="Prof. Vector" class="guide-avatar-img" onerror="this.src='./static/images/logo.png'">
+                <img src="/static/images/scientist_guide.jpg" alt="Prof. Vector" class="guide-avatar-img" onerror="this.src='/static/images/logo.png'">
                 <div class="guide-text-box">
                     <h4>👋 Welcome to the Velocity Valley Lab!</h4>
                     <p>
@@ -1379,14 +1526,14 @@
                 <button id="btn-cat-form5" class="sim-cat-btn" onclick="selectSimCategory('form5')">
                     <span class="cat-icon">🚀</span>
                     <span>Form 5 Experiment</span>
-                    <span class="cat-count">5 KSSM Labs</span>
+                    <span class="cat-count">10 KSSM Labs</span>
                 </button>
             </div>
 
             <!-- PANEL 1: MINI SIMULATION -->
             <div id="panel-cat-mini" class="sim-category-panel active-panel">
                 <div class="menu-grid">
-                    <a href="newton.html" onclick="handleSimClick(event, 'newton.html', 'newton.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.85)), url('./static/images/newton.jpg');">
+                    <a href="/newton" onclick="handleSimClick(event, '/newton', 'newton.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.85)), url('/static/images/newton.jpg');">
                         <div>
                             <h2>Mini Newton's Laws Simulation</h2>
                             <p>Explore inertia, net force, and acceleration through interactive mass and force sliders.</p>
@@ -1394,7 +1541,7 @@
                         </div>
                         <span class="status-badge">▶ Click to Try</span>
                     </a>
-                    <a href="javascript:void(0)" onclick="showComingSoon('Electromagnetism (F = BIL)', 'Visualize the catapult magnetic force on a current-carrying conductor in a permanent magnetic field using Fleming\'s Left-Hand Rule.', 'Formula: F = B I L sin θ')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.88)), url('./static/images/Inprogress.png');">
+                    <a href="javascript:void(0)" onclick="showComingSoon('Electromagnetism (F = BIL)', 'Visualize the catapult magnetic force on a current-carrying conductor in a permanent magnetic field using Fleming\'s Left-Hand Rule.', 'Formula: F = B I L sin θ')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.88)), url('/static/images/Inprogress.png');">
                         <div>
                             <h2>Electromagnetism (F=BIL)</h2>
                             <p>Visualize the magnetic force on a current-carrying wire. Adjust current, magnetic field, and wire length.</p>
@@ -1402,7 +1549,7 @@
                         </div>
                         <span class="status-badge status-building">Preview Principle</span>
                     </a>
-                    <a href="javascript:void(0)" onclick="showComingSoon('Kinematics Projectile Canvas', 'Launch projectiles at custom angles and initial velocities while tracking horizontal range, maximum height, and time of flight.', 'Equations: s = ut + ½at² | v² = u² + 2as')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.88)), url('./static/images/Inprogress.png');">
+                    <a href="javascript:void(0)" onclick="showComingSoon('Kinematics Projectile Canvas', 'Launch projectiles at custom angles and initial velocities while tracking horizontal range, maximum height, and time of flight.', 'Equations: s = ut + ½at² | v² = u² + 2as')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.88)), url('/static/images/Inprogress.png');">
                         <div>
                             <h2>Kinematics Canvas</h2>
                             <p>Launch projectiles and track their velocity vectors, parabolic trajectory, and time in the air.</p>
@@ -1416,7 +1563,7 @@
             <!-- PANEL 2: FORM 4 EXPERIMENTS -->
             <div id="panel-cat-form4" class="sim-category-panel">
                 <div class="menu-grid">
-                    <a href="pendulum_sim.html" onclick="handleSimClick(event, 'pendulum_sim.html', 'pendulum_sim.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment1.jpg');">
+                    <a href="/pendulum" onclick="handleSimClick(event, '/pendulum', 'pendulum_sim.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment1.jpg');">
                         <div>
                             <h2>Experiment 1.1: Simple Pendulum</h2>
                             <p>Investigate how the period of oscillation (T) of a simple pendulum depends on its length (l).</p>
@@ -1424,7 +1571,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="Tingkatan4eksperimen2.html" onclick="handleSimClick(event, 'Tingkatan4eksperimen2.html', 'Tingkatan4eksperimen2.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment2.jpg');">
+                    <a href="/tingkatan4experiment2" onclick="handleSimClick(event, '/tingkatan4experiment2', 'Tingkatan4eksperimen2.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment2.jpg');">
                         <div>
                             <h2>Experiment 2.1: Gravitational Acceleration</h2>
                             <p>Determine Earth's gravitational acceleration (g) using a dual-photogate free-fall timer system.</p>
@@ -1432,7 +1579,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen3.html" onclick="handleSimClick(event, 'form4eksperimen3.html', 'form4eksperimen3.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment3.jpg');">
+                    <a href="/form4experiment3" onclick="handleSimClick(event, '/form4experiment3', 'form4eksperimen3.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment3.jpg');">
                         <div>
                             <h2>Experiment 2.2: Mass & Inertia</h2>
                             <p>Investigate the relationship between plasticine mass (m) and period of oscillation (T) on a hacksaw blade.</p>
@@ -1440,7 +1587,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen4.html" onclick="handleSimClick(event, 'form4eksperimen4.html', 'form4eksperimen4.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment4.jpg');">
+                    <a href="/form4experiment4" onclick="handleSimClick(event, '/form4experiment4', 'form4eksperimen4.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment4.jpg');">
                         <div>
                             <h2>Experiment 4.1 & 4.2: Specific Heat Capacity</h2>
                             <p>Determine the specific heat capacity (c) of water, oil, aluminium, steel, and copper using an immersion heater.</p>
@@ -1448,7 +1595,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen5.html" onclick="handleSimClick(event, 'form4eksperimen5.html', 'form4eksperimen5.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment5.jpg');">
+                    <a href="/form4experiment5" onclick="handleSimClick(event, '/form4experiment5', 'form4eksperimen5.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment5.jpg');">
                         <div>
                             <h2>Experiment 4.3: Specific Latent Heat</h2>
                             <p>Determine the specific latent heat of fusion of ice (Part A) and vaporization of water (Part B).</p>
@@ -1456,7 +1603,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen6.html" onclick="handleSimClick(event, 'form4eksperimen6.html', 'form4eksperimen6.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment6.jpg');">
+                    <a href="/form4experiment6" onclick="handleSimClick(event, '/form4experiment6', 'form4eksperimen6.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment6.jpg');">
                         <div>
                             <h2>Experiment 4.4: Boyle's Law</h2>
                             <p>Investigate the relationship between volume (V) and gas pressure (P) at constant temperature.</p>
@@ -1464,7 +1611,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen7.html" onclick="handleSimClick(event, 'form4eksperimen7.html', 'form4eksperimen7.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment7.jpg');">
+                    <a href="/form4experiment7" onclick="handleSimClick(event, '/form4experiment7', 'form4eksperimen7.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment7.jpg');">
                         <div>
                             <h2>Experiment 4.5: Charles's Law</h2>
                             <p>Investigate the relationship between gas temperature (θ) and trapped air column length (L) at constant pressure.</p>
@@ -1472,7 +1619,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen8.html" onclick="handleSimClick(event, 'form4eksperimen8.html', 'form4eksperimen8.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment8.jpg');">
+                    <a href="/form4experiment8" onclick="handleSimClick(event, '/form4experiment8', 'form4eksperimen8.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment8.jpg');">
                         <div>
                             <h2>Experiment 4.6: Gay-Lussac's Law</h2>
                             <p>Investigate the relationship between gas temperature and pressure at constant volume.</p>
@@ -1480,7 +1627,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen9.html" onclick="handleSimClick(event, 'form4eksperimen9.html', 'form4eksperimen9.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment9.jpg');">
+                    <a href="/form4experiment9" onclick="handleSimClick(event, '/form4experiment9', 'form4eksperimen9.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment9.jpg');">
                         <div>
                             <h2>Experiment 6.1: Snell's Law (Glass Block)</h2>
                             <p>Determine the refractive index (n) of a glass block by measuring angle of incidence (i) and refraction (r).</p>
@@ -1488,7 +1635,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen10.html" onclick="handleSimClick(event, 'form4eksperimen10.html', 'form4eksperimen10.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment10.jpg');">
+                    <a href="/form4experiment10" onclick="handleSimClick(event, '/form4experiment10', 'form4eksperimen10.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment10.jpg');">
                         <div>
                             <h2>Experiment 6.2: Real & Apparent Depth</h2>
                             <p>Determine the refractive index of water using the non-parallax pin method (H vs. h).</p>
@@ -1496,7 +1643,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form4eksperimen11.html" onclick="handleSimClick(event, 'form4eksperimen11.html', 'form4eksperimen11.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment11.jpg');">
+                    <a href="/form4experiment11" onclick="handleSimClick(event, '/form4experiment11', 'form4eksperimen11.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment11.jpg');">
                         <div>
                             <h2>Experiment 6.3: Convex Lens Formula</h2>
                             <p>Examine the relationship between object distance (u) and image distance (v) for a convex lens.</p>
@@ -1507,10 +1654,10 @@
                 </div>
             </div>
 
-            <!-- PANEL 3: FORM 5 EXPERIMENTS (ALL 5 READY TO USE!) -->
+            <!-- PANEL 3: FORM 5 EXPERIMENTS (ALL 10 READY TO USE!) -->
             <div id="panel-cat-form5" class="sim-category-panel">
                 <div class="menu-grid">
-                    <a href="form5eksperimen1.html" onclick="handleSimClick(event, 'form5eksperimen1.html', 'form5eksperimen1.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment1.jpg');">
+                    <a href="/form5experiment1" onclick="handleSimClick(event, '/form5experiment1', 'form5eksperimen1.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment1.jpg');">
                         <div>
                             <h2>Form 5 Exp 1.1: Hooke's Law</h2>
                             <p>Determine the relationship between force (F) and extension of a spring (x = l - l₀) using slotted weights.</p>
@@ -1518,7 +1665,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form5eksperimen2.html" onclick="handleSimClick(event, 'form5eksperimen2.html', 'form5eksperimen2.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment6.jpg');">
+                    <a href="/form5experiment2" onclick="handleSimClick(event, '/form5experiment2', 'form5eksperimen2.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment6.jpg');">
                         <div>
                             <h2>Form 5 Exp 2.1: Liquid Pressure & Depth</h2>
                             <p>Investigate the relationship between liquid depth (h) and pressure difference (D) in a U-tube manometer.</p>
@@ -1526,7 +1673,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form5eksperimen3.html" onclick="handleSimClick(event, 'form5eksperimen3.html', 'form5eksperimen3.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment10.jpg');">
+                    <a href="/form5experiment3" onclick="handleSimClick(event, '/form5experiment3', 'form5eksperimen3.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment10.jpg');">
                         <div>
                             <h2>Form 5 Exp 2.2: Liquid Pressure & Density</h2>
                             <p>Compare U-tube pressure height difference (D) across Alcohol (790), Water (1000), and Glycerine (1300 kg m⁻³).</p>
@@ -1534,7 +1681,7 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form5eksperimen4.html" onclick="handleSimClick(event, 'form5eksperimen4.html', 'form5eksperimen4.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment3.jpg');">
+                    <a href="/form5experiment4" onclick="handleSimClick(event, '/form5experiment4', 'form5eksperimen4.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment3.jpg');">
                         <div>
                             <h2>Form 5 Exp 2.3: Archimedes' Principle</h2>
                             <p>Determine the relationship between buoyant force (F_B = W_U - W_A) and weight of water displaced (W_S) using a Eureka can.</p>
@@ -1542,11 +1689,51 @@
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
-                    <a href="form5eksperimen5.html" onclick="handleSimClick(event, 'form5eksperimen5.html', 'form5eksperimen5.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('./static/images/experiment4.jpg');">
+                    <a href="/form5experiment5" onclick="handleSimClick(event, '/form5experiment5', 'form5eksperimen5.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment4.jpg');">
                         <div>
                             <h2>Form 5 Exp 3.1: Ohm's Law (Ohmic & Bulb)</h2>
                             <p>Study V vs I for an Ohmic conductor (constantan wire, Jadual 3.2) and a Non-Ohmic filament bulb (Jadual 3.3).</p>
                             <span class="formula-pill">V = IR</span>
+                        </div>
+                        <span class="status-badge">Ready to Use</span>
+                    </a>
+                    <a href="/form5experiment6" onclick="handleSimClick(event, '/form5experiment6', 'form5eksperimen6.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment2.jpg');">
+                        <div>
+                            <h2>Form 5 Exp 3.2: Wire Length & Resistance</h2>
+                            <p>Investigate the relationship between constantan wire length l (20–100 cm) and resistance R (Jadual 3.6).</p>
+                            <span class="formula-pill">R ∝ l (R = V / I)</span>
+                        </div>
+                        <span class="status-badge">Ready to Use</span>
+                    </a>
+                    <a href="/form5experiment7" onclick="handleSimClick(event, '/form5experiment7', 'form5eksperimen7.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment5.jpg');">
+                        <div>
+                            <h2>Form 5 Exp 3.3: Cross-Sectional Area & R</h2>
+                            <p>Investigate how wire gauge (s.w.g. 22 to 30, A = πj²) affects the resistance R of a 25 cm constantan wire (Jadual 3.7).</p>
+                            <span class="formula-pill">R ∝ 1 / A (A = πj²)</span>
+                        </div>
+                        <span class="status-badge">Ready to Use</span>
+                    </a>
+                    <a href="/form5experiment8" onclick="handleSimClick(event, '/form5experiment8', 'form5eksperimen8.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment7.jpg');">
+                        <div>
+                            <h2>Form 5 Exp 3.4: Wire Resistivity & R</h2>
+                            <p>Compare the resistance R of Constantan, Nichrome, and Copper wires of identical length and diameter (Jadual 3.8 & 3.9).</p>
+                            <span class="formula-pill">R = ρ l / A</span>
+                        </div>
+                        <span class="status-badge">Ready to Use</span>
+                    </a>
+                    <a href="/form5experiment9" onclick="handleSimClick(event, '/form5experiment9', 'form5eksperimen9.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment8.jpg');">
+                        <div>
+                            <h2>Form 5 Exp 3.5: E.M.F. & Internal Resistance</h2>
+                            <p>Determine the e.m.f. (E) and internal resistance (r) of a dry cell by plotting V against I (Rajah 3.26).</p>
+                            <span class="formula-pill">V = −rI + E</span>
+                        </div>
+                        <span class="status-badge">Ready to Use</span>
+                    </a>
+                    <a href="/form5experiment10" onclick="handleSimClick(event, '/form5experiment10', 'form5eksperimen10.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.86)), url('/static/images/experiment9.jpg');">
+                        <div>
+                            <h2>Form 5 Activity 4.0 / 4.10: EM Induction</h2>
+                            <p>Investigate electromagnetic induction in a straight copper rod (Jadual 4.3) and a solenoid (Jadual 4.4).</p>
+                            <span class="formula-pill">Faraday & Lenz's Law</span>
                         </div>
                         <span class="status-badge">Ready to Use</span>
                     </a>
@@ -1556,20 +1743,20 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 3: GAME                                              -->
+    <!-- TAB 3: GAME -->
     <!-- ======================================================== -->
     <div id="tab-game" class="mobile-tab">
         <div class="section-container">
             <h2 class="section-title">🎮 Mini Physics Games</h2>
             <div class="menu-grid">
-                <a href="boardgame.html" onclick="handleSimClick(event, 'boardgame.html', 'boardgame.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.82)), url('./static/images/boardgame.jpg');">
+                <a href="/boardgame" onclick="handleSimClick(event, '/boardgame', 'boardgame.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.82)), url('/static/images/boardgame.jpg');">
                     <div>
                         <h2>Velocity Valley Board Game</h2>
                         <p>The interactive 1–4 player classroom Monopoly game! Land on C1–C4 tiles, spin 3-streak power-ups, and win.</p>
                     </div>
                     <span class="status-badge">Ready to Play</span>
                 </a>
-                <a href="journey.html" onclick="handleSimClick(event, 'journey.html', 'journey.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.82)), url('./static/images/journey_bg.png');">
+                <a href="/journey" onclick="handleSimClick(event, '/journey', 'journey.html')" class="sim-card" style="background-image: linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.82)), url('/static/images/journey_bg.png');">
                     <div>
                         <h2>Journey to the West (Quiz RPG)</h2>
                         <p>Choose your hero (Wukong, Tang Seng, Bajie, Sha Wujing), use special skills, and defeat demon clones!</p>
@@ -1581,16 +1768,16 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 4: PRO (Teacher Admin & AI Access)                   -->
+    <!-- TAB 4: PRO (Teacher Admin & AI Access) -->
     <!-- ======================================================== -->
     <div id="tab-pro" class="mobile-tab">
         <div class="section-container">
             <h2 class="section-title">👑 Pro Account: AI Tutor, Teacher Admin & Breakout Rooms</h2>
-            <div id="free-user-box" style="display: none; text-align: center; padding: 26px; background-image: linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.92)), url('./static/images/journey_bg.png'); border: 2px dashed #e67e22; border-radius: 14px;">
+            <div id="free-user-box" style="display: none; text-align: center; padding: 26px; background-image: linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.92)), url('/static/images/journey_bg.png'); border: 2px dashed #e67e22; border-radius: 14px;">
                 <h3 style="color: #f39c12; margin-top:0;">Unlock Velocity Valley Pro (RM10 / month)!</h3>
                 <p style="color: white; line-height: 1.6;">
                     Upgrade to a Pro account to unlock:<br>
-                    • <strong>24/7 Prof. Vector AI Physics Tutor</strong><br>
+                    • <strong>24/7 Prof. Vector AI Physics Tutor (with BM, EN, 中文, தமிழ் Voice Input)</strong><br>
                     • <strong>Teacher Admin Panel</strong> to customize questions for any subject<br>
                     • <strong>Student Breakout & Game Rooms</strong> to monitor live scores!
                 </p>
@@ -1599,14 +1786,14 @@
                 </button>
             </div>
 
-            <div id="pro-user-box" style="display: none; text-align: center; padding: 30px; background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('./static/images/journey_bg.png'); background-size: cover; background-position: center; border: 2px solid #f39c12; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.35);">
+            <div id="pro-user-box" style="display: none; text-align: center; padding: 30px; background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('/static/images/journey_bg.png'); background-size: cover; background-position: center; border: 2px solid #f39c12; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.35);">
                 <h3 style="color: #f39c12; font-size: 1.8rem; margin-top: 0;">Welcome to Velocity Valley Pro!</h3>
                 <p style="color: white; font-size: 1.05rem; margin-bottom: 20px;">You have full access to 24/7 Prof. Vector AI Tutor, custom question rooms, and student breakout rooms!</p>
                 <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-                    <a href="tcadminwest.html" onclick="handleSimClick(event, 'tcadminwest.html', 'tcadminwest.html')" style="background-color: #f39c12; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
+                    <a href="/tcadminwest" onclick="handleSimClick(event, '/tcadminwest', 'tcadminwest.html')" style="background-color: #f39c12; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
                         ⚔️ Journey to the West Admin
                     </a>
-                    <a href="admin.html" onclick="handleSimClick(event, 'admin.html', 'admin.html')" style="background-color: #3498db; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
+                    <a href="/teacher-admin" onclick="handleSimClick(event, '/teacher-admin', 'admin.html')" style="background-color: #3498db; color: white; padding: 14px 26px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: inline-block;">
                         🎲 Board Game Question Manager
                     </a>
                 </div>
@@ -1615,13 +1802,13 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 5: ABOUT US                                          -->
+    <!-- TAB 5: ABOUT US -->
     <!-- ======================================================== -->
     <div id="tab-about" class="mobile-tab">
         <div class="section-container" id="about">
             <h2 class="section-title">💡 About Velocity Valley</h2>
             <div class="about-card">
-                <img src="./static/images/logo.png" alt="Velocity Valley Logo" class="about-image">
+                <img src="/static/images/logo.png" alt="Velocity Valley Logo" class="about-image">
                 <div class="about-content">
                     <h3>Why "Velocity Valley"?</h3>
                     <p>The name <strong>Velocity Valley</strong> represents the dynamic and exciting journey of learning physics. "Velocity" symbolizes motion, progress, and the core principles of mechanics, while "Valley" represents a digital hub where students and educators explore the physical world through interactive tools.</p>
@@ -1633,26 +1820,26 @@
                     <p>Hello! I am Gan Jun Heng, the founder of Velocity Valley Education Simulation Games, a passionate Physics educator and student at Universiti Teknologi Malaysia (UTM) specializing in Physics Education.</p>
                     <p>By integrating modern web technologies and Constructivist learning theories, Velocity Valley helps students visualize and master complex physics concepts beyond rote memorization.</p>
                 </div>
-                <img src="./static/images/founder.png" alt="Founder Velocity Valley" class="about-image founder-img">
+                <img src="/static/images/founder.png" alt="Founder Velocity Valley" class="about-image founder-img">
             </div>
             <div class="about-card full-width">
                 <div class="about-content" style="text-align: center; width: 100%;">
                     <h3>Why Choose Velocity Valley?</h3>
                     <p>An interactive ecosystem designed for deep conceptual understanding. <em>(Scroll horizontally to explore)</em></p>
                     <div class="advantage-grid" style="text-align: left;">
-                        <div class="advantage-item" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('./static/images/advantage1.png');">
+                        <div class="advantage-item" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('/static/images/advantage1.png');">
                             <strong>Interactive Simulations</strong>
                             <span>Manipulate real-time sliders, observe apparatus animations, and export experimental data directly to Excel.</span>
                         </div>
-                        <div class="advantage-item" style="border-bottom-color: #2ecc71; background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('./static/images/advantage2.png');">
+                        <div class="advantage-item" style="border-bottom-color: #2ecc71; background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('/static/images/advantage2.png');">
                             <strong>KSSM Curriculum Aligned</strong>
                             <span>Meticulously mapped to the Malaysian KSSM Form 4 and Form 5 Physics practical syllabus.</span>
                         </div>
-                        <div class="advantage-item" style="border-bottom-color: #e74c3c; background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('./static/images/advantage3.png');">
+                        <div class="advantage-item" style="border-bottom-color: #e74c3c; background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('/static/images/advantage3.png');">
                             <strong>Gamified Classroom Learning</strong>
                             <span>Revision becomes an exciting challenge with Physics Monopoly and Journey to the West live teacher rooms.</span>
                         </div>
-                        <div class="advantage-item" style="border-bottom-color: #f39c12; background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('./static/images/advantage4.png');">
+                        <div class="advantage-item" style="border-bottom-color: #f39c12; background-image: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9)), url('/static/images/advantage4.png');">
                             <strong>AI-Powered & Rocket Progress</strong>
                             <span>Get personalized KSSM answers from Prof. Vector (ILMU AI) based on your recent experiments and current chapter.</span>
                         </div>
@@ -1665,7 +1852,7 @@
                     <p>Questions or feedback? Reach out anytime:</p>
                     <p><strong>Email:</strong> velocityvalleysimu@gmail.com<br><strong>WhatsApp:</strong> +60182660152</p>
                 </div>
-                <img src="./static/images/logo.png" alt="Velocity Valley Logo" class="about-image">
+                <img src="/static/images/logo.png" alt="Velocity Valley Logo" class="about-image">
             </div>
         </div>
     </div>
@@ -1688,7 +1875,7 @@
             <span class="nav-icon">👑</span>
             <span class="nav-label">Pro</span>
         </a>
-        <a href="dashboard.html" onclick="handleSimClick(event, 'dashboard.html', 'dashboard.html')" class="nav-item" id="nav-tab-profile">
+        <a href="/dashboard" onclick="handleSimClick(event, '/dashboard', 'dashboard.html')" class="nav-item" id="nav-tab-profile">
             <span class="nav-icon">🚀</span>
             <span class="nav-label">Profile</span>
         </a>
@@ -1704,15 +1891,45 @@
             "F4_B6": "Form 4 • Bab 6: Cahaya & Optik",
             "F5_B1": "Form 5 • Bab 1: Daya & Gerakan II",
             "F5_B2": "Form 5 • Bab 2: Tekanan & Archimedes",
-            "F5_B3": "Form 5 • Bab 3: Elektrik & Keelektromagnetan",
-            "F5_B4": "Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum"
+            "F5_B3": "Form 5 • Bab 3 & 4: Elektrik & Keelektromagnetan",
+            "F5_B4": "Form 5 • Bab 5–7: Elektronik, Nuklear & Kuantum"
+        };
+
+        const VOICE_LANG_NAMES = {
+            "ms-MY": "BM (Bahasa Melayu)",
+            "en-MY": "EN (Malaysian English)",
+            "zh-CN": "中文 (Chinese)",
+            "ta-MY": "தமிழ் (Tamil)"
         };
 
         const db = firebase.firestore();
         window.isCurrentUserPro = false;
 
+        // ============================================================
+        // 4-LANGUAGE ASR STATE (NO TTS — TEXT REPLY ONLY!)
+        // ============================================================
+        let currentVoiceLang = localStorage.getItem('vv_voice_lang') || 'en-MY';
+
+        function setVoiceLanguage(langCode) {
+            currentVoiceLang = langCode;
+            localStorage.setItem('vv_voice_lang', langCode);
+            document.querySelectorAll('.lang-pill-btn').forEach(btn => {
+                btn.classList.toggle('active-lang', btn.getAttribute('data-lang') === langCode);
+            });
+            const inputEl = document.getElementById('aiQuestionInput');
+            if (inputEl) {
+                const placeholders = {
+                    "ms-MY": "Taip atau tekan 🎙️ untuk tanya Prof. Vector (BM)...",
+                    "en-MY": "Type or tap 🎙️ to ask Prof. Vector (EN)...",
+                    "zh-CN": "输入问题或点击 🎙️ 用华语提问 Prof. Vector...",
+                    "ta-MY": "தட்டச்சு செய்க அல்லது 🎙️ அழுத்தி தமிழில் கேட்கவும்..."
+                };
+                inputEl.placeholder = placeholders[langCode] || placeholders["en-MY"];
+            }
+        }
+
         function isMobileAppEnv() {
-            return true || Boolean(window.Capacitor) || (window.location.hostname === 'localhost' && !window.location.port);
+            return window.location.protocol === 'file:' || Boolean(window.Capacitor) || (window.location.hostname === 'localhost' && !window.location.port);
         }
 
         function getApiBaseUrl() {
@@ -1838,6 +2055,7 @@
             history.push({
                 role: role,
                 text: text,
+                lang: currentVoiceLang,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
             const trimmed = history.slice(-40);
@@ -1869,10 +2087,10 @@
             row.className = 'msg-row-ai';
 
             const avatar = document.createElement('img');
-            avatar.src = './static/images/scientist_guide.jpg';
+            avatar.src = '/static/images/scientist_guide.jpg';
             avatar.alt = 'Prof. Vector';
             avatar.className = 'msg-row-ai-avatar';
-            avatar.onerror = function() { this.src = './static/images/logo.png'; };
+            avatar.onerror = function() { this.src = '/static/images/logo.png'; };
 
             const col = document.createElement('div');
             col.className = 'msg-ai-bubbles-col';
@@ -1910,7 +2128,7 @@
 
             appendAiBubbleRow([
                 "It's good to see you! 👋",
-                "Welcome back to Velocity Valley. It's me, **Prof. Vector**, your AI Physics guide. What can I help you with?"
+                "Welcome back to Velocity Valley! I am **Prof. Vector**. You can type or tap **🎙️** to speak your physics question in **BM, English, 中文, or தமிழ்**!"
             ]);
 
             savedMessages.forEach(item => {
@@ -1931,7 +2149,6 @@
         // PRO-ONLY GATE FOR AI TUTOR (0 TOKENS USED ON CLICK!)
         // ============================================================
         function openAiTutorModal() {
-            // If user is NOT a Pro account, show the RM10/month Pro Advertisement Popup!
             if (!window.isCurrentUserPro) {
                 document.getElementById('promo-popup').style.display = 'flex';
                 return;
@@ -1941,6 +2158,7 @@
                 return;
             }
             updateSyllabusBadgesUI();
+            setVoiceLanguage(currentVoiceLang);
             renderChatFeedFromStorage();
 
             document.getElementById('aiTutorModal').style.display = 'flex';
@@ -1964,6 +2182,7 @@
             if (!q) return;
 
             const priorHistory = getSavedChatHistory();
+            const askLang = currentVoiceLang;
 
             const userDiv = document.createElement('div');
             userDiv.className = 'msg-bubble-user';
@@ -1978,6 +2197,7 @@
             const payload = {
                 question: q,
                 syllabus: getCurrentSyllabusCode(),
+                lang: askLang,
                 recentActivities: getRecentActivitiesLocal().slice(0, 1),
                 chatHistory: priorHistory.slice(-2)
             };
@@ -1991,6 +2211,7 @@
             .then(data => {
                 const replyText = data.answer || 'Here is the KSSM explanation for your question.';
                 aiBubble.innerHTML = formatAiMessageHtml(replyText);
+
                 if (data.source === 'ILMU AI') {
                     saveChatHistoryEntry('ai', replyText);
                 }
@@ -2003,6 +2224,267 @@
                 historyBox.scrollTop = historyBox.scrollHeight;
                 sendBtn.disabled = false;
             });
+        }
+
+        // ============================================================
+        // HYBRID 4-LANGUAGE VOICE RECOGNITION ENGINE (NO TTS)
+        // (Browser SpeechRecognition + MediaRecorder -> /api/ilmu/transcribe)
+        // Supports:
+        // 1. Inside-Chat Mic Button (#aiMicBtn)
+        // 2. Long-Press Floating Avatar Button (#drVectorFab)
+        // ============================================================
+        let activeRecognition = null;
+        let activeMediaRecorder = null;
+        let recordedAudioChunks = [];
+        let isRecordingVoice = false;
+        let liveTranscriptBuffer = '';
+        let recordingSourceMode = 'chat'; // 'chat' or 'fab'
+
+        function startHybridVoiceRecording(sourceMode) {
+            if (!window.isCurrentUserPro) {
+                document.getElementById('promo-popup').style.display = 'flex';
+                return;
+            }
+            if (isRecordingVoice) return;
+
+            isRecordingVoice = true;
+            recordingSourceMode = sourceMode;
+            liveTranscriptBuffer = '';
+            recordedAudioChunks = [];
+
+            const micBtn = document.getElementById('aiMicBtn');
+            const chatBanner = document.getElementById('chatVoiceBanner');
+            const chatStatusText = document.getElementById('chatVoiceStatusText');
+            const fabBtn = document.getElementById('drVectorFab');
+            const fabBubble = document.getElementById('fabSpeechBubble');
+
+            if (sourceMode === 'chat') {
+                if (micBtn) micBtn.classList.add('mic-recording');
+                if (chatBanner) chatBanner.classList.add('active-rec');
+                if (chatStatusText) chatStatusText.innerText = `Listening (${VOICE_LANG_NAMES[currentVoiceLang]})... Speak now!`;
+            } else if (sourceMode === 'fab') {
+                if (fabBtn) fabBtn.classList.add('fab-recording');
+                if (fabBubble) {
+                    fabBubble.innerHTML = `🔴 Recording (${currentVoiceLang.split('-')[0].toUpperCase()})...<span class="fab-sub-hint">Release finger to send to Prof. Vector!</span>`;
+                }
+            }
+
+            // 1. Start Browser Live SpeechRecognition (Instant 4-language recognition: BM, EN, 中文, தமிழ்)
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRec) {
+                try {
+                    activeRecognition = new SpeechRec();
+                    activeRecognition.lang = currentVoiceLang;
+                    activeRecognition.continuous = true;
+                    activeRecognition.interimResults = true;
+
+                    activeRecognition.onresult = (event) => {
+                        let combined = '';
+                        for (let i = 0; i < event.results.length; i++) {
+                            combined += event.results[i][0].transcript;
+                        }
+                        liveTranscriptBuffer = combined.trim();
+                        const inputEl = document.getElementById('aiQuestionInput');
+                        if (inputEl && liveTranscriptBuffer) {
+                            inputEl.value = liveTranscriptBuffer;
+                        }
+                        if (sourceMode === 'chat' && chatStatusText && liveTranscriptBuffer) {
+                            chatStatusText.innerText = `🎙️ "${liveTranscriptBuffer}"`;
+                        } else if (sourceMode === 'fab' && fabBubble && liveTranscriptBuffer) {
+                            const shortPreview = liveTranscriptBuffer.length > 26
+                                ? liveTranscriptBuffer.slice(0, 26) + '...'
+                                : liveTranscriptBuffer;
+                            fabBubble.innerHTML = `🎙️ "${shortPreview}"<span class="fab-sub-hint">Release to send question!</span>`;
+                        }
+                    };
+                    activeRecognition.onerror = () => {};
+                    activeRecognition.start();
+                } catch (e) {
+                    console.warn("SpeechRecognition start warning:", e);
+                }
+            }
+
+            // 2. Also start MediaRecorder so if browser SpeechRecognition is unavailable, we send audio to ILMU ASR (ilmu-asr-v4.2)
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        if (!isRecordingVoice) {
+                            stream.getTracks().forEach(t => t.stop());
+                            return;
+                        }
+                        activeMediaRecorder = new MediaRecorder(stream);
+                        activeMediaRecorder.ondataavailable = (e) => {
+                            if (e.data && e.data.size > 0) recordedAudioChunks.push(e.data);
+                        };
+                        activeMediaRecorder.start();
+                    })
+                    .catch(err => {
+                        console.warn("Microphone stream warning:", err);
+                    });
+            }
+        }
+
+        function stopHybridVoiceRecording(autoSendAfterStop = true) {
+            if (!isRecordingVoice) return;
+            isRecordingVoice = false;
+
+            const mode = recordingSourceMode;
+            const micBtn = document.getElementById('aiMicBtn');
+            const chatBanner = document.getElementById('chatVoiceBanner');
+            const fabBtn = document.getElementById('drVectorFab');
+            const fabBubble = document.getElementById('fabSpeechBubble');
+
+            if (micBtn) micBtn.classList.remove('mic-recording');
+            if (chatBanner) chatBanner.classList.remove('active-rec');
+            if (fabBtn) fabBtn.classList.remove('fab-recording');
+            if (fabBubble) {
+                fabBubble.innerHTML = `💬 Ask Dr. Vector! <span style="background:#f59e0b; color:#fff; font-size:0.66rem; padding:1px 6px; border-radius:8px; margin-left:3px;">PRO</span><span class="fab-sub-hint">🎙️ Hold avatar to record question!</span>`;
+            }
+
+            if (activeRecognition) {
+                try { activeRecognition.stop(); } catch (e) {}
+                activeRecognition = null;
+            }
+
+            const finalizeAndSend = (finalText) => {
+                const cleaned = (finalText || '').trim();
+                if (!cleaned) return;
+
+                if (mode === 'fab') {
+                    openAiTutorModal();
+                }
+                setTimeout(() => {
+                    const inputEl = document.getElementById('aiQuestionInput');
+                    if (inputEl) {
+                        inputEl.value = cleaned;
+                    }
+                    if (autoSendAfterStop) {
+                        sendAiTutorQuestion();
+                    }
+                }, mode === 'fab' ? 180 : 40);
+            };
+
+            if (activeMediaRecorder && activeMediaRecorder.state !== 'inactive') {
+                activeMediaRecorder.onstop = () => {
+                    const stream = activeMediaRecorder.stream;
+                    if (stream) stream.getTracks().forEach(t => t.stop());
+
+                    if (liveTranscriptBuffer && liveTranscriptBuffer.trim().length > 0) {
+                        finalizeAndSend(liveTranscriptBuffer);
+                        return;
+                    }
+
+                    if (recordedAudioChunks.length > 0) {
+                        const audioBlob = new Blob(recordedAudioChunks, { type: 'audio/webm' });
+                        const formData = new FormData();
+                        formData.append('audio', audioBlob, 'voice_question.webm');
+                        formData.append('lang', currentVoiceLang);
+
+                        if (mode === 'fab') {
+                            openAiTutorModal();
+                        }
+                        const inputEl = document.getElementById('aiQuestionInput');
+                        if (inputEl) inputEl.value = 'Transcribing voice with ILMU ASR...';
+
+                        fetch(getApiBaseUrl() + '/api/ilmu/transcribe', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data && data.text) {
+                                finalizeAndSend(data.text);
+                            } else {
+                                if (inputEl) inputEl.value = '';
+                                alert("Could not hear clearly. Please hold the mic or avatar and speak slightly closer!");
+                            }
+                        })
+                        .catch(() => {
+                            if (inputEl) inputEl.value = '';
+                        });
+                    }
+                };
+                try { activeMediaRecorder.stop(); } catch (e) {
+                    finalizeAndSend(liveTranscriptBuffer);
+                }
+            } else {
+                setTimeout(() => {
+                    finalizeAndSend(liveTranscriptBuffer);
+                }, 250);
+            }
+        }
+
+        function toggleChatVoiceRecording() {
+            if (isRecordingVoice) {
+                stopHybridVoiceRecording(true);
+            } else {
+                startHybridVoiceRecording('chat');
+            }
+        }
+
+        function stopChatVoiceRecording(autoSend) {
+            stopHybridVoiceRecording(autoSend);
+        }
+
+        // ============================================================
+        // SHORT-CLICK vs LONG-PRESS HANDLER ON FLOATING DR. VECTOR FAB
+        // - Tap (< 380ms): Opens AI Tutor Modal (or Pro Promo Popup)
+        // - Hold (>= 380ms): Records Voice right on the Home screen,
+        //   then opens AI Tutor Modal and sends question on release!
+        // ============================================================
+        function setupFloatingAvatarLongPress() {
+            const fab = document.getElementById('drVectorFab');
+            if (!fab) return;
+
+            let pressTimer = null;
+            let didTriggerLongPress = false;
+
+            const onPressStart = (e) => {
+                if (e.type === 'mousedown' && e.button !== 0) return;
+                didTriggerLongPress = false;
+                clearTimeout(pressTimer);
+
+                pressTimer = setTimeout(() => {
+                    didTriggerLongPress = true;
+                    if (!window.isCurrentUserPro) {
+                        document.getElementById('promo-popup').style.display = 'flex';
+                        return;
+                    }
+                    startHybridVoiceRecording('fab');
+                }, 380);
+            };
+
+            const onPressEnd = (e) => {
+                clearTimeout(pressTimer);
+                if (didTriggerLongPress) {
+                    if (isRecordingVoice) {
+                        stopHybridVoiceRecording(true);
+                    }
+                } else {
+                    openAiTutorModal();
+                }
+            };
+
+            const onPressCancel = () => {
+                clearTimeout(pressTimer);
+                if (didTriggerLongPress && isRecordingVoice) {
+                    stopHybridVoiceRecording(true);
+                }
+            };
+
+            fab.addEventListener('mousedown', onPressStart);
+            fab.addEventListener('mouseup', onPressEnd);
+            fab.addEventListener('mouseleave', onPressCancel);
+
+            fab.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                onPressStart(e);
+            }, { passive: false });
+            fab.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                onPressEnd(e);
+            }, { passive: false });
+            fab.addEventListener('touchcancel', onPressCancel);
         }
 
         function selectSimCategory(catKey) {
@@ -2083,6 +2565,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            setupFloatingAvatarLongPress();
+            setVoiceLanguage(currentVoiceLang);
             updateSyllabusBadgesUI();
             updateDailyBannerVisibility();
             renderChatFeedFromStorage();

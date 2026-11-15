@@ -517,8 +517,8 @@
                             <option value="F4_B6">Form 4 • Bab 6: Cahaya & Optik</option>
                             <option value="F5_B1">Form 5 • Bab 1: Daya & Gerakan II</option>
                             <option value="F5_B2">Form 5 • Bab 2: Tekanan & Archimedes</option>
-                            <option value="F5_B3">Form 5 • Bab 3: Elektrik & Keelektromagnetan</option>
-                            <option value="F5_B4">Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum</option>
+                            <option value="F5_B3">Form 5 • Bab 3 & 4: Elektrik & Keelektromagnetan</option>
+                            <option value="F5_B4">Form 5 • Bab 5–7: Elektronik, Nuklear & Kuantum</option>
                         </select>
                     </div>
                 </div>
@@ -646,6 +646,11 @@
             f5_exp2_2: { title: "Form 5 Exp 2.2: Liquid Pressure & Density", category: "Form 5 • Chapter 2", webUrl: "/form5experiment3", fileUrl: "form5eksperimen3.html" },
             f5_exp2_3: { title: "Form 5 Exp 2.3: Archimedes' Principle", category: "Form 5 • Chapter 2", webUrl: "/form5experiment4", fileUrl: "form5eksperimen4.html" },
             f5_exp3_1: { title: "Form 5 Exp 3.1: Ohmic & Non-Ohmic Conductors", category: "Form 5 • Chapter 3", webUrl: "/form5experiment5", fileUrl: "form5eksperimen5.html" },
+            f5_exp3_2: { title: "Form 5 Exp 3.2: Wire Length & Resistance (R ∝ l)", category: "Form 5 • Chapter 3", webUrl: "/form5experiment6", fileUrl: "form5eksperimen6.html" },
+            f5_exp3_3: { title: "Form 5 Exp 3.3: Cross-Sectional Area & Resistance (R ∝ 1/A)", category: "Form 5 • Chapter 3", webUrl: "/form5experiment7", fileUrl: "form5eksperimen7.html" },
+            f5_exp3_4: { title: "Form 5 Exp 3.4: Wire Resistivity & Resistance (R ∝ ρ)", category: "Form 5 • Chapter 3", webUrl: "/form5experiment8", fileUrl: "form5eksperimen8.html" },
+            f5_exp3_5: { title: "Form 5 Exp 3.5: E.M.F. & Internal Resistance (E = V + Ir)", category: "Form 5 • Chapter 3", webUrl: "/form5experiment9", fileUrl: "form5eksperimen9.html" },
+            f5_act4_10: { title: "Form 5 Activity 4.0 / 4.10: Electromagnetic Induction", category: "Form 5 • Chapter 4", webUrl: "/form5experiment10", fileUrl: "form5eksperimen10.html" },
             boardgame: { title: "Physics Monopoly: Ultimate Edition", category: "Educational Game", webUrl: "/boardgame", fileUrl: "boardgame.html" },
             journey: { title: "Journey to the West: Physics Quiz RPG", category: "Educational Game", webUrl: "/journey", fileUrl: "journey.html" }
         };
@@ -670,7 +675,7 @@
             stations = stations.slice(0, 5);
 
             if (stations.length === 0) {
-                const starterKeys = ['pendulum', 'exp2_1', 'f5_exp1_1', 'f5_exp2_3', 'f5_exp3_1'];
+                const starterKeys = ['pendulum', 'f5_exp1_1', 'f5_exp3_2', 'f5_exp3_5', 'f5_act4_10'];
                 starterKeys.forEach((key, idx) => {
                     const item = simulationCatalog[key];
                     const href = resolveLink(item.webUrl, item.fileUrl);
@@ -725,12 +730,12 @@
             document.getElementById('badge-login-total').innerText = totalLogins;
 
             let simRank = "🔬 Lab Novice Badge";
-            if (simsCount >= 15) simRank = "🏆 Grand Physics Master Badge";
-            else if (simsCount >= 8) simRank = "⚡ Senior KSSM Researcher Badge";
+            if (simsCount >= 18) simRank = "🏆 Grand Physics Master Badge";
+            else if (simsCount >= 9) simRank = "⚡ Senior KSSM Researcher Badge";
             else if (simsCount >= 1) simRank = "🔬 Active Lab Explorer Badge";
             document.getElementById('sim-badge-rank').innerText = simRank;
             document.getElementById('sim-badge-sub').innerText = `${simsCount} Simulations Explored • Keep experimenting across Form 4 & Form 5 labs!`;
-            document.getElementById('sim-progress-fill').style.width = Math.min(100, Math.round((simsCount / 17) * 100)) + '%';
+            document.getElementById('sim-progress-fill').style.width = Math.min(100, Math.round((simsCount / 22) * 100)) + '%';
 
             let streakRank = "🔥 Momentum Starter Badge";
             if (streakCount >= 100) streakRank = "👑 100-Day Physics Legend Badge";

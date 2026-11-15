@@ -1,349 +1,473 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eksperimen 2.1: Pecutan Graviti</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        .photogate-beam { transition: background-color 0.1s; }
-        .beam-active {
-            background-color: rgba(239, 68, 68, 0.8) !important;
-            box-shadow: 0 0 10px red;
-        }
-        .btn-back-menu {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
-        }
-        @media (max-width: 768px) {
-            body { padding: 10px !important; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 2.1: Pecutan Graviti Bumi g (3D Photogate) | Velocity Valley</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active { background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25)); border-color: #38bdf8; color: #fff; }
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.12fr 0.88fr; gap: 18px; align-items: start; }
+.card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.82rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: ns-resize; }
+.readout-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 10px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.75rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.15rem; font-weight: 800; color: #10b981; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 115px; padding: 10px 12px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.84rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+button.btn-act.green { background: linear-gradient(135deg, #10b981, #059669); }
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+button.btn-act.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+select.sel-box {
+  width: 100%; padding: 10px; border-radius: 8px; background: #0f172a;
+  color: #f8fafc; border: 1px solid #38bdf8; font-weight: 600;
+}
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 8px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr; } }
+</style>
 </head>
-<body class="bg-gray-100 min-h-screen p-6 font-sans text-gray-800">
+<body>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 2 • Eksperimen 2.1</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+    </div>
+  </div>
 
-    <div class="max-w-6xl mx-auto mb-4 flex justify-between items-center flex-wrap gap-2">
-        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
-        <span class="font-bold text-gray-700 text-sm">🔬 KSSM Tingkatan 4 • Eksperimen 2.1</span>
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 2.1: Menentukan Nilai Pecutan Graviti Bumi, g (Sistem Photogate 3D)</h1>
+    <p id="pageDesc">Tujuan: Menentukan nilai pecutan graviti, g = 2h / (t₂² - t₁²) menggunakan sistem dwi-photogate (PG1 & PG2) dan elektromagnet pelepas bebola keluli. Seret Photogate Kedua (PG2) ke atas/bawah di sepanjang kaki retort 3D untuk melaraskan jarak h (30.0 cm – 70.0 cm)!</p>
+  </div>
+
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas 3D</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Seret Photogate PG2 (h)</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Lepaskan Bebola Keluli</span></div>
+      <div class="step-pill" id="pill4"><span class="step-num">4</span><span id="pillTxt4">Rekod Jadual 2.6 & Kira g</span></div>
+    </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang kaki retort, pelepas elektromagnet dengan bebola keluli, dan sistem dwi-photogate PG1 & PG2!
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
+        </div>
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_stand"><input type="checkbox" onchange="toggleApparatus('stand', this.checked)"> <span id="lbl_stand">Kaki Retort + Pembaris Meter</span></label>
+          <label class="tray-item" id="tray_em"><input type="checkbox" onchange="toggleApparatus('em', this.checked)"> <span id="lbl_em">Elektromagnet + Bebola Keluli</span></label>
+          <label class="tray-item" id="tray_gates"><input type="checkbox" onchange="toggleApparatus('gates', this.checked)"> <span id="lbl_gates">Photogate PG1 & PG2 + Pemasa</span></label>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="simCanvas" width="680" height="440"></canvas>
+      </div>
+
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Jarak PG1–PG2, h</span><span class="val" id="mVal0">30.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Masa Photogate 1 (t₁)</span><span class="val" id="t1-display">0.000 s</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Masa Photogate 2 (t₂)</span><span class="val" id="t2-display">0.000 s</span></div>
+      </div>
     </div>
 
-    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="bg-blue-600 text-white p-6">
-            <h1 class="text-2xl font-bold">Eksperimen 2.1: Menentukan nilai pecutan graviti Bumi</h1>
-            <p class="text-blue-100 mt-2">Simulasi interaktif jatuh bebas menggunakan sistem dwi-photogate</p>
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlHLbl">🖐️ Seret Photogate PG2 di Kanvas 3D atau Pilih Jarak Pemisahan, h (cm):</label>
+        <select class="sel-box" id="h-select" onchange="updatePG2(this.value)">
+          <option value="30.0">30.0 cm</option>
+          <option value="40.0">40.0 cm</option>
+          <option value="50.0">50.0 cm</option>
+          <option value="60.0">60.0 cm</option>
+          <option value="70.0">70.0 cm</option>
+        </select>
+        <div class="btn-row">
+          <button class="btn-act green" onclick="dropBall()" id="btn-drop">⚪ Lepaskan Bebola Keluli</button>
+          <button class="btn-act red" onclick="clearTable()" id="btn-reset">🔄 Padam Jadual</button>
         </div>
+      </div>
 
-        <div class="bg-sky-50 border-l-4 border-blue-600 p-4 mx-6 mt-6 rounded text-sm text-slate-800">
-            <strong>📘 Prinsip Fizik (Jatuh Bebas & Pecutan Graviti):</strong> Berdasarkan persamaan gerakan linear <strong>s = ut + ½gt²</strong> bagi bola keluli yang dilepaskan dari keadaan pegun (<em>u = 0</em>), masa untuk melalui Photogate 1 dan Photogate 2 memenuhi hubungan <strong>g = 2h / (t₂² - t₁²)</strong>, di mana <em>h</em> ialah jarak pemisahan antara dua photogate.
-        </div>
+      <h3 style="margin:10px 0 6px 0;font-size:0.98rem;color:#38bdf8;" id="tblTitle">📊 Jadual 2.6: Keputusan Eksperimen Pecutan Graviti (g = 2h / (t₂² - t₁²))</h3>
+      <div class="table-wrap">
+        <table class="data-tbl" id="keputusan-table">
+          <thead>
+            <tr>
+              <th id="thH">Jarak, h (cm)</th>
+              <th id="thT1">Masa t₁ (s)</th>
+              <th id="thT2">Masa t₂ (s)</th>
+              <th id="thG">Nilai g (m s⁻²)</th>
+            </tr>
+          </thead>
+          <tbody id="data-table-body"></tbody>
+        </table>
+      </div>
 
-        <div class="flex flex-col md:flex-row p-6 gap-8">
-            <div class="relative w-64 h-[650px] bg-blue-50 border-2 border-gray-300 rounded-lg mx-auto flex-shrink-0">
-                <div class="absolute left-10 top-0 w-4 h-full bg-gray-400 border-r-2 border-gray-500"></div>
-                <div class="absolute left-14 top-[30px] w-12 h-6 bg-gray-700 rounded-r-md"></div>
-                
-                <div class="absolute left-12 w-20 h-6 bg-gray-800 border-2 border-gray-600 z-10 flex items-center justify-center" style="top: 150px;">
-                    <div id="beam1" class="w-full h-1 bg-red-400/30 photogate-beam"></div>
-                    <span class="absolute -right-6 text-xs font-bold text-gray-600">PG1</span>
-                </div>
-
-                <div id="pg2-container" class="absolute left-12 w-20 h-6 bg-gray-800 border-2 border-gray-600 z-10 flex items-center justify-center transition-all duration-300" style="top: 300px;">
-                    <div id="beam2" class="w-full h-1 bg-red-400/30 photogate-beam"></div>
-                    <span class="absolute -right-6 text-xs font-bold text-gray-600">PG2</span>
-                </div>
-
-                <div class="absolute left-[52px] bottom-4 w-12 h-14 bg-blue-200 border-2 border-blue-400 rounded-b-lg border-t-0 z-20"></div>
-                <div id="ball" class="absolute left-[62px] w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-600 rounded-full shadow-md z-15" style="top: 40px;"></div>
-                <div class="absolute right-2 top-[150px] bottom-[50px] w-1 border-l-2 border-dashed border-gray-400"></div>
-            </div>
-
-            <div class="flex-1 space-y-6">
-                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                    <h2 class="text-lg font-semibold mb-4">1. Tetapan & Kawalan</h2>
-                    <div class="flex flex-wrap items-end gap-4">
-                        <div class="w-full sm:w-auto">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Jarak pemisahan, h (cm):</label>
-                            <select id="h-select" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" onchange="updatePG2()">
-                                <option value="30.0">30.0 cm</option>
-                                <option value="40.0">40.0 cm</option>
-                                <option value="50.0">50.0 cm</option>
-                                <option value="60.0">60.0 cm</option>
-                                <option value="70.0">70.0 cm</option>
-                            </select>
-                        </div>
-                        
-                        <div class="w-full sm:w-40">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kelajuan: <span id="speed-label" class="text-blue-600 font-bold">1x (Normal)</span></label>
-                            <input type="range" id="speed-slider" min="0.1" max="1" step="0.1" value="1" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-600" oninput="updateSpeedLabel()">
-                        </div>
-
-                        <button id="btn-drop" onclick="dropBall()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-colors disabled:opacity-50">
-                            Lepaskan Bola
-                        </button>
-                        <button id="btn-reset" onclick="resetApparatus()" class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-colors">
-                            Reset
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-black text-green-400 p-4 rounded-lg border-4 border-gray-700 text-center shadow-inner">
-                        <div class="text-xs text-gray-300 mb-1">Masa Photogate 1 (t₁)</div>
-                        <div class="text-3xl font-mono" id="t1-display">0.000 s</div>
-                    </div>
-                    <div class="bg-black text-green-400 p-4 rounded-lg border-4 border-gray-700 text-center shadow-inner">
-                        <div class="text-xs text-gray-300 mb-1">Masa Photogate 2 (t₂)</div>
-                        <div class="text-3xl font-mono" id="t2-display">0.000 s</div>
-                    </div>
-                </div>
-
-                <div>
-                    <h2 class="text-lg font-semibold mb-3">2. Keputusan (Jadual 2.6)</h2>
-                    <div class="overflow-x-auto rounded-lg border border-gray-200">
-                        <table id="keputusan-table" class="w-full text-sm text-left text-gray-700">
-                            <thead class="text-xs text-gray-700 bg-gray-100 uppercase border-b border-gray-200">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-center border-r">Jarak, h (cm)</th>
-                                    <th scope="col" class="px-6 py-3 text-center border-r">Masa t1 (s)</th>
-                                    <th scope="col" class="px-6 py-3 text-center border-r">Masa t2 (s)</th>
-                                    <th scope="col" class="px-6 py-3 text-center bg-blue-50 text-blue-800">Nilai g (m s-2)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="data-table-body"></tbody>
-                        </table>
-                    </div>
-                    <div class="mt-4 flex flex-wrap justify-between items-center gap-4">
-                        <div class="text-sm text-gray-600 bg-gray-100 p-2 rounded">
-                            Rumus: <strong>g = 2h / (t₂² - t₁²)</strong>
-                        </div>
-                        <div class="flex gap-3">
-                            <button onclick="downloadExcel()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow transition-colors flex items-center gap-2">
-                                ⬇ Muat Turun Excel
-                            </button>
-                            <button onclick="clearTable()" class="text-red-500 hover:text-red-700 text-sm underline px-2">Padam Jadual</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div class="btn-row">
+        <button class="btn-act purple" onclick="downloadExcel()" id="btnExport">⬇️ Muat Turun Excel (.xlsx)</button>
+      </div>
     </div>
+  </div>
+</div>
 
-    <script>
-        const GRAVITY = 9.78;
-        const PIXEL_PER_METER = 500;
-        const Y1_METER = 0.2;
-        const OFFSET_Y = 50;
-        const BALL_RADIUS = 12;
+<script>
+let lang = 'ms';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 4 • Bab 2 • Eksperimen 2.1",
+    pageTitle: "Eksperimen 2.1: Menentukan Nilai Pecutan Graviti Bumi, g (Sistem Photogate 3D)",
+    pageDesc: "Tujuan: Menentukan nilai pecutan graviti, g = 2h / (t₂² - t₁²) menggunakan sistem dwi-photogate (PG1 & PG2) dan elektromagnet pelepas bebola keluli. Seret Photogate Kedua (PG2) ke atas/bawah di sepanjang kaki retort 3D untuk melaraskan jarak h (30.0 cm – 70.0 cm)!",
+    pillTxt1: "Pilih & Pasang Radas 3D",
+    pillTxt2: "Seret Photogate PG2 (h)",
+    pillTxt3: "Lepaskan Bebola Keluli",
+    pillTxt4: "Rekod Jadual 2.6 & Kira g",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_stand: "Kaki Retort + Pembaris Meter",
+    lbl_em: "Elektromagnet + Bebola Keluli",
+    lbl_gates: "Photogate PG1 & PG2 + Pemasa",
+    mLbl0: "Jarak PG1–PG2, h",
+    mLbl1: "Masa Photogate 1 (t₁)",
+    mLbl2: "Masa Photogate 2 (t₂)",
+    ctrlHLbl: "🖐️ Seret Photogate PG2 di Kanvas 3D atau Pilih Jarak Pemisahan, h (cm):",
+    "btn-drop": "⚪ Lepaskan Bebola Keluli",
+    "btn-reset": "🔄 Padam Jadual",
+    tblTitle: "📊 Jadual 2.6: Keputusan Eksperimen Pecutan Graviti (g = 2h / (t₂² - t₁²))",
+    thH: "Jarak, h (cm)",
+    thT1: "Masa t₁ (s)",
+    thT2: "Masa t₂ (s)",
+    thG: "Nilai g (m s⁻²)",
+    btnExport: "⬇️ Muat Turun Excel (.xlsx)",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    dragHint: "🖐️ Seret Photogate PG2 ke atas/bawah untuk menukar h, kemudian klik Lepaskan Bebola!"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 4 • Chapter 2 • Experiment 2.1",
+    pageTitle: "Experiment 2.1: Determining Gravitational Acceleration, g (3D Photogate System)",
+    pageDesc: "Objective: To determine gravitational acceleration, g = 2h / (t₂² - t₁²) using a dual-photogate system (PG1 & PG2) and an electromagnet release. Drag Photogate 2 (PG2) up/down along the 3D retort stand to adjust separation distance h (30.0 cm – 70.0 cm)!",
+    pillTxt1: "Select & Assemble 3D Apparatus",
+    pillTxt2: "Drag Photogate PG2 (h)",
+    pillTxt3: "Release Steel Ball",
+    pillTxt4: "Record Table 2.6 & Calculate g",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_stand: "Retort Stand + Metre Rule",
+    lbl_em: "Electromagnet + Steel Ball",
+    lbl_gates: "Photogates PG1 & PG2 + Timer",
+    mLbl0: "Distance PG1–PG2, h",
+    mLbl1: "Photogate 1 Time (t₁)",
+    mLbl2: "Photogate 2 Time (t₂)",
+    ctrlHLbl: "🖐️ Drag Photogate PG2 on 3D Canvas or Select Separation Distance, h (cm):",
+    "btn-drop": "⚪ Release Steel Ball",
+    "btn-reset": "🔄 Clear Table",
+    tblTitle: "📊 Table 2.6: Gravitational Acceleration Results (g = 2h / (t₂² - t₁²))",
+    thH: "Distance, h (cm)",
+    thT1: "Time t₁ (s)",
+    thT2: "Time t₂ (s)",
+    thG: "Value of g (m s⁻²)",
+    btnExport: "⬇️ Download Excel (.xlsx)",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    dragHint: "🖐️ Drag Photogate PG2 up/down to change h, then click Release Steel Ball!"
+  }
+};
 
-        const ball = document.getElementById('ball');
-        const pg2Container = document.getElementById('pg2-container');
-        const beam1 = document.getElementById('beam1');
-        const beam2 = document.getElementById('beam2');
-        const t1Disp = document.getElementById('t1-display');
-        const t2Disp = document.getElementById('t2-display');
-        const btnDrop = document.getElementById('btn-drop');
-        const speedSlider = document.getElementById('speed-slider');
+const placed = { stand: false, em: false, gates: false };
+const GRAVITY = 9.78;
+let h_cm = 30.0;
+let ballY = 55;
+let isDropping = false;
+let isDraggingPG2 = false;
+let beam1Active = false, beam2Active = false;
 
-        let isDropping = false;
-        updatePG2();
+function allPlaced() { return placed.stand && placed.em && placed.gates; }
 
-        function updateSpeedLabel() {
-            let val = speedSlider.value;
-            document.getElementById('speed-label').innerText = (val == 1) ? '1x (Normal)' : val + 'x';
-        }
+function toggleApparatus(k, c) {
+  placed[k] = c;
+  document.getElementById('tray_' + k).classList.toggle('placed', c);
+  updateCoach(); draw3D();
+}
+function assembleAll() {
+  ['stand', 'em', 'gates'].forEach(k => {
+    placed[k] = true;
+    document.querySelector('#tray_' + k + ' input').checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  updateCoach(); draw3D();
+}
+function updatePG2(v) {
+  if (!allPlaced()) assembleAll();
+  if (isDropping) return;
+  h_cm = parseFloat(v);
+  document.getElementById('h-select').value = h_cm.toFixed(1);
+  document.getElementById('mVal0').innerText = h_cm.toFixed(1) + ' cm';
+  ballY = 55;
+  draw3D();
+}
+function dropBall() {
+  if (!allPlaced()) assembleAll();
+  if (isDropping) return;
+  isDropping = true;
+  ballY = 55;
+  const y1_m = 0.20;
+  const y2_m = y1_m + h_cm / 100;
+  const t1 = Math.sqrt((2 * y1_m) / GRAVITY) + (Math.random() - 0.5) * 0.002;
+  const t2 = Math.sqrt((2 * y2_m) / GRAVITY) + (Math.random() - 0.5) * 0.002;
+  const pg1Y = 125;
+  const pg2Y = pg1Y + h_cm * 3.2;
 
-        function updatePG2() {
-            if (isDropping) return;
-            let h_cm = parseFloat(document.getElementById('h-select').value);
-            let h_m = h_cm / 100;
-            let y2_m = Y1_METER + h_m;
-            let pg2_px = OFFSET_Y + (y2_m * PIXEL_PER_METER) - 12;
-            pg2Container.style.top = pg2_px + 'px';
-        }
+  const start = performance.now();
+  function anim(now) {
+    const dt = (now - start) / 1000;
+    ballY = 55 + 0.5 * 480 * dt * dt;
+    beam1Active = Math.abs(ballY - pg1Y) < 15;
+    beam2Active = Math.abs(ballY - pg2Y) < 15;
+    if (ballY >= pg1Y) document.getElementById('t1-display').innerText = t1.toFixed(3) + ' s';
+    if (ballY >= pg2Y + 25) {
+      ballY = 365;
+      isDropping = false;
+      beam1Active = false; beam2Active = false;
+      document.getElementById('t2-display').innerText = t2.toFixed(3) + ' s';
+      logToTable(h_cm, t1, t2);
+      draw3D();
+      updateCoach();
+      return;
+    }
+    draw3D();
+    requestAnimationFrame(anim);
+  }
+  requestAnimationFrame(anim);
+}
 
-        function calculateTheoreticalTime(distance) {
-            return Math.sqrt((2 * distance) / GRAVITY);
-        }
+function logToTable(h, t1, t2) {
+  const g = (2 * (h / 100)) / (t2 * t2 - t1 * t1);
+  const tb = document.getElementById('data-table-body');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${h.toFixed(1)}</td><td>${t1.toFixed(3)}</td><td>${t2.toFixed(3)}</td><td style="color:#38bdf8;font-weight:800;">${g.toFixed(2)}</td>`;
+  tb.appendChild(tr);
+}
 
-        function dropBall() {
-            if (isDropping) return;
-            isDropping = true;
+function clearTable() {
+  document.getElementById('data-table-body').innerHTML = '';
+  ballY = 55;
+  draw3D();
+}
 
-            btnDrop.disabled = true;
-            document.getElementById('h-select').disabled = true;
-            speedSlider.disabled = true;
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3');
+  [p1, p2, p3].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun sistem photogate 3D."
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus Tray</b> to assemble the 3D photogate system.";
+  } else {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? `🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Seret <b>Photogate PG2</b> pada tiang kaki retort kepada <b>h = 30.0, 40.0, 50.0, 60.0, 70.0 cm</b> dan klik <b>⚪ Lepaskan Bebola Keluli</b>!`
+      : `🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Drag <b>Photogate PG2</b> along the retort stand to <b>h = 30.0, 40.0, 50.0, 60.0, 70.0 cm</b> and click <b>⚪ Release Steel Ball</b>!`;
+  }
+}
 
-            t1Disp.innerText = "0.000 s";
-            t2Disp.innerText = "0.000 s";
-            beam1.classList.remove('beam-active');
-            beam2.classList.remove('beam-active');
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateCoach(); draw3D();
+}
 
-            let h_cm = parseFloat(document.getElementById('h-select').value);
-            let h_m = h_cm / 100;
-            let y2_m = Y1_METER + h_m;
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
 
-            let exact_t1 = calculateTheoreticalTime(Y1_METER);
-            let exact_t2 = calculateTheoreticalTime(y2_m);
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 440);
+  bg.addColorStop(0, '#0f172a'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 440);
+  ctx.fillStyle = '#334155'; ctx.fillRect(0, 390, canvas.width, 50);
 
-            let noise1 = (Math.random() - 0.5) * 0.004;
-            let noise2 = (Math.random() - 0.5) * 0.004;
-            let recorded_t1 = exact_t1 + noise1;
-            let recorded_t2 = exact_t2 + noise2;
+  if (!placed.stand && !placed.em && !placed.gates) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 210);
+    return;
+  }
 
-            let startTime = performance.now();
-            let slowMoFactor = parseFloat(speedSlider.value);
+  const standX = 210, dropX = 290;
+  const pg1Y = 125;
+  const pg2Y = pg1Y + h_cm * 3.2;
 
-            let pg1Triggered = false;
-            let pg2Triggered = false;
+  if (placed.stand) {
+    ctx.fillStyle = '#64748b'; ctx.fillRect(160, 372, 190, 20);
+    ctx.fillStyle = '#cbd5e1'; ctx.fillRect(standX, 25, 14, 350);
+    // Catch cup at bottom
+    ctx.fillStyle = '#1e3a8a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+    ctx.fillRect(dropX - 24, 355, 48, 32); ctx.strokeRect(dropX - 24, 355, 48, 32);
+  }
 
-            function animateFrame(time) {
-                let visualElapsed = (time - startTime) / 1000;
-                let physicsTime = visualElapsed * slowMoFactor;
-                let current_y_m = 0.5 * GRAVITY * physicsTime * physicsTime;
-                let newTop = OFFSET_Y + (current_y_m * PIXEL_PER_METER) - BALL_RADIUS;
-                ball.style.top = newTop + 'px';
+  if (placed.em) {
+    ctx.fillStyle = '#475569'; ctx.fillRect(standX, 32, 95, 18);
+    // Steel Ball
+    const bGrad = ctx.createRadialGradient(dropX - 4, ballY - 4, 2, dropX, ballY, 13);
+    bGrad.addColorStop(0, '#f8fafc'); bGrad.addColorStop(1, '#475569');
+    ctx.fillStyle = bGrad;
+    ctx.beginPath(); ctx.arc(dropX, ballY, 13, 0, Math.PI * 2); ctx.fill();
+  }
 
-                if (physicsTime >= recorded_t1 && !pg1Triggered) {
-                    pg1Triggered = true;
-                    t1Disp.innerText = recorded_t1.toFixed(3) + " s";
-                    beam1.classList.add('beam-active');
-                    setTimeout(() => beam1.classList.remove('beam-active'), 200);
-                }
+  if (placed.gates) {
+    // PG1 (Fixed at pg1Y = 125)
+    ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+    ctx.fillRect(standX + 14, pg1Y - 10, 110, 20); ctx.strokeRect(standX + 14, pg1Y - 10, 110, 20);
+    ctx.strokeStyle = beam1Active ? '#ef4444' : 'rgba(239,68,68,0.45)';
+    ctx.lineWidth = beam1Active ? 4 : 2;
+    ctx.beginPath(); ctx.moveTo(standX + 20, pg1Y); ctx.lineTo(standX + 120, pg1Y); ctx.stroke();
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText('PG1 (0 cm)', standX + 132, pg1Y + 4);
 
-                if (physicsTime >= recorded_t2 && !pg2Triggered) {
-                    pg2Triggered = true;
-                    t2Disp.innerText = recorded_t2.toFixed(3) + " s";
-                    beam2.classList.add('beam-active');
-                    setTimeout(() => beam2.classList.remove('beam-active'), 200);
+    // PG2 (Draggable at pg2Y)
+    ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
+    ctx.fillRect(standX + 14, pg2Y - 10, 110, 20); ctx.strokeRect(standX + 14, pg2Y - 10, 110, 20);
+    ctx.strokeStyle = beam2Active ? '#ef4444' : 'rgba(239,68,68,0.45)';
+    ctx.lineWidth = beam2Active ? 4 : 2;
+    ctx.beginPath(); ctx.moveTo(standX + 20, pg2Y); ctx.lineTo(standX + 120, pg2Y); ctx.stroke();
+    ctx.fillStyle = '#fde047';
+    ctx.fillText(`PG2 (h = ${h_cm.toFixed(1)} cm)`, standX + 132, pg2Y + 4);
 
-                    ball.style.top = (OFFSET_Y + (y2_m + 0.1) * PIXEL_PER_METER) + 'px';
-                    logToTable(h_cm, recorded_t1, recorded_t2);
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 422);
+  }
+}
 
-                    btnDrop.disabled = false;
-                    document.getElementById('h-select').disabled = false;
-                    speedSlider.disabled = false;
-                    return;
-                }
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  if (isDropping) return;
+  isDraggingPG2 = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDraggingPG2) handleDrag(e); });
+canvas.addEventListener('pointerup', () => { isDraggingPG2 = false; updateCoach(); draw3D(); });
 
-                if (isDropping) {
-                    requestAnimationFrame(animateFrame);
-                }
-            }
+function handleDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const py = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const rawCm = (py - 125) / 3.2;
+  const snapped = Math.round(Math.max(30, Math.min(70, rawCm)) / 10) * 10;
+  updatePG2(snapped);
+}
 
-            requestAnimationFrame(animateFrame);
-        }
+function downloadExcel() {
+  const tb = document.getElementById('data-table-body');
+  if (tb.children.length === 0) {
+    alert(lang === 'ms' ? 'Sila jalankan eksperimen dahulu!' : 'Please run the experiment first!');
+    return;
+  }
+  let table = document.getElementById('keputusan-table');
+  let wb = XLSX.utils.table_to_book(table, { sheet: "Keputusan Eksperimen" });
+  XLSX.writeFile(wb, "Keputusan_Eksperimen_2.1.xlsx");
+}
 
-        function resetApparatus() {
-            isDropping = false;
-            ball.style.top = '40px';
-            t1Disp.innerText = "0.000 s";
-            t2Disp.innerText = "0.000 s";
-            beam1.classList.remove('beam-active');
-            beam2.classList.remove('beam-active');
-            btnDrop.disabled = false;
-            document.getElementById('h-select').disabled = false;
-            speedSlider.disabled = false;
-        }
-
-        function logToTable(h_cm, t1, t2) {
-            let h_m = h_cm / 100;
-            let calc_g = (2 * h_m) / ((t2 * t2) - (t1 * t1));
-
-            const tbody = document.getElementById('data-table-body');
-            const row = document.createElement('tr');
-            row.className = "bg-white border-b hover:bg-gray-50";
-            row.innerHTML = `
-                <td class="px-6 py-3 text-center border-r">${h_cm.toFixed(1)}</td>
-                <td class="px-6 py-3 text-center border-r">${t1.toFixed(3)}</td>
-                <td class="px-6 py-3 text-center border-r">${t2.toFixed(3)}</td>
-                <td class="px-6 py-3 text-center font-bold text-blue-600 bg-blue-50/50">${calc_g.toFixed(2)}</td>
-            `;
-            tbody.appendChild(row);
-        }
-
-        function clearTable() {
-            document.getElementById('data-table-body').innerHTML = '';
-        }
-
-        function downloadExcel() {
-            const tbody = document.getElementById('data-table-body');
-            if (tbody.children.length === 0) {
-                alert("Sila jalankan eksperimen sekurang-kurangnya sekali sebelum memuat turun jadual.");
-                return;
-            }
-            let table = document.getElementById("keputusan-table");
-            let workbook = XLSX.utils.table_to_book(table, {sheet: "Keputusan Eksperimen"});
-            XLSX.writeFile(workbook, "Keputusan_Eksperimen_2.1.xlsx");
-        }
-    </script>
-
-    <!-- Firebase Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-            authDomain: "velocity-valley-edu.firebaseapp.com",
-            projectId: "velocity-valley-edu",
-            storageBucket: "velocity-valley-edu.firebasestorage.app",
-            messagingSenderId: "340043533038",
-            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-        };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-
-        function recordStationVisit(user) {
-            const stationItem = {
-                id: "exp2_1",
-                title: "Experiment 2.1: Gravitational Acceleration (g)",
-                category: "Form 4 • Chapter 2",
-                webUrl: "/tingkatan4experiment2",
-                fileUrl: "Tingkatan4eksperimen2.html",
-                timestamp: new Date().toLocaleString('en-GB')
-            };
-            try {
-                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
-                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
-            } catch (e) {}
-
-            const pageID = "visited_gravity_eksperimen2_1";
-            const isFirstInSession = !sessionStorage.getItem(pageID);
-            sessionStorage.setItem(pageID, "true");
-
-            db.collection("users").doc(user.uid).get().then(doc => {
-                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
-                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                let payload = { recentActivities: updated };
-                if (isFirstInSession) {
-                    payload.simsExplored = firebase.firestore.FieldValue.increment(1);
-                }
-                db.collection("users").doc(user.uid).set(payload, { merge: true });
-            });
-        }
-
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                recordStationVisit(user);
-            } else {
-                window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
-            }
-        });
-    </script>
+draw3D();
+</script>
 </body>
 </html>

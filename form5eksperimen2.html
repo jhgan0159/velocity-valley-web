@@ -1,639 +1,547 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eksperimen 2.1 (Tingkatan 5): Tekanan & Kedalaman Cecair | Velocity Valley</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            margin: 0;
-            padding: 20px;
-            color: #1e293b;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .top-bar-wrapper {
-            width: 100%;
-            max-width: 1280px;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .btn-back-menu {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
-        }
-        .lang-switch-btn {
-            background: #0ea5e9;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.88rem;
-        }
-        h1 { text-align: center; color: #0f172a; margin: 0 0 6px 0; font-size: 1.75rem; }
-        .subtitle { text-align: center; color: #475569; margin: 0 0 16px 0; font-size: 0.98rem; }
-        .principle-banner {
-            width: 100%;
-            max-width: 1280px;
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-            border-left: 5px solid #0284c7;
-            padding: 14px 18px;
-            border-radius: 10px;
-            margin-bottom: 18px;
-            color: #0f172a;
-            font-size: 0.93rem;
-            line-height: 1.55;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1.15fr;
-            gap: 20px;
-            width: 100%;
-            max-width: 1280px;
-        }
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-        }
-        canvas {
-            border: 1.5px solid #cbd5e1;
-            background-color: #ffffff;
-            display: block;
-            margin: 0 auto 14px auto;
-            border-radius: 8px;
-            max-width: 100%;
-            height: auto;
-        }
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .control-group {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 12px 14px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .depth-btn-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .depth-btn {
-            flex: 1;
-            min-width: 72px;
-            padding: 9px 10px;
-            background: #e2e8f0;
-            color: #1e293b;
-            border: 2px solid transparent;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 0.88rem;
-            transition: all 0.2s;
-        }
-        .depth-btn.active-d {
-            background: #0284c7;
-            color: white;
-            border-color: #38bdf8;
-            box-shadow: 0 3px 8px rgba(2,132,199,0.3);
-        }
-        .student-input-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .student-input-row input {
-            flex: 1;
-            min-width: 120px;
-            padding: 9px 12px;
-            border: 1.5px solid #94a3b8;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: bold;
-        }
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 11px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-        .btn-excel {
-            background: #16a34a;
-            color: white;
-            border: none;
-            padding: 11px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
-        }
-        .reminder {
-            font-weight: bold;
-            text-align: center;
-            padding: 9px;
-            border-radius: 6px;
-            font-size: 0.88rem;
-        }
-        .reminder.warning { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-        .reminder.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-        .table-scroll { width: 100%; overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            font-size: 0.92rem;
-        }
-        th, td {
-            border: 1px solid #cbd5e1;
-            padding: 10px 8px;
-            text-align: center;
-        }
-        th { background: #0f4c81; color: white; }
-        .discussion-box {
-            margin-top: 16px;
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            border-radius: 8px;
-            padding: 12px 14px;
-            font-size: 0.88rem;
-            line-height: 1.5;
-        }
-        @media (max-width: 900px) {
-            .container { grid-template-columns: 1fr; }
-            body { padding: 12px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 2.1: Tekanan Cecair & Kedalaman (3D Interaktif) | Velocity Valley</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active {
+  background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25));
+  border-color: #38bdf8; color: #fff;
+}
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+.card-panel {
+  background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px; padding: 18px;
+}
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.84rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: ns-resize; }
+.readout-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 10px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.78rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.2rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 120px; padding: 10px 14px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.88rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+button.btn-act.green { background: linear-gradient(135deg, #10b981, #059669); }
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+button.btn-act.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 8px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+canvas#graphCanvas {
+  width: 100%; height: auto; background: #090d16; border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.25); margin-top: 12px; display: block;
+}
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 5 • Bab 2 • Eksperimen 2.1</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+    </div>
+  </div>
 
-    <div class="top-bar-wrapper">
-        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:' || window.Capacitor || (window.location.hostname==='localhost' && !window.location.port)){this.href='index.html';}">← Back to Main Menu</a>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-weight: bold; color: #1e3a8a;">🚀 KSSM Tingkatan 5 • Eksperimen 2.1</span>
-            <button class="lang-switch-btn" onclick="toggleLang()">🌐 English / BM</button>
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 2.1: Hubungan antara Kedalaman Cecair, h dengan Tekanan Cecair, P (P = hρg)</h1>
+    <p id="pageDesc">Tujuan: Mengkaji hubungan antara kedalaman cecair, h dengan tekanan cecair (diwakili oleh perbezaan aras cecair berwarna dalam manometer tiub-U, D). Tandakan radas untuk memasang dan seret corong tisel ke dalam air secara terus di atas kanvas 3D.</p>
+  </div>
+
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Seret Corong Tisel ke h</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Ukur Perbezaan Aras D</span></div>
+      <div class="step-pill" id="pill4"><span class="step-num">4</span><span id="pillTxt4">Rekod & Plot Graf D vs h</span></div>
+    </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang silinder penyukat berisi air, manometer tiub-U berisi air berwarna, dan corong tisel bergetah nipis!
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
         </div>
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_cylinder"><input type="checkbox" onchange="toggleApparatus('cylinder', this.checked)"> <span id="lbl_cylinder">Silinder Penyukat 500 ml + Air</span></label>
+          <label class="tray-item" id="tray_manometer"><input type="checkbox" onchange="toggleApparatus('manometer', this.checked)"> <span id="lbl_manometer">Manometer Tiub-U + Pembaris</span></label>
+          <label class="tray-item" id="tray_funnel"><input type="checkbox" onchange="toggleApparatus('funnel', this.checked)"> <span id="lbl_funnel">Corong Tisel + Tiub Getah</span></label>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="simCanvas" width="680" height="440"></canvas>
+      </div>
+
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Kedalaman Corong Tisel, h</span><span class="val" id="mVal0">4.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Beza Aras Manometer, D</span><span class="val" id="mVal1">3.6 cm</span></div>
+      </div>
     </div>
 
-    <h1 id="mainTitle">Eksperimen 2.1: Tekanan Cecair & Kedalaman (P = hρg)</h1>
-    <p class="subtitle" id="subTitle">Mengkaji hubungan antara kedalaman cecair, h dengan tekanan cecair, D dalam tiub-U (Rajah 2.2)</p>
-
-    <div class="principle-banner" id="principleBox">
-        <strong>📘 Inferens & Hipotesis (Tekanan Cecair, P = hρg):</strong> Tekanan cecair bergantung pada kedalaman cecair. Semakin bertambah kedalaman corong tisel di dalam air, <em>h</em>, semakin bertambah tekanan cecair yang diwakili oleh perbezaan ketinggian turus air berwarna, <em>D</em> antara dua aras air di dalam tiub-U.
-    </div>
-
-    <div class="container">
-        <!-- LEFT PANEL: APPARATUS -->
-        <div class="panel">
-            <canvas id="simCanvas" width="530" height="410"></canvas>
-
-            <div class="controls">
-                <div class="control-group">
-                    <label><strong id="lblSelectDepth">1. Tolak Corong Tisel ke Kedalaman Air, h (Jadual 2.1):</strong></label>
-                    <div class="depth-btn-row">
-                        <button class="depth-btn" onclick="setDepth(4.0)" id="dbtn-4">h = 4.0 cm</button>
-                        <button class="depth-btn" onclick="setDepth(8.0)" id="dbtn-8">h = 8.0 cm</button>
-                        <button class="depth-btn" onclick="setDepth(12.0)" id="dbtn-12">h = 12.0 cm</button>
-                        <button class="depth-btn" onclick="setDepth(16.0)" id="dbtn-16">h = 16.0 cm</button>
-                        <button class="depth-btn" onclick="setDepth(20.0)" id="dbtn-20">h = 20.0 cm</button>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label><strong id="lblReadD">2. Tentukan perbezaan ketinggian turus air berwarna, D (cm) pada tiub-U:</strong></label>
-                    <div class="student-input-row">
-                        <input type="number" step="0.1" id="inputDiffD" placeholder="Nilai D (cm)">
-                        <button class="btn-primary" onclick="rekodData()" id="btnRecord">➕ Rekod Jadual 2.1</button>
-                    </div>
-                </div>
-
-                <div id="reminderText" class="reminder warning">⚠️ Sila rekodkan bacaan D untuk kedalaman h = 4.0 cm!</div>
-            </div>
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlDepthLbl">🖐️ Seret Corong Tisel di Kanvas 3D atau Pilih Kedalaman Air, h (cm):</label>
+        <input type="range" id="depthSlider" min="4.0" max="20.0" step="4.0" value="4.0" style="width:100%;" oninput="setDepth(this.value)">
+        <div style="display:flex;justify-content:space-between;font-size:0.84rem;color:#94a3b8;margin-top:4px;">
+          <span>4.0 cm</span><span>8.0 cm</span><span>12.0 cm</span><span>16.0 cm</span><span>20.0 cm</span>
         </div>
-
-        <!-- RIGHT PANEL: JADUAL 2.1 & GRAPH -->
-        <div class="panel">
-            <h3 style="margin-top:0;" id="tableTitle">Jadual 2.1: Keputusan Eksperimen 2.1</h3>
-            <div class="table-scroll">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Kedalaman air, <i>h</i> / cm</th>
-                            <th>Perbezaan ketinggian turus air berwarna, <i>D</i> / cm</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <h4 style="margin: 18px 0 8px 0; color:#0f172a;" id="graphTitle">📈 Graf Perbezaan Ketinggian Turus Air, D (cm) melawan Kedalaman, h (cm)</h4>
-            <canvas id="graphCanvas" width="520" height="230"></canvas>
-
-            <button class="btn-excel" onclick="muatTurunExcel()" id="btnDownload">⬇ Muat Turun Jadual 2.1 (Excel / CSV)</button>
-
-            <div class="discussion-box">
-                <strong>🔍 Perbincangan KSSM:</strong><br>
-                1. <strong>Hubungan:</strong> Tekanan air (diwakili oleh <em>D</em>) berkadar terus dengan kedalaman air, <em>h</em>.<br>
-                2. <strong>Langkah berjaga-jaga:</strong> Pastikan sambungan tiub silikon pada corong tisel dan tiub-U adalah kedap udara (tiada kebocoran gas), dan pastikan kepingan getah nipis diikat dengan ketat pada muncung corong tisel.
-            </div>
+        <div class="btn-row">
+          <button class="btn-act green" onclick="recordRow()" id="btnRecord">➕ Rekod Bacaan Jadual 2.1</button>
+          <button class="btn-act red" onclick="resetSim()" id="btnReset">🔄 Reset</button>
         </div>
+      </div>
+
+      <h3 style="margin:10px 0 6px 0;font-size:1rem;color:#38bdf8;" id="tblTitle">📊 Jadual 2.1: Keputusan Eksperimen Kedalaman vs Tekanan Cecair</h3>
+      <div class="table-wrap">
+        <table class="data-tbl">
+          <thead>
+            <tr>
+              <th id="thH">Kedalaman air, h / cm</th>
+              <th id="thD">Perbezaan aras cecair berwarna, D / cm</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-act purple" onclick="exportCSV()" id="btnExport">⬇️ Muat Turun CSV / Excel</button>
+      </div>
+
+      <canvas id="graphCanvas" width="520" height="220"></canvas>
     </div>
+  </div>
+</div>
 
-    <script>
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
-        const graphCanvas = document.getElementById('graphCanvas');
-        const gctx = graphCanvas.getContext('2d');
+<script>
+let lang = 'ms';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 5 • Bab 2 • Eksperimen 2.1",
+    pageTitle: "Eksperimen 2.1: Hubungan antara Kedalaman Cecair, h dengan Tekanan Cecair, P (P = hρg)",
+    pageDesc: "Tujuan: Mengkaji hubungan antara kedalaman cecair, h dengan tekanan cecair (diwakili oleh perbezaan aras cecair berwarna dalam manometer tiub-U, D). Tandakan radas untuk memasang dan seret corong tisel ke dalam air secara terus di atas kanvas 3D.",
+    pillTxt1: "Pilih & Pasang Radas",
+    pillTxt2: "Seret Corong Tisel ke h",
+    pillTxt3: "Ukur Perbezaan Aras D",
+    pillTxt4: "Rekod & Plot Graf D vs h",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_cylinder: "Silinder Penyukat 500 ml + Air",
+    lbl_manometer: "Manometer Tiub-U + Pembaris",
+    lbl_funnel: "Corong Tisel + Tiub Getah",
+    mLbl0: "Kedalaman Corong Tisel, h",
+    mLbl1: "Beza Aras Manometer, D",
+    ctrlDepthLbl: "🖐️ Seret Corong Tisel di Kanvas 3D atau Pilih Kedalaman Air, h (cm):",
+    btnRecord: "➕ Rekod Bacaan Jadual 2.1",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Jadual 2.1: Keputusan Eksperimen Kedalaman vs Tekanan Cecair",
+    thH: "Kedalaman air, h / cm",
+    thD: "Perbezaan aras cecair berwarna, D / cm",
+    btnExport: "⬇️ Muat Turun CSV / Excel",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    dragHint: "🖐️ Tekan & seret Corong Tisel ke atas/bawah di dalam silinder untuk mengubah kedalaman h!",
+    graphTitle: "Graf Perbezaan Aras Manometer, D (cm) melawan Kedalaman Air, h (cm)"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 5 • Chapter 2 • Experiment 2.1",
+    pageTitle: "Experiment 2.1: Relationship between Liquid Depth, h and Liquid Pressure, P (P = hρg)",
+    pageDesc: "Objective: To study the relationship between liquid depth, h and liquid pressure (represented by the coloured liquid level difference D in the U-tube manometer). Tick apparatus to assemble and drag the thistle funnel directly on the 3D canvas.",
+    pillTxt1: "Select & Assemble Apparatus",
+    pillTxt2: "Drag Thistle Funnel to h",
+    pillTxt3: "Measure Level Difference D",
+    pillTxt4: "Record & Plot D vs h Graph",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_cylinder: "500 ml Measuring Cylinder + Water",
+    lbl_manometer: "U-Tube Manometer + Ruler",
+    lbl_funnel: "Thistle Funnel + Rubber Tube",
+    mLbl0: "Thistle Funnel Depth, h",
+    mLbl1: "Manometer Level Diff, D",
+    ctrlDepthLbl: "🖐️ Drag Thistle Funnel on 3D Canvas or Select Water Depth, h (cm):",
+    btnRecord: "➕ Record Reading to Table 2.1",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Table 2.1: Liquid Depth vs Pressure Results",
+    thH: "Water depth, h / cm",
+    thD: "Coloured liquid level difference, D / cm",
+    btnExport: "⬇️ Download CSV / Excel",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    dragHint: "🖐️ Press & drag the Thistle Funnel up/down inside the cylinder to adjust depth h!",
+    graphTitle: "Graph of Manometer Level Difference, D (cm) against Water Depth, h (cm)"
+  }
+};
 
-        let currentH = 4.0; // cm
-        let currentD = 3.2; // cm (D = 0.80 * h)
-        let recordedDepths = new Map();
-        let isEng = false;
+const placed = { cylinder: false, manometer: false, funnel: false };
+let h_cm = 4.0;
+let records = [];
+let isDragging = false;
 
-        function setDepth(h) {
-            currentH = h;
-            currentD = +(h * 0.80).toFixed(1);
-            document.getElementById('inputDiffD').value = currentD.toFixed(1);
+function allPlaced() { return placed.cylinder && placed.manometer && placed.funnel; }
 
-            [4, 8, 12, 16, 20].forEach(val => {
-                const btn = document.getElementById('dbtn-' + val);
-                if (btn) btn.classList.toggle('active-d', val === h);
-            });
-            updateReminderUI();
-            drawApparatus();
-        }
+function toggleApparatus(key, checked) {
+  placed[key] = checked;
+  const el = document.getElementById('tray_' + key);
+  if (checked) el.classList.add('placed'); else el.classList.remove('placed');
+  updateCoach(); draw3D();
+}
 
-        function updateReminderUI() {
-            const rem = document.getElementById('reminderText');
-            if (recordedDepths.has(currentH)) {
-                rem.className = 'reminder success';
-                rem.innerText = isEng
-                    ? `✓ Data for h = ${currentH.toFixed(1)} cm (D = ${currentD.toFixed(1)} cm) recorded!`
-                    : `✓ Data untuk h = ${currentH.toFixed(1)} cm (D = ${currentD.toFixed(1)} cm) telah direkodkan!`;
-            } else {
-                rem.className = 'reminder warning';
-                rem.innerText = isEng
-                    ? `⚠️ Please record D = ${currentD.toFixed(1)} cm for depth h = ${currentH.toFixed(1)} cm!`
-                    : `⚠️ Sila rekodkan D = ${currentD.toFixed(1)} cm untuk kedalaman h = ${currentH.toFixed(1)} cm!`;
-            }
-        }
+function assembleAll() {
+  ['cylinder', 'manometer', 'funnel'].forEach(k => {
+    placed[k] = true;
+    const cb = document.querySelector('#tray_' + k + ' input');
+    if (cb) cb.checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  updateCoach(); draw3D();
+}
 
-        function drawApparatus() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+function setDepth(val) {
+  if (!allPlaced()) assembleAll();
+  h_cm = parseFloat(val);
+  document.getElementById('depthSlider').value = h_cm;
+  updateReadouts(); updateCoach(); draw3D();
+}
 
-            const baseY = 375;
-            const cylX = 85, cylW = 105, cylTopY = 115;
-            const waterSurfaceY = 145;
-            const pxPerCm = 9.5; // 20 cm = 190 px
+function updateReadouts() {
+  const D_cm = h_cm * 0.90;
+  document.getElementById('mVal0').innerText = h_cm.toFixed(1) + ' cm';
+  document.getElementById('mVal1').innerText = D_cm.toFixed(1) + ' cm';
+}
 
-            // 1. Measuring Cylinder (Silinder Penyukat 500 ml) & Water
-            ctx.fillStyle = "rgba(56, 189, 248, 0.32)";
-            ctx.fillRect(cylX, waterSurfaceY, cylW, baseY - waterSurfaceY);
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3'), p4 = document.getElementById('pill4');
+  [p1, p2, p3, p4].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang silinder penyukat, manometer tiub-U, dan corong tisel di atas meja 3D."
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus Tray</b> to place the measuring cylinder, U-tube manometer, and thistle funnel on the 3D bench.";
+  } else if (records.length < 5) {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? `🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Seret <b>Corong Tisel</b> ke bawah di dalam silinder air 3D kepada kedalaman <b>h = 4.0, 8.0, 12.0, 16.0, 20.0 cm</b> dan klik <b>➕ Rekod Bacaan Jadual 2.1</b> (${records.length}/5 direkod).`
+      : `🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Drag the <b>Thistle Funnel</b> downward inside the 3D water cylinder to depths <b>h = 4.0, 8.0, 12.0, 16.0, 20.0 cm</b> and click <b>➕ Record Reading to Table 2.1</b> (${records.length}/5 recorded).`;
+  } else {
+    [p1, p2, p3].forEach(p => p.classList.add('done')); p4.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Lengkap! Graf <b>D melawan h</b> ialah garis lurus melalui asalan — membuktikan tekanan cecair berkadar terus dengan kedalaman (P = hρg)."
+      : "🧑‍🏫 <b>Prof. Vector:</b> Complete! The <b>D against h</b> graph is a straight line through the origin — proving liquid pressure is directly proportional to depth (P = hρg).";
+  }
+}
 
-            // Dashed water lines
-            ctx.strokeStyle = "rgba(2, 132, 199, 0.35)";
-            ctx.lineWidth = 1;
-            ctx.setLineDash([5, 5]);
-            for (let y = waterSurfaceY + 14; y < baseY; y += 14) {
-                ctx.beginPath();
-                ctx.moveTo(cylX + 6, y);
-                ctx.lineTo(cylX + cylW - 6, y);
-                ctx.stroke();
-            }
-            ctx.setLineDash([]);
+function recordRow() {
+  if (!allPlaced()) assembleAll();
+  if (records.some(r => Math.abs(r.h - h_cm) < 0.1)) {
+    alert(lang === 'ms' ? `Data untuk h = ${h_cm.toFixed(1)} cm sudah direkod!` : `Data for h = ${h_cm.toFixed(1)} cm is already recorded!`);
+    return;
+  }
+  const D = h_cm * 0.90;
+  records.push({ h: h_cm, D });
+  records.sort((a, b) => a.h - b.h);
+  const tb = document.getElementById('tableBody');
+  tb.innerHTML = '';
+  records.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.h.toFixed(1)}</td><td style="color:#38bdf8;font-weight:700;">${r.D.toFixed(1)}</td>`;
+    tb.appendChild(tr);
+  });
+  drawGraph(); updateCoach();
+}
 
-            // Cylinder walls
-            ctx.strokeStyle = "#334155";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(cylX, cylTopY);
-            ctx.lineTo(cylX, baseY);
-            ctx.lineTo(cylX + cylW, baseY);
-            ctx.lineTo(cylX + cylW, cylTopY);
-            ctx.stroke();
+function resetSim() {
+  h_cm = 4.0; records = [];
+  document.getElementById('depthSlider').value = 4.0;
+  document.getElementById('tableBody').innerHTML = '';
+  updateReadouts(); drawGraph(); updateCoach(); draw3D();
+}
 
-            ctx.fillStyle = "#0f172a";
-            ctx.font = "bold 12px Segoe UI";
-            ctx.fillText(isEng ? "Measuring Cylinder" : "Silinder penyukat", 20, cylTopY - 8);
-            ctx.fillText(isEng ? "Water (Air)" : "Air", cylX + 35, baseY - 14);
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateCoach(); draw3D(); drawGraph();
+}
 
-            // 2. Thistle Funnel (Corong Tisel) at depth h below waterSurfaceY
-            const funnelMouthY = waterSurfaceY + currentH * pxPerCm;
-            const funnelX = cylX + cylW / 2;
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
 
-            // Funnel stem going up to top arch
-            ctx.strokeStyle = "#475569";
-            ctx.lineWidth = 5;
-            ctx.beginPath();
-            ctx.moveTo(funnelX, funnelMouthY - 26);
-            ctx.lineTo(funnelX, 55);
-            ctx.stroke();
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 380);
+  bg.addColorStop(0, '#0f172a'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 380);
+  ctx.fillStyle = '#334155'; ctx.fillRect(0, 380, canvas.width, 60);
 
-            // Funnel bell
-            ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
-            ctx.strokeStyle = "#334155";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(funnelX - 6, funnelMouthY - 26);
-            ctx.lineTo(funnelX - 18, funnelMouthY);
-            ctx.lineTo(funnelX + 18, funnelMouthY);
-            ctx.lineTo(funnelX + 6, funnelMouthY - 26);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
+  if (!placed.cylinder && !placed.manometer && !placed.funnel) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 200);
+    return;
+  }
 
-            // Rubber sheet (Kepingan getah)
-            ctx.strokeStyle = "#d97706";
-            ctx.lineWidth = 3.5;
-            ctx.beginPath();
-            ctx.moveTo(funnelX - 20, funnelMouthY);
-            ctx.lineTo(funnelX + 20, funnelMouthY);
-            ctx.stroke();
+  const waterSurfaceY = 120;
+  const pxPerCm = 11.0; // 20 cm = 220 px (120 -> 340)
+  const funnelY = waterSurfaceY + h_cm * pxPerCm;
+  const D_cm = h_cm * 0.90;
 
-            // Depth h arrow indicator
-            ctx.strokeStyle = "#dc2626";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(cylX + cylW + 18, waterSurfaceY);
-            ctx.lineTo(cylX + cylW + 18, funnelMouthY);
-            ctx.stroke();
-            ctx.fillStyle = "#dc2626";
-            ctx.font = "bold 12px Segoe UI";
-            ctx.fillText(`h = ${currentH.toFixed(1)} cm`, cylX + cylW + 24, (waterSurfaceY + funnelMouthY) / 2 + 4);
+  // 1. Measuring Cylinder + Water
+  if (placed.cylinder) {
+    const cx = 130, cw = 150, cy = 85, ch = 290;
+    const wGrad = ctx.createLinearGradient(cx, waterSurfaceY, cx + cw, 375);
+    wGrad.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+    wGrad.addColorStop(1, 'rgba(2, 132, 199, 0.75)');
+    ctx.fillStyle = wGrad;
+    ctx.fillRect(cx + 4, waterSurfaceY, cw - 8, 375 - waterSurfaceY);
 
-            // 3. Retort Stand & U-Tube Manometer (Tiub-U) on Right
-            const uLeftX = 325, uRightX = 395, uBotY = 335, uTopY = 105;
-            const uEqY = 235; // equilibrium level when h = 0
+    ctx.strokeStyle = 'rgba(226, 232, 240, 0.8)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(cx, cy, cw, ch);
 
-            // Retort stand
-            ctx.fillStyle = "#94a3b8";
-            ctx.fillRect(360, baseY, 130, 12);
-            ctx.fillRect(450, 75, 9, baseY - 75);
-            ctx.fillRect(385, 260, 68, 6);
+    // Depth scale marks
+    ctx.fillStyle = '#e2e8f0'; ctx.font = '11px monospace'; ctx.textAlign = 'right';
+    for (let d = 0; d <= 20; d += 4) {
+      const my = waterSurfaceY + d * pxPerCm;
+      ctx.beginPath(); ctx.moveTo(cx, my); ctx.lineTo(cx + 12, my); ctx.stroke();
+      ctx.fillText(d + 'cm', cx - 6, my + 4);
+    }
+  }
 
-            // Silicone tube connecting funnel stem (funnelX, 55) to left arm of U-tube (uLeftX, uTopY)
-            ctx.strokeStyle = "rgba(99, 102, 241, 0.55)";
-            ctx.lineWidth = 9;
-            ctx.beginPath();
-            ctx.moveTo(funnelX, 60);
-            ctx.bezierCurveTo(funnelX, 15, uLeftX, 15, uLeftX, uTopY);
-            ctx.stroke();
-            ctx.fillStyle = "#4338ca";
-            ctx.font = "bold 12px Segoe UI";
-            ctx.fillText(isEng ? "Silicone tube" : "Tiub silikon", 205, 28);
+  // 2. U-Tube Manometer + Ruler
+  if (placed.manometer) {
+    const mx = 460, baseU = 330, topU = 85, armGap = 70;
+    const eqY = 210;
+    const halfShift = (D_cm * 4.5) / 2;
+    const leftY = eqY + halfShift;
+    const rightY = eqY - halfShift;
 
-            // Coloured water in U-tube (shifts by D/2 down on left, D/2 up on right)
-            const halfShiftPx = (currentD / 2) * (pxPerCm * 0.75);
-            const leftLevelY = uEqY + halfShiftPx;
-            const rightLevelY = uEqY - halfShiftPx;
+    // Wooden backing board
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(mx - 30, 70, armGap + 60, 305);
 
-            ctx.strokeStyle = "rgba(236, 72, 153, 0.72)";
-            ctx.lineWidth = 12;
-            ctx.lineCap = "butt";
-            ctx.beginPath();
-            ctx.moveTo(uLeftX, leftLevelY);
-            ctx.lineTo(uLeftX, uBotY - 25);
-            ctx.arc((uLeftX + uRightX) / 2, uBotY - 25, (uRightX - uLeftX) / 2, Math.PI, 0, true);
-            ctx.lineTo(uRightX, rightLevelY);
-            ctx.stroke();
+    // Coloured liquid inside U-tube
+    ctx.strokeStyle = '#ec4899';
+    ctx.lineWidth = 14;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(mx, leftY);
+    ctx.lineTo(mx, baseU);
+    ctx.arc(mx + armGap / 2, baseU, armGap / 2, Math.PI, 0, true);
+    ctx.lineTo(mx + armGap, rightY);
+    ctx.stroke();
 
-            // U-Tube glass outline
-            ctx.strokeStyle = "#334155";
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(uLeftX - 7, uTopY);
-            ctx.lineTo(uLeftX - 7, uBotY - 25);
-            ctx.arc((uLeftX + uRightX) / 2, uBotY - 25, (uRightX - uLeftX) / 2 + 7, Math.PI, 0, true);
-            ctx.lineTo(uRightX + 7, uTopY);
-            ctx.stroke();
+    // Glass U-tube outline
+    ctx.strokeStyle = 'rgba(248, 250, 252, 0.85)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(mx - 8, topU);
+    ctx.lineTo(mx - 8, baseU);
+    ctx.arc(mx + armGap / 2, baseU, armGap / 2 + 8, Math.PI, 0, true);
+    ctx.lineTo(mx + armGap + 8, topU);
+    ctx.stroke();
 
-            ctx.beginPath();
-            ctx.moveTo(uLeftX + 7, uTopY);
-            ctx.lineTo(uLeftX + 7, uBotY - 25);
-            ctx.arc((uLeftX + uRightX) / 2, uBotY - 25, (uRightX - uLeftX) / 2 - 7, Math.PI, 0, true);
-            ctx.lineTo(uRightX - 7, uTopY);
-            ctx.stroke();
+    // D bracket indicator
+    ctx.strokeStyle = '#fde047'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(mx - 12, leftY); ctx.lineTo(mx + armGap + 25, leftY);
+    ctx.moveTo(mx + armGap - 12, rightY); ctx.lineTo(mx + armGap + 25, rightY);
+    ctx.stroke();
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 13px Segoe UI, sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(`D = ${D_cm.toFixed(1)} cm`, mx + armGap + 30, (leftY + rightY) / 2 + 4);
+  }
 
-            // Dashed lines & D measurement between leftLevelY and rightLevelY
-            ctx.setLineDash([4, 4]);
-            ctx.strokeStyle = "#0f172a";
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(uLeftX, leftLevelY);
-            ctx.lineTo(uRightX, leftLevelY);
-            ctx.moveTo(uLeftX, rightLevelY);
-            ctx.lineTo(uRightX, rightLevelY);
-            ctx.stroke();
-            ctx.setLineDash([]);
+  // 3. Thistle Funnel + Rubber Tube
+  if (placed.funnel) {
+    const fx = 205;
+    // Stem
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(fx - 4, 55, 8, funnelY - 55);
+    // Funnel Bell + Rubber Diaphragm
+    ctx.fillStyle = 'rgba(248, 250, 252, 0.85)';
+    ctx.beginPath();
+    ctx.moveTo(fx - 22, funnelY);
+    ctx.lineTo(fx + 22, funnelY);
+    ctx.lineTo(fx + 6, funnelY - 18);
+    ctx.lineTo(fx - 6, funnelY - 18);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#f43f5e';
+    ctx.fillRect(fx - 22, funnelY - 2, 44, 5);
 
-            const midUX = (uLeftX + uRightX) / 2;
-            ctx.strokeStyle = "#be185d";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(midUX, rightLevelY);
-            ctx.lineTo(midUX, leftLevelY);
-            ctx.stroke();
+    // Rubber Tube connecting Funnel top to Left Manometer Arm
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(fx, 55);
+    ctx.bezierCurveTo(fx, 15, 460, 15, 460, 85);
+    ctx.stroke();
 
-            ctx.fillStyle = "#be185d";
-            ctx.font = "bold 12px Segoe UI";
-            ctx.fillText(`D = ${currentD.toFixed(1)} cm`, uRightX + 14, (leftLevelY + rightLevelY) / 2 + 4);
-            ctx.fillStyle = "#334155";
-            ctx.fillText(isEng ? "U-Tube (Tiub-U)" : "Tiub-U", midUX - 25, uBotY + 25);
-        }
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(`h = ${h_cm.toFixed(1)} cm`, fx + 28, funnelY + 4);
 
-        function rekodData() {
-            const val = parseFloat(document.getElementById('inputDiffD').value);
-            const usedD = !isNaN(val) ? +val.toFixed(1) : currentD;
-            recordedDepths.set(currentH, { h: currentH, D: usedD });
-            renderTableAndGraph();
-            updateReminderUI();
-        }
+    ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 422);
+  }
+}
 
-        function renderTableAndGraph() {
-            const tbody = document.querySelector('#dataTable tbody');
-            tbody.innerHTML = '';
-            const sorted = Array.from(recordedDepths.values()).sort((a, b) => a.h - b.h);
-            sorted.forEach(r => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${r.h.toFixed(1)}</td><td><strong>${r.D.toFixed(1)}</strong></td>`;
-                tbody.appendChild(tr);
-            });
-            drawGraph(sorted);
-        }
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  isDragging = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDragging) handleDrag(e); });
+canvas.addEventListener('pointerup', () => { isDragging = false; updateCoach(); draw3D(); });
 
-        function drawGraph(points) {
-            gctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-            const padL = 55, padB = 38, padT = 20, padR = 25;
-            const w = graphCanvas.width - padL - padR;
-            const h = graphCanvas.height - padT - padB;
+function handleDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const py = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const rawCm = (py - 120) / 11.0;
+  const snapped = Math.round(Math.max(4, Math.min(20, rawCm)) / 4) * 4;
+  h_cm = snapped;
+  document.getElementById('depthSlider').value = h_cm;
+  updateReadouts(); draw3D();
+}
 
-            gctx.strokeStyle = "#e2e8f0";
-            gctx.lineWidth = 1;
-            for (let i = 0; i <= 5; i++) {
-                const gx = padL + (i / 5) * w;
-                const gy = padT + (i / 5) * h;
-                gctx.beginPath(); gctx.moveTo(gx, padT); gctx.lineTo(gx, padT + h); gctx.stroke();
-                gctx.beginPath(); gctx.moveTo(padL, gy); gctx.lineTo(padL + w, gy); gctx.stroke();
+function drawGraph() {
+  const gCanvas = document.getElementById('graphCanvas');
+  const gCtx = gCanvas.getContext('2d');
+  gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+  gCtx.fillStyle = '#38bdf8'; gCtx.font = 'bold 12px Segoe UI, sans-serif'; gCtx.textAlign = 'center';
+  gCtx.fillText(i18n[lang].graphTitle, gCanvas.width / 2, 20);
+  const ox = 55, oy = 185, gw = 430, gh = 140;
+  gCtx.strokeStyle = '#64748b'; gCtx.lineWidth = 1.5;
+  gCtx.beginPath(); gCtx.moveTo(ox, oy - gh); gCtx.lineTo(ox, oy); gCtx.lineTo(ox + gw, oy); gCtx.stroke();
+  gCtx.fillStyle = '#94a3b8'; gCtx.font = '11px monospace';
+  [0, 4, 8, 12, 16, 20].forEach(h => {
+    const px = ox + (h / 20) * gw;
+    gCtx.fillText(h + 'cm', px, oy + 16);
+  });
+  if (records.length > 0) {
+    gCtx.strokeStyle = '#10b981'; gCtx.lineWidth = 2.5;
+    gCtx.beginPath(); gCtx.moveTo(ox, oy);
+    records.forEach(r => {
+      const px = ox + (r.h / 20) * gw;
+      const py = oy - (r.D / 20) * gh;
+      gCtx.lineTo(px, py);
+    });
+    gCtx.stroke();
+    records.forEach(r => {
+      const px = ox + (r.h / 20) * gw;
+      const py = oy - (r.D / 20) * gh;
+      gCtx.fillStyle = '#38bdf8'; gCtx.beginPath(); gCtx.arc(px, py, 4.5, 0, Math.PI * 2); gCtx.fill();
+    });
+  }
+}
 
-                gctx.fillStyle = "#475569";
-                gctx.font = "11px Segoe UI";
-                gctx.fillText((i * 4.0).toFixed(1), gx - 10, padT + h + 16);
-                gctx.fillText(((5 - i) * 3.5).toFixed(1), padL - 32, gy + 4);
-            }
+function exportCSV() {
+  if (records.length === 0) { alert(lang === 'ms' ? 'Tiada data!' : 'No data!'); return; }
+  let csv = 'Kedalaman h (cm),Beza Aras Manometer D (cm)\n';
+  records.forEach(r => { csv += `${r.h.toFixed(1)},${r.D.toFixed(1)}\n`; });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = 'Eksperimen_2.1_Tekanan_Kedalaman_Cecair.csv';
+  a.click();
+}
 
-            gctx.strokeStyle = "#0f172a";
-            gctx.lineWidth = 2;
-            gctx.beginPath();
-            gctx.moveTo(padL, padT);
-            gctx.lineTo(padL, padT + h);
-            gctx.lineTo(padL + w, padT + h);
-            gctx.stroke();
-
-            gctx.fillStyle = "#0f172a";
-            gctx.font = "bold 12px Segoe UI";
-            gctx.fillText("Kedalaman air, h / cm", padL + w / 2 - 55, graphCanvas.height - 6);
-            gctx.save();
-            gctx.translate(15, padT + h / 2 + 25);
-            gctx.rotate(-Math.PI / 2);
-            gctx.fillText("D / cm", 0, 0);
-            gctx.restore();
-
-            if (points.length === 0) return;
-
-            gctx.strokeStyle = "#be185d";
-            gctx.lineWidth = 2.5;
-            gctx.beginPath();
-            gctx.moveTo(padL, padT + h);
-            points.forEach(p => {
-                const px = padL + (p.h / 20.0) * w;
-                const py = padT + h - (p.D / 17.5) * h;
-                gctx.lineTo(px, py);
-            });
-            gctx.stroke();
-
-            points.forEach(p => {
-                const px = padL + (p.h / 20.0) * w;
-                const py = padT + h - (p.D / 17.5) * h;
-                gctx.fillStyle = "#0284c7";
-                gctx.beginPath();
-                gctx.arc(px, py, 4.5, 0, Math.PI * 2);
-                gctx.fill();
-            });
-        }
-
-        function muatTurunExcel() {
-            if (recordedDepths.size === 0) {
-                alert(isEng ? "Please record at least one reading first!" : "Sila rekodkan sekurang-kurangnya satu data terlebih dahulu!");
-                return;
-            }
-            let csv = "Kedalaman air h (cm),Perbezaan ketinggian turus air D (cm)\n";
-            Array.from(recordedDepths.values()).sort((a, b) => a.h - b.h).forEach(r => {
-                csv += `${r.h.toFixed(1)},${r.D.toFixed(1)}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Eksperimen_2_1_Tekanan_Kedalaman_Cecair.csv';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function toggleLang() {
-            isEng = !isEng;
-            document.getElementById('mainTitle').innerText = isEng
-                ? "Experiment 2.1 (Form 5): Liquid Pressure & Depth (P = hρg)"
-                : "Eksperimen 2.1: Tekanan Cecair & Kedalaman (P = hρg)";
-            document.getElementById('subTitle').innerText = isEng
-                ? "To study the relationship between depth of liquid, h and liquid pressure, D in U-tube"
-                : "Mengkaji hubungan antara kedalaman cecair, h dengan tekanan cecair, D dalam tiub-U (Rajah 2.2)";
-            updateReminderUI();
-            drawApparatus();
-        }
-
-        setDepth(4.0);
-        drawGraph([]);
-    </script>
-
-    <!-- Firebase Activity Tracking -->
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-            authDomain: "velocity-valley-edu.firebaseapp.com",
-            projectId: "velocity-valley-edu",
-            storageBucket: "velocity-valley-edu.firebasestorage.app",
-            messagingSenderId: "340043533038",
-            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        function recordStationVisit(user) {
-            const stationItem = {
-                id: "f5_exp2_1",
-                title: "Form 5 Exp 2.1: Liquid Pressure & Depth (P = hρg)",
-                category: "Form 5 • Chapter 2",
-                webUrl: "/form5experiment2",
-                fileUrl: "form5eksperimen2.html",
-                timestamp: new Date().toLocaleString('en-GB')
-            };
-            try {
-                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
-                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
-            } catch (e) {}
-
-            if (!user) return;
-            const pageID = "visited_f5_exp2_1";
-            const isFirst = !sessionStorage.getItem(pageID);
-            sessionStorage.setItem(pageID, "true");
-
-            db.collection("users").doc(user.uid).get().then(doc => {
-                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
-                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                let payload = { recentActivities: updated };
-                if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
-                db.collection("users").doc(user.uid).set(payload, { merge: true });
-            });
-        }
-
-        firebase.auth().onAuthStateChanged(function(user) {
-            recordStationVisit(user);
-        });
-    </script>
+updateReadouts(); draw3D(); drawGraph();
+</script>
 </body>
 </html>

@@ -1,498 +1,530 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eksperimen 1.1: Pendulum Simulation</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .top-bar-wrapper {
-            width: 100%;
-            max-width: 1000px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .btn-back-menu {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
-            transition: transform 0.2s;
-        }
-        .btn-back-menu:hover { transform: translateY(-2px); }
-
-        .principle-banner {
-            width: 100%;
-            max-width: 1000px;
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-            border-left: 5px solid #0284c7;
-            padding: 14px 18px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            color: #0f172a;
-            font-size: 0.94rem;
-            line-height: 1.5;
-        }
-
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            max-width: 1000px;
-            width: 100%;
-        }
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 300px;
-        }
-        canvas {
-            background: #e9ecef;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            display: block;
-            margin: 0 auto 15px auto;
-            max-width: 100%;
-            height: auto;
-        }
-        .controls {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        input[type="range"] { width: 80%; }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin: 5px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        button:hover { background-color: #0056b3; }
-        #releaseBtn { background-color: #28a745; }
-        #releaseBtn:hover { background-color: #218838; }
-        #stopTimerBtn { background-color: #dc3545; }
-        #stopTimerBtn:hover { background-color: #c82333; }
-        #exportExcelBtn {
-            background-color: #198754;
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            font-size: 16px;
-        }
-        #exportExcelBtn:hover { background-color: #157347; }
-        .display-box {
-            font-size: 28px;
-            font-weight: bold;
-            font-family: monospace;
-            text-align: center;
-            margin: 10px 0;
-            color: #333;
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .counter-label {
-            font-size: 16px;
-            color: #555;
-            text-transform: uppercase;
-        }
-        .table-scroll {
-            width: 100%;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center;
-        }
-        th { background-color: #d1e7dd; }
-        input[type="number"] {
-            width: 60px;
-            padding: 4px;
-            text-align: center;
-        }
-        .instructions {
-            background: #fff3cd;
-            padding: 10px;
-            border-left: 4px solid #ffc107;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        /* Mobile Layout Adaptation (Desktop remains 2-column side-by-side) */
-        @media (max-width: 768px) {
-            body { padding: 12px; }
-            .container { flex-direction: column; }
-            .panel { min-width: 100%; padding: 15px; }
-            input[type="range"] { width: 100%; }
-            .controls button { width: 100%; margin: 5px 0; padding: 12px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 1.1: Bandul Ringkas (3D Interaktif) | Velocity Valley</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active { background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25)); border-color: #38bdf8; color: #fff; }
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.12fr 0.88fr; gap: 18px; align-items: start; }
+.card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.82rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#pendulumCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: grab; }
+.readout-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 10px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.75rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.15rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 115px; padding: 10px 12px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.84rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+button.btn-act.green { background: linear-gradient(135deg, #10b981, #059669); }
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+button.btn-act.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 6px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+table.data-tbl input {
+  width: 58px; padding: 4px; background: #0f172a; color: #38bdf8;
+  border: 1px solid #38bdf8; border-radius: 5px; text-align: center; font-weight: 700;
+}
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 1 • Eksperimen 1.1</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+    </div>
+  </div>
 
-<div class="top-bar-wrapper">
-    <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
-    <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Form 4 • Experiment 1.1</span>
-</div>
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 1.1: Bandul Ringkas (Hubungan Panjang Bandul, l dengan Tempoh, T)</h1>
+    <p id="pageDesc">Tujuan: Mengkaji hubungan antara panjang bandul, l (20.0 cm hingga 70.0 cm) dengan tempoh ayunan lengkap, T (T = 2π√(l/g)). Pasang radas 3D, seret ladung bandul ke sisi dengan tetikus/jari untuk menetapkan sudut θ dan lepaskan untuk 20 ayunan lengkap!</p>
+  </div>
 
-<div class="principle-banner">
-    <strong>📘 Prinsip Fizik (Ayunan Bandul Ringkas):</strong> Tempoh ayunan lengkap bandul ringkas diberi oleh rumus <strong>T = 2π√(l / g)</strong> atau <strong>T² = (4π² / g) l</strong>. Semakin bertambah panjang bandul (<em>l</em>), semakin bertambah tempoh ayunan (<em>T</em>). Graf <em>T²</em> melawan <em>l</em> menghasilkan garis lurus melalui asalan dengan kecerunan <em>4π² / g</em>.
-</div>
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas 3D</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Tetapkan Panjang l (20–70 cm)</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Seret Ladung & Lepaskan (20 Ayunan)</span></div>
+      <div class="step-pill" id="pill4"><span class="step-num">4</span><span id="pillTxt4">Rekod t₁, t₂, T & T²</span></div>
+    </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang kaki retort, pengapit kepingan papan lapis, benang bersama ladung bandul, dan jam randik!
+    </div>
+  </div>
 
-<div class="container">
-    <div class="panel">
-        <h2 style="text-align: center; margin-top: 0;">Experiment 1.1: Pendulum Simulator</h2>
-        <canvas id="pendulumCanvas" width="300" height="350"></canvas>
-        
-        <div class="controls">
-            <label><strong>Panjang bandul, l: <span id="lengthDisplay">20</span> cm</strong></label><br>
-            <input type="range" id="lengthSlider" min="20" max="70" step="10" value="20">
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
         </div>
-        
-        <div class="controls">
-            <label><strong>Sudut pelepasan, θ: <span id="angleDisplay">10</span>°</strong></label><br>
-            <input type="range" id="angleSlider" min="10" max="70" step="1" value="10">
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_stand"><input type="checkbox" onchange="toggleApparatus('stand', this.checked)"> <span id="lbl_stand">Kaki Retort + Papan Lapis</span></label>
+          <label class="tray-item" id="tray_protractor"><input type="checkbox" onchange="toggleApparatus('protractor', this.checked)"> <span id="lbl_protractor">Jangka Sudut + Pembaris Meter</span></label>
+          <label class="tray-item" id="tray_bob"><input type="checkbox" onchange="toggleApparatus('bob', this.checked)"> <span id="lbl_bob">Benang + Ladung Bandul 3D</span></label>
+          <label class="tray-item" id="tray_timer"><input type="checkbox" onchange="toggleApparatus('timer', this.checked)"> <span id="lbl_timer">Jam Randik Digital</span></label>
         </div>
+      </div>
 
-        <div class="controls">
-            <button id="releaseBtn">▶ Release Pendulum (Auto-Start Timer)</button>
-            <button id="stopSimBtn">🔄 Reset Pendulum</button>
-        </div>
+      <div class="canvas-wrap">
+        <canvas id="pendulumCanvas" width="680" height="440"></canvas>
+      </div>
+
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Panjang Bandul, l</span><span class="val" id="mVal0">20.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Masa Jam Randik, t</span><span class="val" id="timeDisplay">0.00 s</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Bilangan Ayunan Lengkap</span><span class="val" id="swingCountDisplay">0 / 20</span></div>
+      </div>
     </div>
 
-    <div class="panel">
-        <h2 style="margin-top: 0;">Stopwatch & Data</h2>
-        <div class="instructions">
-            <strong>Prosedur:</strong> Tetapkan panjang dan sudut. Tekan <em>Release</em>. Perhatikan kiraan ayunan dan tekan <em>Stop Timer</em> tepat pada <strong>20 ayunan lengkap</strong>. Masukkan data ke dalam jadual.
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:6px;"><span id="lblLen">📏 Panjang Bandul, l:</span> <span id="lengthDisplay" style="color:#38bdf8;">20</span> cm</label>
+        <input type="range" id="lengthSlider" min="20" max="70" step="10" value="20" style="width:100%;margin-bottom:10px;" oninput="setLength(this.value)">
+        <label style="font-weight:700;display:block;margin-bottom:6px;"><span id="lblAng">📐 Sudut Pelepasan, θ (atau Seret Ladung di Kanvas 3D):</span> <span id="angleDisplay" style="color:#fde047;">10</span>°</label>
+        <input type="range" id="angleSlider" min="10" max="45" step="1" value="10" style="width:100%;" oninput="setAngle(this.value)">
+        <div class="btn-row">
+          <button class="btn-act green" onclick="releasePendulum()" id="releaseBtn">▶️ Lepaskan Bandul (Mula Jam)</button>
+          <button class="btn-act red" onclick="stopTimerManual()" id="stopTimerBtn">⏹️ Henti Jam</button>
+          <button class="btn-act" onclick="autoFillCurrentL()" id="btnAutoFill">✍️ Isi Masa 20 Ayunan ke Jadual</button>
         </div>
-        
-        <div class="display-box">
-            <div class="counter-label">Masa (Jam Randik)</div>
-            <span id="timeDisplay">0.00 s</span>
-        </div>
+      </div>
 
-        <div class="display-box" style="background: #cfe2ff;">
-            <div class="counter-label">Jumlah Ayunan Lengkap</div>
-            <span id="swingCountDisplay">0</span>
-        </div>
+      <h3 style="margin:10px 0 6px 0;font-size:0.98rem;color:#38bdf8;" id="tblTitle">📊 Jadual Keputusan: Masa untuk 20 Ayunan Lengkap (t₁, t₂, t_purata, T, T²)</h3>
+      <div class="table-wrap">
+        <table class="data-tbl" id="dataTable">
+          <thead>
+            <tr>
+              <th rowspan="2">l / cm</th>
+              <th colspan="3" id="thTime20">Masa untuk 20 ayunan, t / s</th>
+              <th rowspan="2">T / s</th>
+              <th rowspan="2">T² / s²</th>
+            </tr>
+            <tr>
+              <th>t₁</th>
+              <th>t₂</th>
+              <th>t_purata</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
 
-        <div class="controls">
-            <button id="stopTimerBtn">⏹ Stop Timer</button>
-            <button id="resetTimerBtn">🔄 Reset Timer</button>
-        </div>
-
-        <div class="table-scroll">
-            <table id="dataTable">
-                <tr>
-                    <th rowspan="2">l / cm</th>
-                    <th colspan="3">Masa untuk 20 ayunan, t / s</th>
-                    <th rowspan="2">T / s</th>
-                    <th rowspan="2">T² / s²</th>
-                </tr>
-                <tr>
-                    <th>t₁</th>
-                    <th>t₂</th>
-                    <th>t_purata</th>
-                </tr>
-            </table>
-        </div>
-
-        <button id="exportExcelBtn">⬇ Download Data as Excel (.xlsx)</button>
+      <div class="btn-row">
+        <button class="btn-act purple" id="exportExcelBtn" onclick="exportExcel()">⬇️ Muat Turun Data Excel (.xlsx)</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-    const canvas = document.getElementById('pendulumCanvas');
-    const ctx = canvas.getContext('2d');
-    const G = 9.81;
-    const dampingFactor = 0.012;
+let lang = 'ms';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 4 • Bab 1 • Eksperimen 1.1",
+    pageTitle: "Eksperimen 1.1: Bandul Ringkas (Hubungan Panjang Bandul, l dengan Tempoh, T)",
+    pageDesc: "Tujuan: Mengkaji hubungan antara panjang bandul, l (20.0 cm hingga 70.0 cm) dengan tempoh ayunan lengkap, T (T = 2π√(l/g)). Pasang radas 3D, seret ladung bandul ke sisi dengan tetikus/jari untuk menetapkan sudut θ dan lepaskan untuk 20 ayunan lengkap!",
+    pillTxt1: "Pilih & Pasang Radas 3D",
+    pillTxt2: "Tetapkan Panjang l (20–70 cm)",
+    pillTxt3: "Seret Ladung & Lepaskan (20 Ayunan)",
+    pillTxt4: "Rekod t₁, t₂, T & T²",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_stand: "Kaki Retort + Papan Lapis",
+    lbl_protractor: "Jangka Sudut + Pembaris Meter",
+    lbl_bob: "Benang + Ladung Bandul 3D",
+    lbl_timer: "Jam Randik Digital",
+    mLbl0: "Panjang Bandul, l",
+    mLbl1: "Masa Jam Randik, t",
+    mLbl2: "Bilangan Ayunan Lengkap",
+    lblLen: "📏 Panjang Bandul, l:",
+    lblAng: "📐 Sudut Pelepasan, θ (atau Seret Ladung di Kanvas 3D):",
+    releaseBtn: "▶️ Lepaskan Bandul (Mula Jam)",
+    stopTimerBtn: "⏹️ Henti Jam",
+    btnAutoFill: "✍️ Isi Masa 20 Ayunan ke Jadual",
+    tblTitle: "📊 Jadual Keputusan: Masa untuk 20 Ayunan Lengkap (t₁, t₂, t_purata, T, T²)",
+    thTime20: "Masa untuk 20 ayunan, t / s",
+    exportExcelBtn: "⬇️ Muat Turun Data Excel (.xlsx)",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    dragHint: "🖐️ Seret Ladung Bandul ke kiri/kanan dengan tetikus atau jari dan lepaskan untuk memulakan ayunan!"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 4 • Chapter 1 • Experiment 1.1",
+    pageTitle: "Experiment 1.1: Simple Pendulum (Relationship between Length, l and Period, T)",
+    pageDesc: "Objective: To study the relationship between pendulum length, l (20.0 cm to 70.0 cm) and period of oscillation, T (T = 2π√(l/g)). Assemble the 3D apparatus, drag the pendulum bob sideways to set angle θ and release for 20 complete oscillations!",
+    pillTxt1: "Select & Assemble 3D Apparatus",
+    pillTxt2: "Set Length l (20–70 cm)",
+    pillTxt3: "Drag Bob & Release (20 Swings)",
+    pillTxt4: "Record t₁, t₂, T & T²",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_stand: "Retort Stand + Plywood Clamp",
+    lbl_protractor: "Protractor + Metre Rule",
+    lbl_bob: "Thread + 3D Pendulum Bob",
+    lbl_timer: "Digital Stopwatch",
+    mLbl0: "Pendulum Length, l",
+    mLbl1: "Stopwatch Time, t",
+    mLbl2: "Complete Oscillations",
+    lblLen: "📏 Pendulum Length, l:",
+    lblAng: "📐 Release Angle, θ (or Drag Bob on 3D Canvas):",
+    releaseBtn: "▶️ Release Pendulum (Start Timer)",
+    stopTimerBtn: "⏹️ Stop Timer",
+    btnAutoFill: "✍️ Fill 20-Swing Time into Table",
+    tblTitle: "📊 Results Table: Time for 20 Complete Oscillations (t₁, t₂, t_avg, T, T²)",
+    thTime20: "Time for 20 oscillations, t / s",
+    exportExcelBtn: "⬇️ Download Data as Excel (.xlsx)",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    dragHint: "🖐️ Drag the Pendulum Bob left/right with mouse or finger and release to start oscillating!"
+  }
+};
 
-    let lengthCm = 20;
-    let selectedAngleDeg = 10;
-    let maxAngleRad = selectedAngleDeg * (Math.PI / 180);
-    let isSwinging = false;
-    let angle = maxAngleRad;
-    let simTime = 0;
-    let lastTime = 0;
-    let animationReq;
+const placed = { stand: false, protractor: false, bob: false, timer: false };
+const G = 9.81;
+let lengthCm = 20;
+let selectedAngleDeg = 10;
+let angle = (10 * Math.PI) / 180;
+let isSwinging = false;
+let isDraggingBob = false;
+let simTime = 0, lastTime = 0;
 
-    const lengthSlider = document.getElementById('lengthSlider');
-    const lengthDisplay = document.getElementById('lengthDisplay');
-    const angleSlider = document.getElementById('angleSlider');
-    const angleDisplay = document.getElementById('angleDisplay');
-    const releaseBtn = document.getElementById('releaseBtn');
-    const stopSimBtn = document.getElementById('stopSimBtn');
-    const swingCountDisplay = document.getElementById('swingCountDisplay');
-
-    lengthSlider.addEventListener('input', (e) => {
-        lengthCm = parseInt(e.target.value);
-        lengthDisplay.innerText = lengthCm;
-        resetPendulum();
-    });
-
-    angleSlider.addEventListener('input', (e) => {
-        selectedAngleDeg = parseInt(e.target.value);
-        angleDisplay.innerText = selectedAngleDeg;
-        resetPendulum();
-    });
-
-    releaseBtn.addEventListener('click', () => {
-        if (!isSwinging) {
-            isSwinging = true;
-            lastTime = performance.now();
-            if (!timerRunning) {
-                timerStartTime = performance.now() - elapsedTime;
-                timerInterval = setInterval(updateTimer, 10);
-                timerRunning = true;
-            }
-            animate(lastTime);
-        }
-    });
-
-    stopSimBtn.addEventListener('click', resetPendulum);
-
-    function resetPendulum() {
-        isSwinging = false;
-        cancelAnimationFrame(animationReq);
-        maxAngleRad = selectedAngleDeg * (Math.PI / 180);
-        angle = maxAngleRad;
-        simTime = 0;
-        swingCountDisplay.innerText = "0";
-        drawPendulum();
+const lengths = [20, 30, 40, 50, 60, 70];
+const tb = document.getElementById('tableBody');
+lengths.forEach(l => {
+  const tr = document.createElement('tr');
+  tr.id = 'row_' + l;
+  tr.innerHTML = `
+    <td>${l.toFixed(1)}</td>
+    <td><input type="number" step="0.01" class="t1"></td>
+    <td><input type="number" step="0.01" class="t2"></td>
+    <td class="t_avg">-</td>
+    <td class="T_val">-</td>
+    <td class="T2_val">-</td>
+  `;
+  tb.appendChild(tr);
+  const t1In = tr.querySelector('.t1'), t2In = tr.querySelector('.t2');
+  const calc = () => {
+    const v1 = parseFloat(t1In.value), v2 = parseFloat(t2In.value);
+    if (!isNaN(v1) && !isNaN(v2)) {
+      const avg = (v1 + v2) / 2;
+      const T = avg / 20;
+      const T2 = T * T;
+      tr.querySelector('.t_avg').innerText = avg.toFixed(2);
+      tr.querySelector('.T_val').innerText = T.toFixed(3);
+      tr.querySelector('.T2_val').innerText = T2.toFixed(3);
     }
+  };
+  t1In.addEventListener('input', calc);
+  t2In.addEventListener('input', calc);
+});
 
-    function drawPendulum() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const pivotX = canvas.width / 2;
-        const pivotY = 30;
-        const visualLength = lengthCm * 4;
-        const bobX = pivotX + visualLength * Math.sin(angle);
-        const bobY = pivotY + visualLength * Math.cos(angle);
+function allPlaced() { return placed.stand && placed.protractor && placed.bob && placed.timer; }
 
-        ctx.fillStyle = '#666';
-        ctx.fillRect(pivotX - 25, pivotY - 10, 50, 10);
+function toggleApparatus(k, c) {
+  placed[k] = c;
+  document.getElementById('tray_' + k).classList.toggle('placed', c);
+  updateCoach(); draw3D();
+}
+function assembleAll() {
+  ['stand', 'protractor', 'bob', 'timer'].forEach(k => {
+    placed[k] = true;
+    document.querySelector('#tray_' + k + ' input').checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  updateCoach(); draw3D();
+}
+function setLength(v) {
+  if (!allPlaced()) assembleAll();
+  lengthCm = parseInt(v);
+  document.getElementById('lengthDisplay').innerText = lengthCm;
+  document.getElementById('mVal0').innerText = lengthCm.toFixed(1) + ' cm';
+  isSwinging = false; simTime = 0;
+  angle = (selectedAngleDeg * Math.PI) / 180;
+  draw3D();
+}
+function setAngle(v) {
+  if (!allPlaced()) assembleAll();
+  selectedAngleDeg = parseInt(v);
+  document.getElementById('angleDisplay').innerText = selectedAngleDeg;
+  isSwinging = false; simTime = 0;
+  angle = (selectedAngleDeg * Math.PI) / 180;
+  draw3D();
+}
+function releasePendulum() {
+  if (!allPlaced()) assembleAll();
+  isSwinging = true; simTime = 0; lastTime = performance.now();
+  updateCoach();
+}
+function stopTimerManual() {
+  isSwinging = false;
+  updateCoach();
+}
+function autoFillCurrentL() {
+  if (!allPlaced()) assembleAll();
+  const T_theo = 2 * Math.PI * Math.sqrt((lengthCm / 100) / G);
+  const t20 = 20 * T_theo + (Math.random() - 0.5) * 0.12;
+  const row = document.getElementById('row_' + lengthCm);
+  const t1In = row.querySelector('.t1'), t2In = row.querySelector('.t2');
+  if (!t1In.value) t1In.value = t20.toFixed(2);
+  else t2In.value = t20.toFixed(2);
+  t1In.dispatchEvent(new Event('input'));
+  document.getElementById('timeDisplay').innerText = t20.toFixed(2) + ' s';
+  document.getElementById('swingCountDisplay').innerText = '20 / 20';
+}
 
-        ctx.beginPath();
-        ctx.moveTo(pivotX, pivotY);
-        ctx.lineTo(bobX, bobY);
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3');
+  [p1, p2, p3].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun bandul ringkas 3D."
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus Tray</b> to assemble the 3D simple pendulum.";
+  } else {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? `🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Seret ladung bandul 3D ke tepi dan lepaskan untuk memulakan ayunan pada <b>l = ${lengthCm}.0 cm</b>, atau klik <b>✍️ Isi Masa 20 Ayunan ke Jadual</b>!`
+      : `🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Drag the 3D pendulum bob sideways and release to oscillate at <b>l = ${lengthCm}.0 cm</b>, or click <b>✍️ Fill 20-Swing Time into Table</b>!`;
+  }
+}
 
-        ctx.beginPath();
-        ctx.arc(bobX, bobY, 14, 0, 2 * Math.PI);
-        const gradient = ctx.createRadialGradient(bobX - 4, bobY - 4, 2, bobX, bobY, 14);
-        gradient.addColorStop(0, '#ccc');
-        gradient.addColorStop(1, '#555');
-        ctx.fillStyle = gradient;
-        ctx.fill();
-        ctx.stroke();
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateCoach(); draw3D();
+}
+
+const canvas = document.getElementById('pendulumCanvas');
+const ctx = canvas.getContext('2d');
+const pivotX = 340, pivotY = 68;
+
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 440);
+  bg.addColorStop(0, '#0f172a'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 440);
+  ctx.fillStyle = '#334155'; ctx.fillRect(0, 390, canvas.width, 50);
+
+  if (!placed.stand && !placed.protractor && !placed.bob && !placed.timer) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 210);
+    return;
+  }
+
+  if (placed.stand) {
+    ctx.fillStyle = '#64748b'; ctx.fillRect(110, 372, 160, 20);
+    ctx.fillStyle = '#cbd5e1'; ctx.fillRect(145, 45, 14, 330);
+    ctx.fillStyle = '#94a3b8'; ctx.fillRect(140, 52, 225, 12);
+    // Plywood clamp cheeks
+    ctx.fillStyle = '#b45309'; ctx.fillRect(pivotX - 24, pivotY - 14, 48, 16);
+  }
+
+  if (placed.protractor) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(pivotX, pivotY, 55, 0, Math.PI); ctx.stroke();
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(pivotX, pivotY); ctx.lineTo(pivotX, 375); ctx.stroke();
+    ctx.restore();
+  }
+
+  if (placed.bob) {
+    const visLen = lengthCm * 4.1;
+    const bobX = pivotX + visLen * Math.sin(angle);
+    const bobY = pivotY + visLen * Math.cos(angle);
+
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(pivotX, pivotY); ctx.lineTo(bobX, bobY); ctx.stroke();
+
+    const bGrad = ctx.createRadialGradient(bobX - 5, bobY - 5, 3, bobX, bobY, 18);
+    bGrad.addColorStop(0, '#fde047'); bGrad.addColorStop(0.6, '#eab308'); bGrad.addColorStop(1, '#713f12');
+    ctx.fillStyle = bGrad;
+    ctx.beginPath(); ctx.arc(bobX, bobY, 18, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 422);
+  }
+
+  if (placed.timer) {
+    ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.roundRect(510, 50, 140, 70, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#10b981'; ctx.font = 'bold 16px monospace'; ctx.textAlign = 'center';
+    ctx.fillText(document.getElementById('timeDisplay').innerText, 580, 82);
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 11px sans-serif';
+    ctx.fillText(document.getElementById('swingCountDisplay').innerText, 580, 105);
+  }
+}
+
+function animLoop(now) {
+  if (isSwinging) {
+    const dt = (now - lastTime) / 1000;
+    lastTime = now;
+    simTime += dt * 2.5; // 2.5x visual speed for smooth classroom experience
+    const omega = Math.sqrt(G / (lengthCm / 100));
+    const maxRad = (selectedAngleDeg * Math.PI) / 180;
+    const phase = omega * simTime;
+    angle = maxRad * Math.exp(-0.008 * simTime) * Math.cos(phase);
+    const swings = Math.min(20, Math.floor(phase / (2 * Math.PI)));
+    const realElapsed = (phase / omega);
+    document.getElementById('timeDisplay').innerText = realElapsed.toFixed(2) + ' s';
+    document.getElementById('swingCountDisplay').innerText = swings + ' / 20';
+    if (swings >= 20) {
+      isSwinging = false;
+      autoFillCurrentL();
     }
+    draw3D();
+  }
+  requestAnimationFrame(animLoop);
+}
+requestAnimationFrame(animLoop);
 
-    function animate(currentTime) {
-        if (!isSwinging) return;
-        const deltaTime = (currentTime - lastTime) / 1000;
-        lastTime = currentTime;
-        simTime += deltaTime;
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  isSwinging = false; isDraggingBob = true;
+  canvas.setPointerCapture(e.pointerId); handleBobDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDraggingBob) handleBobDrag(e); });
+canvas.addEventListener('pointerup', () => {
+  if (isDraggingBob) {
+    isDraggingBob = false;
+    releasePendulum();
+  }
+});
 
-        const lengthMeters = lengthCm / 100;
-        const angularFrequency = Math.sqrt(G / lengthMeters);
-        const currentAmplitude = maxAngleRad * Math.exp(-dampingFactor * simTime);
-        const phase = angularFrequency * simTime;
-        angle = currentAmplitude * Math.cos(phase);
+function handleBobDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const px = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const py = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const rad = Math.atan2(px - pivotX, Math.max(40, py - pivotY));
+  const deg = Math.round(Math.max(-45, Math.min(45, (rad * 180) / Math.PI)));
+  selectedAngleDeg = Math.max(10, Math.abs(deg));
+  angle = (deg * Math.PI) / 180;
+  document.getElementById('angleDisplay').innerText = selectedAngleDeg;
+  document.getElementById('angleSlider').value = selectedAngleDeg;
+  draw3D();
+}
 
-        const swingsCompleted = Math.floor(phase / (2 * Math.PI));
-        swingCountDisplay.innerText = swingsCompleted;
+function exportExcel() {
+  const table = document.getElementById('dataTable');
+  let excelData = [["Panjang bandul (l / cm)", "Masa t1 (s)", "Masa t2 (s)", "Masa purata (t / s)", "Tempoh (T / s)", "T^2 (s^2)"]];
+  for (let i = 2; i < table.rows.length; i++) {
+    let r = table.rows[i];
+    excelData.push([
+      r.cells[0].innerText,
+      r.querySelector('.t1').value || "",
+      r.querySelector('.t2').value || "",
+      r.querySelector('.t_avg').innerText,
+      r.querySelector('.T_val').innerText,
+      r.querySelector('.T2_val').innerText
+    ]);
+  }
+  let ws = XLSX.utils.aoa_to_sheet(excelData);
+  let wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Data Eksperimen 1.1");
+  XLSX.writeFile(wb, "Data_Eksperimen_Pendulum.xlsx");
+}
 
-        drawPendulum();
-        animationReq = requestAnimationFrame(animate);
-    }
-
-    drawPendulum();
-
-    let timerRunning = false;
-    let timerStartTime = 0;
-    let elapsedTime = 0;
-    let timerInterval;
-
-    const timeDisplay = document.getElementById('timeDisplay');
-    const stopTimerBtn = document.getElementById('stopTimerBtn');
-    const resetTimerBtn = document.getElementById('resetTimerBtn');
-
-    stopTimerBtn.addEventListener('click', () => {
-        if (timerRunning) {
-            clearInterval(timerInterval);
-            timerRunning = false;
-        }
-    });
-
-    resetTimerBtn.addEventListener('click', () => {
-        clearInterval(timerInterval);
-        timerRunning = false;
-        elapsedTime = 0;
-        timeDisplay.innerText = "0.00 s";
-    });
-
-    function updateTimer() {
-        elapsedTime = performance.now() - timerStartTime;
-        timeDisplay.innerText = (elapsedTime / 1000).toFixed(2) + " s";
-    }
-
-    const table = document.getElementById('dataTable');
-    const lengths = [20, 30, 40, 50, 60, 70];
-
-    lengths.forEach(l => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${l.toFixed(1)}</td>
-            <td><input type="number" step="0.01" class="t1"></td>
-            <td><input type="number" step="0.01" class="t2"></td>
-            <td class="t_avg">-</td>
-            <td class="T_val">-</td>
-            <td class="T2_val">-</td>
-        `;
-        table.appendChild(row);
-
-        const t1Input = row.querySelector('.t1');
-        const t2Input = row.querySelector('.t2');
-        const tAvgDisplay = row.querySelector('.t_avg');
-        const TDisplay = row.querySelector('.T_val');
-        const T2Display = row.querySelector('.T2_val');
-
-        function calculateRow() {
-            const t1 = parseFloat(t1Input.value);
-            const t2 = parseFloat(t2Input.value);
-            if (!isNaN(t1) && !isNaN(t2)) {
-                const tAvg = (t1 + t2) / 2;
-                const T = tAvg / 20;
-                const T2 = Math.pow(T, 2);
-                tAvgDisplay.innerText = tAvg.toFixed(2);
-                TDisplay.innerText = T.toFixed(3);
-                T2Display.innerText = T2.toFixed(3);
-            } else {
-                tAvgDisplay.innerText = "-";
-                TDisplay.innerText = "-";
-                T2Display.innerText = "-";
-            }
-        }
-
-        t1Input.addEventListener('input', calculateRow);
-        t2Input.addEventListener('input', calculateRow);
-    });
-
-    document.getElementById('exportExcelBtn').addEventListener('click', () => {
-        let excelData = [];
-        excelData.push(["Panjang bandul (l / cm)", "Masa t1 (s)", "Masa t2 (s)", "Masa purata (t / s)", "Tempoh (T / s)", "T^2 (s^2)"]);
-        for (let i = 2; i < table.rows.length; i++) {
-            let row = table.rows[i];
-            let l = row.cells[0].innerText;
-            let t1 = row.querySelector('.t1').value || "";
-            let t2 = row.querySelector('.t2').value || "";
-            let tAvg = row.querySelector('.t_avg').innerText;
-            let T = row.querySelector('.T_val').innerText;
-            let T2 = row.querySelector('.T2_val').innerText;
-            excelData.push([l, t1, t2, tAvg, T, T2]);
-        }
-        let worksheet = XLSX.utils.aoa_to_sheet(excelData);
-        worksheet['!cols'] = [{wch: 22}, {wch: 12}, {wch: 12}, {wch: 20}, {wch: 15}, {wch: 15}];
-        let workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Data Eksperimen 1.1");
-        XLSX.writeFile(workbook, "Data_Eksperimen_Pendulum.xlsx");
-    });
-</script>
-
-<!-- Firebase Libraries -->
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
-
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-        authDomain: "velocity-valley-edu.firebaseapp.com",
-        projectId: "velocity-valley-edu",
-        storageBucket: "velocity-valley-edu.firebasestorage.app",
-        messagingSenderId: "340043533038",
-        appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-    };
-
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    function recordStationVisit(user) {
-        const stationItem = {
-            id: "pendulum",
-            title: "Experiment 1.1: Simple Pendulum",
-            category: "Form 4 • Chapter 1",
-            webUrl: "pendulum_sim.html",
-            fileUrl: "pendulum_sim.html",
-            timestamp: new Date().toLocaleString('en-GB')
-        };
-        try {
-            let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
-            localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
-            localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
-        } catch (e) {}
-
-        const pageID = "visited_pendulum_eksperimen1_1";
-        const isFirstInSession = !sessionStorage.getItem(pageID);
-        sessionStorage.setItem(pageID, "true");
-
-        db.collection("users").doc(user.uid).get().then(doc => {
-            let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
-            let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
-            let payload = { recentActivities: updated };
-            if (isFirstInSession) {
-                payload.simsExplored = firebase.firestore.FieldValue.increment(1);
-            }
-            db.collection("users").doc(user.uid).set(payload, { merge: true });
-        });
-    }
-
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            recordStationVisit(user);
-        } else {
-            window.location.replace(true ? 'login.html' : 'login.html');
-        }
-    });
+draw3D();
 </script>
 </body>
 </html>

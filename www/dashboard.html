@@ -485,20 +485,20 @@
 
     <div class="dashboard-wrapper">
         <div class="top-bar">
-            <a href="index.html" class="btn-back-menu" onclick="if(true || window.Capacitor || (window.location.hostname==='localhost' && !window.location.port)){this.href='index.html';}">← Back to Main Menu</a>
+            <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:' || window.Capacitor || (window.location.hostname==='localhost' && !window.location.port)){this.href='index.html';}">← Back to Main Menu</a>
             <button class="btn-logout" onclick="logoutUser()">Sign Out</button>
         </div>
 
         <div class="profile-hero">
             <div class="profile-identity">
                 <div class="avatar-column">
-                    <img id="profile-avatar-img" src="./static/images/avatar_boy.jpg" alt="Student Avatar" class="avatar-circle-img" onerror="this.src='./static/images/logo.png'">
+                    <img id="profile-avatar-img" src="/static/images/avatar_boy.jpg" alt="Student Avatar" class="avatar-circle-img" onerror="this.src='/static/images/logo.png'">
                     <div class="avatar-switcher">
                         <button type="button" id="btn-avatar-boy" class="avatar-choice-btn active-avatar" onclick="selectAvatar('boy')">
-                            <img src="./static/images/avatar_boy.jpg" alt="Boy" onerror="this.style.display='none'"> 👦 Boy
+                            <img src="/static/images/avatar_boy.jpg" alt="Boy" onerror="this.style.display='none'"> 👦 Boy
                         </button>
                         <button type="button" id="btn-avatar-girl" class="avatar-choice-btn" onclick="selectAvatar('girl')">
-                            <img src="./static/images/avatar_girl.jpg" alt="Girl" onerror="this.style.display='none'"> 👧 Girl
+                            <img src="/static/images/avatar_girl.jpg" alt="Girl" onerror="this.style.display='none'"> 👧 Girl
                         </button>
                     </div>
                 </div>
@@ -517,8 +517,8 @@
                             <option value="F4_B6">Form 4 • Bab 6: Cahaya & Optik</option>
                             <option value="F5_B1">Form 5 • Bab 1: Daya & Gerakan II</option>
                             <option value="F5_B2">Form 5 • Bab 2: Tekanan & Archimedes</option>
-                            <option value="F5_B3">Form 5 • Bab 3: Elektrik & Keelektromagnetan</option>
-                            <option value="F5_B4">Form 5 • Bab 4–7: Elektronik, Nuklear & Kuantum</option>
+                            <option value="F5_B3">Form 5 • Bab 3 & 4: Elektrik & Keelektromagnetan</option>
+                            <option value="F5_B4">Form 5 • Bab 5–7: Elektronik, Nuklear & Kuantum</option>
                         </select>
                     </div>
                 </div>
@@ -576,11 +576,11 @@
         const db = firebase.firestore();
 
         function isMobileAppEnv() {
-            return true || Boolean(window.Capacitor) || (window.location.hostname === 'localhost' && !window.location.port);
+            return window.location.protocol === 'file:' || Boolean(window.Capacitor) || (window.location.hostname === 'localhost' && !window.location.port);
         }
 
         function getStaticPrefix() {
-            return isMobileAppEnv() ? './static/images/' : './static/images/';
+            return isMobileAppEnv() ? './static/images/' : '/static/images/';
         }
 
         function applyAvatarVisual(gender) {
@@ -629,25 +629,30 @@
         })();
 
         const simulationCatalog = {
-            newton: { title: "Mini Simulation: Newton's Second Law (F = ma)", category: "Mini Simulation", webUrl: "newton.html", fileUrl: "newton.html" },
-            pendulum: { title: "Experiment 1.1: Simple Pendulum", category: "Form 4 • Chapter 1", webUrl: "pendulum_sim.html", fileUrl: "pendulum_sim.html" },
-            exp2_1: { title: "Experiment 2.1: Gravitational Acceleration (g)", category: "Form 4 • Chapter 2", webUrl: "Tingkatan4eksperimen2.html", fileUrl: "Tingkatan4eksperimen2.html" },
-            exp2_2: { title: "Experiment 2.2: Mass & Inertia", category: "Form 4 • Chapter 2", webUrl: "form4eksperimen3.html", fileUrl: "form4eksperimen3.html" },
-            exp4_1: { title: "Experiment 4.1 & 4.2: Specific Heat Capacity", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen4.html", fileUrl: "form4eksperimen4.html" },
-            exp4_3: { title: "Experiment 4.3: Specific Latent Heat", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen5.html", fileUrl: "form4eksperimen5.html" },
-            exp4_4: { title: "Experiment 4.4: Boyle's Law", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen6.html", fileUrl: "form4eksperimen6.html" },
-            exp4_5: { title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen7.html", fileUrl: "form4eksperimen7.html" },
-            exp4_6: { title: "Experiment 4.6: Gay-Lussac's Law", category: "Form 4 • Chapter 4", webUrl: "form4eksperimen8.html", fileUrl: "form4eksperimen8.html" },
-            exp6_1: { title: "Experiment 6.1: Snell's Law (Glass Block)", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen9.html", fileUrl: "form4eksperimen9.html" },
-            exp6_2: { title: "Experiment 6.2: Real & Apparent Depth (Water)", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen10.html", fileUrl: "form4eksperimen10.html" },
-            exp6_3: { title: "Experiment 6.3: Convex Lens Formula", category: "Form 4 • Chapter 6", webUrl: "form4eksperimen11.html", fileUrl: "form4eksperimen11.html" },
-            f5_exp1_1: { title: "Form 5 Exp 1.1: Hooke's Law (F = kx)", category: "Form 5 • Chapter 1", webUrl: "form5eksperimen1.html", fileUrl: "form5eksperimen1.html" },
-            f5_exp2_1: { title: "Form 5 Exp 2.1: Liquid Pressure & Depth", category: "Form 5 • Chapter 2", webUrl: "form5eksperimen2.html", fileUrl: "form5eksperimen2.html" },
-            f5_exp2_2: { title: "Form 5 Exp 2.2: Liquid Pressure & Density", category: "Form 5 • Chapter 2", webUrl: "form5eksperimen3.html", fileUrl: "form5eksperimen3.html" },
-            f5_exp2_3: { title: "Form 5 Exp 2.3: Archimedes' Principle", category: "Form 5 • Chapter 2", webUrl: "form5eksperimen4.html", fileUrl: "form5eksperimen4.html" },
-            f5_exp3_1: { title: "Form 5 Exp 3.1: Ohmic & Non-Ohmic Conductors", category: "Form 5 • Chapter 3", webUrl: "form5eksperimen5.html", fileUrl: "form5eksperimen5.html" },
-            boardgame: { title: "Physics Monopoly: Ultimate Edition", category: "Educational Game", webUrl: "boardgame.html", fileUrl: "boardgame.html" },
-            journey: { title: "Journey to the West: Physics Quiz RPG", category: "Educational Game", webUrl: "journey.html", fileUrl: "journey.html" }
+            newton: { title: "Mini Simulation: Newton's Second Law (F = ma)", category: "Mini Simulation", webUrl: "/newton", fileUrl: "newton.html" },
+            pendulum: { title: "Experiment 1.1: Simple Pendulum", category: "Form 4 • Chapter 1", webUrl: "/pendulum", fileUrl: "pendulum_sim.html" },
+            exp2_1: { title: "Experiment 2.1: Gravitational Acceleration (g)", category: "Form 4 • Chapter 2", webUrl: "/tingkatan4experiment2", fileUrl: "Tingkatan4eksperimen2.html" },
+            exp2_2: { title: "Experiment 2.2: Mass & Inertia", category: "Form 4 • Chapter 2", webUrl: "/form4experiment3", fileUrl: "form4eksperimen3.html" },
+            exp4_1: { title: "Experiment 4.1 & 4.2: Specific Heat Capacity", category: "Form 4 • Chapter 4", webUrl: "/form4experiment4", fileUrl: "form4eksperimen4.html" },
+            exp4_3: { title: "Experiment 4.3: Specific Latent Heat", category: "Form 4 • Chapter 4", webUrl: "/form4experiment5", fileUrl: "form4eksperimen5.html" },
+            exp4_4: { title: "Experiment 4.4: Boyle's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment6", fileUrl: "form4eksperimen6.html" },
+            exp4_5: { title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment7", fileUrl: "form4eksperimen7.html" },
+            exp4_6: { title: "Experiment 4.6: Gay-Lussac's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment8", fileUrl: "form4eksperimen8.html" },
+            exp6_1: { title: "Experiment 6.1: Snell's Law (Glass Block)", category: "Form 4 • Chapter 6", webUrl: "/form4experiment9", fileUrl: "form4eksperimen9.html" },
+            exp6_2: { title: "Experiment 6.2: Real & Apparent Depth (Water)", category: "Form 4 • Chapter 6", webUrl: "/form4experiment10", fileUrl: "form4eksperimen10.html" },
+            exp6_3: { title: "Experiment 6.3: Convex Lens Formula", category: "Form 4 • Chapter 6", webUrl: "/form4experiment11", fileUrl: "form4eksperimen11.html" },
+            f5_exp1_1: { title: "Form 5 Exp 1.1: Hooke's Law (F = kx)", category: "Form 5 • Chapter 1", webUrl: "/form5experiment1", fileUrl: "form5eksperimen1.html" },
+            f5_exp2_1: { title: "Form 5 Exp 2.1: Liquid Pressure & Depth", category: "Form 5 • Chapter 2", webUrl: "/form5experiment2", fileUrl: "form5eksperimen2.html" },
+            f5_exp2_2: { title: "Form 5 Exp 2.2: Liquid Pressure & Density", category: "Form 5 • Chapter 2", webUrl: "/form5experiment3", fileUrl: "form5eksperimen3.html" },
+            f5_exp2_3: { title: "Form 5 Exp 2.3: Archimedes' Principle", category: "Form 5 • Chapter 2", webUrl: "/form5experiment4", fileUrl: "form5eksperimen4.html" },
+            f5_exp3_1: { title: "Form 5 Exp 3.1: Ohmic & Non-Ohmic Conductors", category: "Form 5 • Chapter 3", webUrl: "/form5experiment5", fileUrl: "form5eksperimen5.html" },
+            f5_exp3_2: { title: "Form 5 Exp 3.2: Wire Length & Resistance (R ∝ l)", category: "Form 5 • Chapter 3", webUrl: "/form5experiment6", fileUrl: "form5eksperimen6.html" },
+            f5_exp3_3: { title: "Form 5 Exp 3.3: Cross-Sectional Area & Resistance (R ∝ 1/A)", category: "Form 5 • Chapter 3", webUrl: "/form5experiment7", fileUrl: "form5eksperimen7.html" },
+            f5_exp3_4: { title: "Form 5 Exp 3.4: Wire Resistivity & Resistance (R ∝ ρ)", category: "Form 5 • Chapter 3", webUrl: "/form5experiment8", fileUrl: "form5eksperimen8.html" },
+            f5_exp3_5: { title: "Form 5 Exp 3.5: E.M.F. & Internal Resistance (E = V + Ir)", category: "Form 5 • Chapter 3", webUrl: "/form5experiment9", fileUrl: "form5eksperimen9.html" },
+            f5_act4_10: { title: "Form 5 Activity 4.0 / 4.10: Electromagnetic Induction", category: "Form 5 • Chapter 4", webUrl: "/form5experiment10", fileUrl: "form5eksperimen10.html" },
+            boardgame: { title: "Physics Monopoly: Ultimate Edition", category: "Educational Game", webUrl: "/boardgame", fileUrl: "boardgame.html" },
+            journey: { title: "Journey to the West: Physics Quiz RPG", category: "Educational Game", webUrl: "/journey", fileUrl: "journey.html" }
         };
 
         function resolveLink(webUrl, fileUrl) {
@@ -670,7 +675,7 @@
             stations = stations.slice(0, 5);
 
             if (stations.length === 0) {
-                const starterKeys = ['pendulum', 'exp2_1', 'f5_exp1_1', 'f5_exp2_3', 'f5_exp3_1'];
+                const starterKeys = ['pendulum', 'f5_exp1_1', 'f5_exp3_2', 'f5_exp3_5', 'f5_act4_10'];
                 starterKeys.forEach((key, idx) => {
                     const item = simulationCatalog[key];
                     const href = resolveLink(item.webUrl, item.fileUrl);
@@ -725,12 +730,12 @@
             document.getElementById('badge-login-total').innerText = totalLogins;
 
             let simRank = "🔬 Lab Novice Badge";
-            if (simsCount >= 15) simRank = "🏆 Grand Physics Master Badge";
-            else if (simsCount >= 8) simRank = "⚡ Senior KSSM Researcher Badge";
+            if (simsCount >= 18) simRank = "🏆 Grand Physics Master Badge";
+            else if (simsCount >= 9) simRank = "⚡ Senior KSSM Researcher Badge";
             else if (simsCount >= 1) simRank = "🔬 Active Lab Explorer Badge";
             document.getElementById('sim-badge-rank').innerText = simRank;
             document.getElementById('sim-badge-sub').innerText = `${simsCount} Simulations Explored • Keep experimenting across Form 4 & Form 5 labs!`;
-            document.getElementById('sim-progress-fill').style.width = Math.min(100, Math.round((simsCount / 17) * 100)) + '%';
+            document.getElementById('sim-progress-fill').style.width = Math.min(100, Math.round((simsCount / 22) * 100)) + '%';
 
             let streakRank = "🔥 Momentum Starter Badge";
             if (streakCount >= 100) streakRank = "👑 100-Day Physics Legend Badge";
@@ -741,10 +746,10 @@
 
             let badgeHtml = "";
             if (streakCount >= 50) {
-                badgeHtml += `<img src="./static/images/badge50days.png" alt="50 Days Badge" style="width: 76px; filter: drop-shadow(0px 4px 10px rgba(245,158,11,0.5));">`;
+                badgeHtml += `<img src="/static/images/badge50days.png" alt="50 Days Badge" style="width: 76px; filter: drop-shadow(0px 4px 10px rgba(245,158,11,0.5));">`;
             }
             if (streakCount >= 100) {
-                badgeHtml += `<img src="./static/images/badge100days.png" alt="100 Days Badge" style="width: 76px; filter: drop-shadow(0px 4px 10px rgba(245,158,11,0.5));">`;
+                badgeHtml += `<img src="/static/images/badge100days.png" alt="100 Days Badge" style="width: 76px; filter: drop-shadow(0px 4px 10px rgba(245,158,11,0.5));">`;
             }
             document.getElementById("badgeContainer").innerHTML = badgeHtml;
         }
@@ -787,13 +792,13 @@
                     renderRocketStations([]);
                 });
             } else {
-                window.location.replace(isMobileAppEnv() ? 'login.html' : 'login.html');
+                window.location.replace(isMobileAppEnv() ? 'login.html' : '/login');
             }
         });
 
         function logoutUser() {
             firebase.auth().signOut().then(() => {
-                window.location.replace(isMobileAppEnv() ? 'login.html' : 'login.html');
+                window.location.replace(isMobileAppEnv() ? 'login.html' : '/login');
             });
         }
     </script>

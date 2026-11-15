@@ -1,401 +1,344 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulasi Eksperimen 6.1: Indeks Biasan</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .top-bar-wrapper {
-            width: 100%;
-            max-width: 1220px;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .btn-back-menu {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
-        }
-        .principle-banner {
-            width: 100%;
-            max-width: 1220px;
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-            border-left: 5px solid #0284c7;
-            padding: 14px 18px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            color: #0f172a;
-            font-size: 0.94rem;
-            line-height: 1.5;
-        }
-        h1 { text-align: center; color: #333; margin-top: 0; }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            width: 100%;
-            max-width: 1220px;
-        }
-        .simulation-panel, .data-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 400px;
-            max-width: 600px;
-        }
-        canvas {
-            border: 1px solid #ccc;
-            background-color: #fff;
-            display: block;
-            margin: 0 auto 15px auto;
-            max-width: 100%;
-            height: auto;
-        }
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .control-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        input[type="range"] { width: 60%; }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        button:hover { background-color: #0056b3; }
-        .btn-excel {
-            background-color: #28a745;
-            margin-top: 15px;
-            width: 100%;
-        }
-        .btn-excel:hover { background-color: #218838; }
-        .reminder {
-            font-weight: bold;
-            color: #dc3545;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .table-scroll { width: 100%; overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        table, th, td { border: 1px solid #aaa; }
-        th, td { padding: 10px; text-align: center; }
-        th { background-color: #e9ecef; }
-
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .simulation-panel, .data-panel {
-                min-width: 100%;
-                padding: 15px;
-            }
-            input[type="range"] { width: 100%; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 6.1: Hukum Snell & Indeks Biasan Blok Kaca (3D Interaktif) | Velocity Valley</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active { background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25)); border-color: #38bdf8; color: #fff; }
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+.card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.82rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: grab; }
+.readout-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 10px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.75rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.15rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 115px; padding: 10px 12px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.84rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 8px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
-
-    <div class="top-bar-wrapper">
-        <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
-        <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 6.1</span>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 6 • Eksperimen 6.1</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
     </div>
+  </div>
 
-    <h1>Simulasi Menentukan Indeks Biasan Blok Kaca</h1>
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 6.1: Hukum Snell & Menentukan Indeks Biasan Blok Kaca (n = sin i / sin r)</h1>
+    <p id="pageDesc">Tujuan: Mengkaji hubungan antara sudut tuju, i dengan sudut biasan, r apabila sinar laser merambat dari udara ke dalam blok kaca 3D (n ≈ 1.50). Tandakan radas untuk memasang blok kaca, jangka sudut, dan kotak sinar laser, kemudian seret Kotak Sinar Laser secara terus di atas kanvas 3D!</p>
+  </div>
 
-    <div class="principle-banner">
-        <strong>📘 Prinsip Fizik (Hukum Snell & Pembiasan Cahaya):</strong> Apabila sinar cahaya merambat dari medium kurang tumpat (udara) ke medium lebih tumpat (blok kaca), sinar cahaya terbias mendekati garis normal. Mengikut Hukum Snell, indeks biasan blok kaca diberi oleh <strong>n = sin i / sin r</strong>, di mana kecerunan graf <em>sin i</em> melawan <em>sin r</em> mewakili nilai <em>n</em> (≈ 1.50).
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas 3D</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Seret Kotak Sinar Laser (i)</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Rekod Jadual 6.2 (i, r, sin i, sin r)</span></div>
     </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun kertas putih berjangka sudut, blok kaca 3D, dan kotak sinar laser!
+    </div>
+  </div>
 
-    <div class="container">
-        <div class="simulation-panel">
-            <canvas id="simCanvas" width="500" height="350"></canvas>
-            
-            <div class="controls">
-                <div class="control-group">
-                    <label for="sudutTuju"><strong>Sudut Tuju, <i>i</i> : <span id="nilaiI">20</span>°</strong></label>
-                    <input type="range" id="sudutTuju" min="0" max="80" value="20" step="1">
-                </div>
-                <div class="control-group">
-                    <span><strong>Sudut Biasan, <i>r</i> : <span id="nilaiR">13.2</span>°</strong> <em>(Auto-kira untuk rujukan)</em></span>
-                </div>
-                <button id="btnRekod" onclick="rekodData()">➕ Rekod Data ke Jadual</button>
-                <div id="reminderText" class="reminder">⚠️ Sila rekodkan data untuk sudut tuju ini!</div>
-            </div>
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
         </div>
-
-        <div class="data-panel">
-            <h3 style="margin-top:0;">Jadual 6.2 Keputusan</h3>
-            <div class="table-scroll">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Sudut tuju, <i>i</i> / °</th>
-                            <th>Sudut biasan, <i>r</i> / °</th>
-                            <th>sin <i>i</i></th>
-                            <th>sin <i>r</i></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            
-            <button class="btn-excel" onclick="muatTurunExcel()">⬇ Muat Turun Jadual (Excel / CSV)</button>
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_glass"><input type="checkbox" onchange="toggleApparatus('glass', this.checked)"> <span id="lbl_glass">Blok Kaca 3D (n = 1.50)</span></label>
+          <label class="tray-item" id="tray_prot"><input type="checkbox" onchange="toggleApparatus('prot', this.checked)"> <span id="lbl_prot">Jangka Sudut + Garis Normal</span></label>
+          <label class="tray-item" id="tray_laser"><input type="checkbox" onchange="toggleApparatus('laser', this.checked)"> <span id="lbl_laser">Kotak Sinar Laser 3D</span></label>
         </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="simCanvas" width="680" height="400"></canvas>
+      </div>
+
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Sudut Tuju, i</span><span class="val" id="nilaiI">20°</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Sudut Biasan, r</span><span class="val" id="nilaiR">13.2°</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Nisbah sin i / sin r</span><span class="val" id="nilaiN">1.50</span></div>
+      </div>
     </div>
 
-    <script>
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
-        const sliderTuju = document.getElementById('sudutTuju');
-        const labelI = document.getElementById('nilaiI');
-        const labelR = document.getElementById('nilaiR');
-        const reminderText = document.getElementById('reminderText');
-        const jadualBody = document.querySelector('#dataTable tbody');
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:8px;">🖐️ Seret Kotak Sinar Laser di Kanvas 3D atau Pilih Sudut Tuju, i (°):</label>
+        <input type="range" id="sudutTuju" min="10" max="80" value="20" step="10" style="width:100%;" oninput="setAngleI(this.value)">
+        <div class="btn-row">
+          <button class="btn-act" onclick="rekodData()">➕ Rekod Data ke Jadual 6.2</button>
+          <button class="btn-act purple" onclick="muatTurunExcel()">⬇️ Muat Turun Jadual (CSV)</button>
+        </div>
+      </div>
 
-        const indeksBiasanKaca = 1.5;
-        let sudutTujuSemasa = 20;
-        let sudutBiasanSemasa = 0;
-        let dataSet = new Set();
+      <h3 style="margin:10px 0 6px 0;font-size:0.98rem;color:#38bdf8;" id="tblTitle">📊 Jadual 6.2: Keputusan Eksperimen Indeks Biasan Blok Kaca</h3>
+      <div class="table-wrap">
+        <table class="data-tbl" id="dataTable">
+          <thead>
+            <tr>
+              <th>Sudut tuju, i / °</th>
+              <th>Sudut biasan, r / °</th>
+              <th>sin i</th>
+              <th>sin r</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function lukisSimulasi() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+<script>
+let lang = 'ms';
+const placed = { glass: false, prot: false, laser: false };
+const n_glass = 1.50;
+let angleI = 20;
+let isDragging = false;
+const dataSet = new Set();
 
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
+function allPlaced() { return placed.glass && placed.prot && placed.laser; }
+function toggleApparatus(k, c) {
+  placed[k] = c;
+  document.getElementById('tray_' + k).classList.toggle('placed', c);
+  draw3D();
+}
+function assembleAll() {
+  ['glass', 'prot', 'laser'].forEach(k => {
+    placed[k] = true;
+    document.querySelector('#tray_' + k + ' input').checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  draw3D();
+}
+function setAngleI(val) {
+  if (!allPlaced()) assembleAll();
+  angleI = parseInt(val);
+  document.getElementById('sudutTuju').value = angleI;
+  const radI = (angleI * Math.PI) / 180;
+  const radR = Math.asin(Math.sin(radI) / n_glass);
+  const angleR = (radR * 180) / Math.PI;
+  document.getElementById('nilaiI').innerText = angleI + '°';
+  document.getElementById('nilaiR').innerText = angleR.toFixed(1) + '°';
+  draw3D();
+}
+function rekodData() {
+  if (!allPlaced()) assembleAll();
+  if (dataSet.has(angleI)) { alert(`Sudut ${angleI}° sudah direkod!`); return; }
+  const radI = (angleI * Math.PI) / 180;
+  const sinI = Math.sin(radI);
+  const sinR = sinI / n_glass;
+  const angleR = (Math.asin(sinR) * 180) / Math.PI;
+  const tb = document.querySelector('#dataTable tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${angleI}</td><td>${angleR.toFixed(1)}</td><td>${sinI.toFixed(4)}</td><td style="color:#38bdf8;font-weight:700;">${sinR.toFixed(4)}</td>`;
+  tb.appendChild(tr);
+  dataSet.add(angleI);
+}
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  draw3D();
+}
 
-            // 1. Lukis Blok Kaca & Label
-            ctx.fillStyle = "rgba(173, 216, 230, 0.4)";
-            ctx.fillRect(50, cy, 400, 150);
-            ctx.strokeStyle = "#555";
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(50, cy, 400, 150);
-            ctx.fillStyle = "#333";
-            ctx.font = "14px Arial";
-            ctx.fillText("Blok Kaca", 380, cy + 20);
-            ctx.fillText("Udara", 380, cy - 10);
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+const cx = 340, cy = 200;
 
-            // 2. Lukis Garis Normal & Label
-            ctx.beginPath();
-            ctx.setLineDash([5, 5]);
-            ctx.moveTo(cx, 20);
-            ctx.lineTo(cx, canvas.height - 20);
-            ctx.strokeStyle = "#888";
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.fillStyle = "#333";
-            ctx.fillText("Garis Normal", cx - 40, 15);
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 400);
+  bg.addColorStop(0, '#090d16'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 400);
 
-            let radI = sudutTujuSemasa * (Math.PI / 180);
-            let sinR = Math.sin(radI) / indeksBiasanKaca;
-            let radR = Math.asin(sinR);
-            sudutBiasanSemasa = radR * (180 / Math.PI);
-            labelR.innerText = sudutBiasanSemasa.toFixed(1);
+  if (!placed.glass && !placed.prot && !placed.laser) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 200);
+    return;
+  }
 
-            // 3. Lukis Sinar Tuju (Merah)
-            let panjangSinar = 180;
-            let mulaX = cx - panjangSinar * Math.sin(radI);
-            let mulaY = cy - panjangSinar * Math.cos(radI);
+  if (placed.glass) {
+    const gGrad = ctx.createLinearGradient(120, cy, 560, cy + 145);
+    gGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+    gGrad.addColorStop(1, 'rgba(14, 165, 233, 0.18)');
+    ctx.fillStyle = gGrad;
+    ctx.fillRect(120, cy, 440, 145);
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
+    ctx.strokeRect(120, cy, 440, 145);
+    ctx.fillStyle = '#bae6fd'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(lang === 'ms' ? 'Blok Kaca 3D (n = 1.50)' : '3D Glass Block (n = 1.50)', 548, cy + 24);
+  }
 
-            ctx.beginPath();
-            ctx.moveTo(mulaX, mulaY);
-            ctx.lineTo(cx, cy);
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = 2;
-            ctx.stroke();
+  if (placed.prot) {
+    ctx.save();
+    ctx.setLineDash([5, 5]); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx, 25); ctx.lineTo(cx, 375); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = 'rgba(148,163,184,0.35)';
+    ctx.beginPath(); ctx.arc(cx, cy, 75, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
 
-            // Lukis Kotak Sinar pada hujung sinar tuju
-            ctx.fillStyle = "purple";
-            ctx.save();
-            ctx.translate(mulaX, mulaY);
-            ctx.rotate(-radI);
-            ctx.fillRect(-15, -30, 30, 30);
-            ctx.restore();
-            ctx.fillStyle = "black";
-            ctx.fillText("Kotak Sinar", Math.max(10, mulaX - 30), Math.max(15, mulaY - 35));
+  if (placed.laser) {
+    const radI = (angleI * Math.PI) / 180;
+    const radR = Math.asin(Math.sin(radI) / n_glass);
+    const len = 165;
+    const startX = cx - len * Math.sin(radI);
+    const startY = cy - len * Math.cos(radI);
+    const endX = cx + 150 * Math.sin(radR);
+    const endY = cy + 150 * Math.cos(radR);
 
-            // 4. Lukis Sinar Biasan (Merah gelap)
-            let hujungX = cx + panjangSinar * Math.sin(radR);
-            let hujungY = cy + panjangSinar * Math.cos(radR);
+    // Laser Beam
+    ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(cx, cy); ctx.lineTo(endX, endY); ctx.stroke();
 
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.lineTo(hujungX, hujungY);
-            ctx.strokeStyle = "darkred";
-            ctx.lineWidth = 2;
-            ctx.stroke();
+    // 3D Ray Box
+    ctx.save();
+    ctx.translate(startX, startY);
+    ctx.rotate(-radI);
+    ctx.fillStyle = '#8b5cf6'; ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 2;
+    ctx.fillRect(-18, -34, 36, 34); ctx.strokeRect(-18, -34, 36, 34);
+    ctx.restore();
 
-            // 5. Lukis Lengkuk Sudut Tuju i (Biru)
-            ctx.beginPath();
-            ctx.arc(cx, cy, 40, -Math.PI/2 - radI, -Math.PI/2, false);
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-            ctx.fillStyle = "blue";
-            ctx.fillText("i = " + sudutTujuSemasa + "°", cx - 65, cy - 45);
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`i = ${angleI}°`, cx - 45, cy - 35);
+    ctx.fillStyle = '#10b981';
+    ctx.fillText(`r = ${((radR * 180) / Math.PI).toFixed(1)}°`, cx + 45, cy + 55);
+  }
+}
 
-            // 6. Lukis Lengkuk Sudut Biasan r (Hijau)
-            ctx.beginPath();
-            ctx.arc(cx, cy, 45, Math.PI/2 - radR, Math.PI/2, false);
-            ctx.strokeStyle = "green";
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-            ctx.fillStyle = "green";
-            ctx.fillText("r = " + sudutBiasanSemasa.toFixed(1) + "°", cx + 15, cy + 60);
-        }
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  isDragging = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDragging) handleDrag(e); });
+canvas.addEventListener('pointerup', () => { isDragging = false; });
 
-        sliderTuju.addEventListener('input', function() {
-            sudutTujuSemasa = parseInt(this.value);
-            labelI.innerText = sudutTujuSemasa;
-            if (dataSet.has(sudutTujuSemasa)) {
-                reminderText.innerText = "✓ Data untuk sudut ini telah direkodkan.";
-                reminderText.style.color = "green";
-            } else {
-                reminderText.innerText = "⚠️ Sila rekodkan data untuk sudut tuju " + sudutTujuSemasa + "° ini!";
-                reminderText.style.color = "#dc3545";
-            }
-            lukisSimulasi();
-        });
+function handleDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const px = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const py = (e.clientY - rect.top) * (canvas.height / rect.height);
+  if (py < cy) {
+    const rad = Math.atan2(cx - px, cy - py);
+    const deg = Math.round(Math.max(10, Math.min(80, (rad * 180) / Math.PI)));
+    setAngleI(deg);
+  }
+}
 
-        function rekodData() {
-            if (dataSet.has(sudutTujuSemasa)) {
-                alert("Data untuk sudut tuju " + sudutTujuSemasa + "° telah pun direkodkan.");
-                return;
-            }
-            let sinI = Math.sin(sudutTujuSemasa * Math.PI / 180).toFixed(4);
-            let sinR = Math.sin(sudutBiasanSemasa * Math.PI / 180).toFixed(4);
-            let rFixed = sudutBiasanSemasa.toFixed(1);
+function muatTurunExcel() {
+  if (dataSet.size === 0) { alert("Tiada data!"); return; }
+  let csv = "Sudut tuju i (darjah),Sudut biasan r (darjah),sin i,sin r\n";
+  document.querySelectorAll("#dataTable tbody tr").forEach(r => {
+    csv += Array.from(r.cells).map(c => c.innerText).join(",") + "\n";
+  });
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = "Data_Eksperimen_Biasan.csv";
+  a.click();
+}
 
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${sudutTujuSemasa}</td><td>${rFixed}</td><td>${sinI}</td><td>${sinR}</td>`;
-            jadualBody.appendChild(row);
-            dataSet.add(sudutTujuSemasa);
-            reminderText.innerText = "✓ Data berjaya direkod. Sila ubah sudut tuju yang lain.";
-            reminderText.style.color = "green";
-        }
-
-        function muatTurunExcel() {
-            if (dataSet.size === 0) {
-                alert("Jadual masih kosong. Sila rekodkan data terlebih dahulu.");
-                return;
-            }
-            let csvContent = "Sudut tuju i (darjah),Sudut biasan r (darjah),sin i,sin r\n";
-            let rows = jadualBody.querySelectorAll("tr");
-            rows.forEach(function(row) {
-                let cols = row.querySelectorAll("td");
-                let rowData = [];
-                cols.forEach(function(col) { rowData.push(col.innerText); });
-                csvContent += rowData.join(",") + "\n";
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.setAttribute("href", URL.createObjectURL(blob));
-            link.setAttribute("download", "Data_Eksperimen_Biasan.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        lukisSimulasi();
-    </script>
-
-    <!-- Firebase Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-            authDomain: "velocity-valley-edu.firebaseapp.com",
-            projectId: "velocity-valley-edu",
-            storageBucket: "velocity-valley-edu.firebasestorage.app",
-            messagingSenderId: "340043533038",
-            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-        };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-
-        function recordStationVisit(user) {
-            const stationItem = {
-                id: "exp6_1",
-                title: "Experiment 6.1: Snell's Law (Glass Block)",
-                category: "Form 4 • Chapter 6",
-                webUrl: "form4eksperimen9.html",
-                fileUrl: "form4eksperimen9.html",
-                timestamp: new Date().toLocaleString('en-GB')
-            };
-            try {
-                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
-                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
-            } catch (e) {}
-
-            const pageID = "visited_index_biasan_eksperimen6_1";
-            const isFirstInSession = !sessionStorage.getItem(pageID);
-            sessionStorage.setItem(pageID, "true");
-
-            db.collection("users").doc(user.uid).get().then(doc => {
-                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
-                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                let payload = { recentActivities: updated };
-                if (isFirstInSession) {
-                    payload.simsExplored = firebase.firestore.FieldValue.increment(1);
-                }
-                db.collection("users").doc(user.uid).set(payload, { merge: true });
-            });
-        }
-
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                recordStationVisit(user);
-            } else {
-                window.location.replace(true ? 'login.html' : 'login.html');
-            }
-        });
-    </script>
+draw3D();
+</script>
 </body>
 </html>

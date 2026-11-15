@@ -1,634 +1,535 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eksperimen 2.2 (Tingkatan 5): Tekanan & Ketumpatan Cecair | Velocity Valley</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            margin: 0;
-            padding: 20px;
-            color: #1e293b;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .top-bar-wrapper {
-            width: 100%;
-            max-width: 1280px;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .btn-back-menu {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
-        }
-        .lang-switch-btn {
-            background: #0ea5e9;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.88rem;
-        }
-        h1 { text-align: center; color: #0f172a; margin: 0 0 6px 0; font-size: 1.75rem; }
-        .subtitle { text-align: center; color: #475569; margin: 0 0 16px 0; font-size: 0.98rem; }
-        .principle-banner {
-            width: 100%;
-            max-width: 1280px;
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-            border-left: 5px solid #0284c7;
-            padding: 14px 18px;
-            border-radius: 10px;
-            margin-bottom: 18px;
-            color: #0f172a;
-            font-size: 0.93rem;
-            line-height: 1.55;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1.15fr;
-            gap: 20px;
-            width: 100%;
-            max-width: 1280px;
-        }
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-        }
-        canvas {
-            border: 1.5px solid #cbd5e1;
-            background-color: #ffffff;
-            display: block;
-            margin: 0 auto 14px auto;
-            border-radius: 8px;
-            max-width: 100%;
-            height: auto;
-        }
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .control-group {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 12px 14px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .beaker-btn-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .beaker-btn {
-            flex: 1;
-            min-width: 135px;
-            padding: 10px 12px;
-            background: #e2e8f0;
-            color: #1e293b;
-            border: 2px solid transparent;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 0.86rem;
-            transition: all 0.2s;
-        }
-        .beaker-btn.active-b {
-            background: #0284c7;
-            color: white;
-            border-color: #38bdf8;
-            box-shadow: 0 3px 8px rgba(2,132,199,0.3);
-        }
-        .student-input-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .student-input-row input {
-            flex: 1;
-            min-width: 120px;
-            padding: 9px 12px;
-            border: 1.5px solid #94a3b8;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: bold;
-        }
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 11px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-        .btn-excel {
-            background: #16a34a;
-            color: white;
-            border: none;
-            padding: 11px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
-        }
-        .reminder {
-            font-weight: bold;
-            text-align: center;
-            padding: 9px;
-            border-radius: 6px;
-            font-size: 0.88rem;
-        }
-        .reminder.warning { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-        .reminder.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-        .table-scroll { width: 100%; overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }
-        th, td {
-            border: 1px solid #cbd5e1;
-            padding: 10px 8px;
-            text-align: center;
-        }
-        th { background: #0f4c81; color: white; }
-        .discussion-box {
-            margin-top: 16px;
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            border-radius: 8px;
-            padding: 12px 14px;
-            font-size: 0.88rem;
-            line-height: 1.5;
-        }
-        @media (max-width: 900px) {
-            .container { grid-template-columns: 1fr; }
-            body { padding: 12px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 2.2: Ketumpatan & Tekanan Cecair (3D Interaktif) | Velocity Valley</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active { background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25)); border-color: #38bdf8; color: #fff; }
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+.card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.84rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: pointer; }
+.readout-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 10px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.76rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.1rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 120px; padding: 10px 14px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.88rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+button.btn-act.green { background: linear-gradient(135deg, #10b981, #059669); }
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+button.btn-act.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+select.sel-box {
+  width: 100%; padding: 10px; border-radius: 8px; background: #0f172a;
+  color: #f8fafc; border: 1px solid #38bdf8; font-weight: 600;
+}
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 8px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+canvas#graphCanvas {
+  width: 100%; height: auto; background: #090d16; border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.25); margin-top: 12px; display: block;
+}
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 5 • Bab 2 • Eksperimen 2.2</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+    </div>
+  </div>
 
-    <div class="top-bar-wrapper">
-        <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:' || window.Capacitor || (window.location.hostname==='localhost' && !window.location.port)){this.href='index.html';}">← Back to Main Menu</a>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-weight: bold; color: #1e3a8a;">🚀 KSSM Tingkatan 5 • Eksperimen 2.2</span>
-            <button class="lang-switch-btn" onclick="toggleLang()">🌐 English / BM</button>
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 2.2: Hubungan antara Ketumpatan Cecair, ρ dengan Tekanan Cecair, P</h1>
+    <p id="pageDesc">Tujuan: Mengkaji hubungan antara ketumpatan cecair, ρ (Alkohol, Air Suling, Larutan Garam, dan Gliserin) dengan tekanan cecair pada kedalaman tetap h = 10.0 cm. Seret corong tisel ke tanda h = 10.0 cm dan rekodkan Jadual 2.2.</p>
+  </div>
+
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Pilih Cecair (ρ)</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Seret Corong ke h = 10 cm</span></div>
+      <div class="step-pill" id="pill4"><span class="step-num">4</span><span id="pillTxt4">Rekod & Plot Graf D vs ρ</span></div>
+    </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun bikar cecair, manometer tiub-U, dan corong tisel!
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
         </div>
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_beaker"><input type="checkbox" onchange="toggleApparatus('beaker', this.checked)"> <span id="lbl_beaker">Bikar Tinggi 600 ml + Cecair</span></label>
+          <label class="tray-item" id="tray_mano"><input type="checkbox" onchange="toggleApparatus('mano', this.checked)"> <span id="lbl_mano">Manometer Tiub-U + Pembaris</span></label>
+          <label class="tray-item" id="tray_funnel"><input type="checkbox" onchange="toggleApparatus('funnel', this.checked)"> <span id="lbl_funnel">Corong Tisel + Tiub Getah</span></label>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="simCanvas" width="680" height="440"></canvas>
+      </div>
+
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Ketumpatan Cecair, ρ</span><span class="val" id="mVal0">800 kg m⁻³</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Kedalaman Semasa, h</span><span class="val" id="mVal1">10.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Beza Aras Manometer, D</span><span class="val" id="mVal2">7.2 cm</span></div>
+      </div>
     </div>
 
-    <h1 id="mainTitle">Eksperimen 2.2: Tekanan & Ketumpatan Cecair</h1>
-    <p class="subtitle" id="subTitle">Mengkaji hubungan antara ketumpatan cecair, ρ dengan tekanan cecair, D pada kedalaman malar (Rajah 2.3)</p>
-
-    <div class="principle-banner">
-        <strong>📘 Inferens & Hipotesis (P = hρg):</strong> Tekanan cecair bergantung pada ketumpatan cecair. Pada kedalaman yang dimalarkan (penanda pita pelekat 2 cm dari dasar bikar), semakin tinggi ketumpatan cecair, <em>ρ</em> (Alkohol 790 kg m⁻³ → Air 1000 kg m⁻³ → Gliserin 1300 kg m⁻³), semakin tinggi perbezaan ketinggian turus air, <em>D</em> di dalam tiub-U.
-    </div>
-
-    <div class="container">
-        <!-- LEFT PANEL -->
-        <div class="panel">
-            <canvas id="simCanvas" width="530" height="410"></canvas>
-
-            <div class="controls">
-                <div class="control-group">
-                    <label><strong id="lblSelectBeaker">1. Pilih Bikar Cecair (Kedalaman corong tisel dimalarkan pada Penanda):</strong></label>
-                    <div class="beaker-btn-row">
-                        <button class="beaker-btn" onclick="selectBeaker('A')" id="bbtn-A">🧪 Bikar A: Alkohol<br><small>(ρ = 790 kg m⁻³)</small></button>
-                        <button class="beaker-btn" onclick="selectBeaker('B')" id="bbtn-B">💧 Bikar B: Air<br><small>(ρ = 1000 kg m⁻³)</small></button>
-                        <button class="beaker-btn" onclick="selectBeaker('C')" id="bbtn-C">🍯 Bikar C: Gliserin<br><small>(ρ = 1300 kg m⁻³)</small></button>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label><strong id="lblReadD">2. Rekodkan perbezaan ketinggian turus air, D (cm) dalam Jadual 2.2:</strong></label>
-                    <div class="student-input-row">
-                        <input type="number" step="0.1" id="inputDiffD" placeholder="Nilai D (cm)">
-                        <button class="btn-primary" onclick="rekodData()">➕ Rekod Jadual 2.2</button>
-                    </div>
-                </div>
-
-                <div id="reminderText" class="reminder warning">⚠️ Sila rekodkan bacaan D untuk Bikar A (Alkohol)!</div>
-            </div>
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlLiqLbl">🧪 Pilih Jenis Cecair (Ketumpatan, ρ):</label>
+        <select class="sel-box" id="liqSelect" onchange="changeLiquid(this.value)">
+          <option value="0" id="opt0">Alkohol (ρ = 800 kg m⁻³)</option>
+          <option value="1" id="opt1">Air Suling (ρ = 1000 kg m⁻³)</option>
+          <option value="2" id="opt2">Larutan Garam (ρ = 1100 kg m⁻³)</option>
+          <option value="3" id="opt3">Gliserin (ρ = 1260 kg m⁻³)</option>
+        </select>
+        <div class="btn-row">
+          <button class="btn-act" onclick="immerseTo10()" id="btnImmerse">⬇️ Tenggelamkan ke h = 10.0 cm</button>
+          <button class="btn-act green" onclick="recordRow()" id="btnRecord">➕ Rekod ke Jadual 2.2</button>
+          <button class="btn-act red" onclick="resetSim()" id="btnReset">🔄 Reset</button>
         </div>
+      </div>
 
-        <!-- RIGHT PANEL -->
-        <div class="panel">
-            <h3 style="margin-top:0;">Jadual 2.2: Keputusan Eksperimen 2.2</h3>
-            <div class="table-scroll">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Bikar</th>
-                            <th>Jenis cecair</th>
-                            <th>Ketumpatan cecair, <i>ρ</i> / kg m⁻³</th>
-                            <th>Perbezaan ketinggian turus air, <i>D</i> / cm</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr id="row-A"><td>A</td><td>Alkohol</td><td>790</td><td id="cell-A"><em>Belum direkod</em></td></tr>
-                        <tr id="row-B"><td>B</td><td>Air</td><td>1000</td><td id="cell-B"><em>Belum direkod</em></td></tr>
-                        <tr id="row-C"><td>C</td><td>Gliserin</td><td>1300</td><td id="cell-C"><em>Belum direkod</em></td></tr>
-                    </tbody>
-                </table>
-            </div>
+      <h3 style="margin:10px 0 6px 0;font-size:1rem;color:#38bdf8;" id="tblTitle">📊 Jadual 2.2: Keputusan Ketumpatan vs Tekanan Cecair (h = 10.0 cm)</h3>
+      <div class="table-wrap">
+        <table class="data-tbl">
+          <thead>
+            <tr>
+              <th id="thLiq">Jenis Cecair</th>
+              <th id="thRho">Ketumpatan, ρ (kg m⁻³)</th>
+              <th id="thD">Beza Aras Manometer, D (cm)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
 
-            <h4 style="margin: 18px 0 8px 0; color:#0f172a;">📈 Graf Perbezaan Ketinggian Turus Air, D (cm) melawan Ketumpatan Cecair, ρ (kg m⁻³)</h4>
-            <canvas id="graphCanvas" width="520" height="220"></canvas>
+      <div class="btn-row">
+        <button class="btn-act purple" onclick="exportCSV()" id="btnExport">⬇️ Muat Turun CSV / Excel</button>
+      </div>
 
-            <button class="btn-excel" onclick="muatTurunExcel()">⬇ Muat Turun Jadual 2.2 (Excel / CSV)</button>
-
-            <div class="discussion-box">
-                <strong>🔍 Perbincangan KSSM:</strong><br>
-                1. <strong>Mengapakah merkuri tidak sesuai digunakan sebagai cecair di dalam tiub-U?</strong> Merkuri mempunyai ketumpatan yang sangat tinggi (13 600 kg m⁻³), menyebabkan perubahan aras ketinggian <em>D</em> menjadi terlalu kecil dan sukar dibaca, selain bersifat toksik.<br>
-                2. <strong>Langkah berjaga-jaga:</strong> Keluarkan dan keringkan corong tisel setiap kali sebelum dimasukkan ke dalam bikar cecair yang baharu supaya cecair tidak bercampur.
-            </div>
-        </div>
+      <canvas id="graphCanvas" width="520" height="220"></canvas>
     </div>
+  </div>
+</div>
 
-    <script>
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
-        const graphCanvas = document.getElementById('graphCanvas');
-        const gctx = graphCanvas.getContext('2d');
+<script>
+let lang = 'ms';
+const liquids = [
+  { ms: 'Alkohol', en: 'Alcohol', rho: 800, D: 7.2, color: 'rgba(167, 243, 208, 0.55)' },
+  { ms: 'Air Suling', en: 'Distilled Water', rho: 1000, D: 9.0, color: 'rgba(56, 189, 248, 0.55)' },
+  { ms: 'Larutan Garam', en: 'Salt Solution', rho: 1100, D: 9.9, color: 'rgba(129, 140, 248, 0.55)' },
+  { ms: 'Gliserin', en: 'Glycerine', rho: 1260, D: 11.3, color: 'rgba(251, 191, 36, 0.65)' }
+];
 
-        const BEAKERS = {
-            'A': { key: 'A', name: 'Alkohol', nameEn: 'Alcohol', rho: 790, D: 7.9, color: 'rgba(186, 230, 253, 0.55)' },
-            'B': { key: 'B', name: 'Air', nameEn: 'Water', rho: 1000, D: 10.0, color: 'rgba(56, 189, 248, 0.45)' },
-            'C': { key: 'C', name: 'Gliserin', nameEn: 'Glycerine', rho: 1300, D: 13.0, color: 'rgba(253, 224, 71, 0.50)' }
-        };
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 5 • Bab 2 • Eksperimen 2.2",
+    pageTitle: "Eksperimen 2.2: Hubungan antara Ketumpatan Cecair, ρ dengan Tekanan Cecair, P",
+    pageDesc: "Tujuan: Mengkaji hubungan antara ketumpatan cecair, ρ (Alkohol, Air Suling, Larutan Garam, dan Gliserin) dengan tekanan cecair pada kedalaman tetap h = 10.0 cm. Seret corong tisel ke tanda h = 10.0 cm dan rekodkan Jadual 2.2.",
+    pillTxt1: "Pilih & Pasang Radas",
+    pillTxt2: "Pilih Cecair (ρ)",
+    pillTxt3: "Seret Corong ke h = 10 cm",
+    pillTxt4: "Rekod & Plot Graf D vs ρ",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_beaker: "Bikar Tinggi 600 ml + Cecair",
+    lbl_mano: "Manometer Tiub-U + Pembaris",
+    lbl_funnel: "Corong Tisel + Tiub Getah",
+    mLbl0: "Ketumpatan Cecair, ρ",
+    mLbl1: "Kedalaman Semasa, h",
+    mLbl2: "Beza Aras Manometer, D",
+    ctrlLiqLbl: "🧪 Pilih Jenis Cecair (Ketumpatan, ρ):",
+    opt0: "Alkohol (ρ = 800 kg m⁻³)",
+    opt1: "Air Suling (ρ = 1000 kg m⁻³)",
+    opt2: "Larutan Garam (ρ = 1100 kg m⁻³)",
+    opt3: "Gliserin (ρ = 1260 kg m⁻³)",
+    btnImmerse: "⬇️ Tenggelamkan ke h = 10.0 cm",
+    btnRecord: "➕ Rekod ke Jadual 2.2",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Jadual 2.2: Keputusan Ketumpatan vs Tekanan Cecair (h = 10.0 cm)",
+    thLiq: "Jenis Cecair",
+    thRho: "Ketumpatan, ρ (kg m⁻³)",
+    thD: "Beza Aras Manometer, D (cm)",
+    btnExport: "⬇️ Muat Turun CSV / Excel",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    dragHint: "🖐️ Seret Corong Tisel ke garisan merah h = 10.0 cm di dalam bikar!",
+    graphTitle: "Graf Beza Aras Manometer, D (cm) melawan Ketumpatan, ρ (kg m⁻³)"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 5 • Chapter 2 • Experiment 2.2",
+    pageTitle: "Experiment 2.2: Relationship between Liquid Density, ρ and Liquid Pressure, P",
+    pageDesc: "Objective: To study the relationship between liquid density, ρ (Alcohol, Distilled Water, Salt Solution, Glycerine) and liquid pressure at fixed depth h = 10.0 cm. Drag the thistle funnel to h = 10.0 cm and record Table 2.2.",
+    pillTxt1: "Select & Assemble Apparatus",
+    pillTxt2: "Select Liquid (ρ)",
+    pillTxt3: "Drag Funnel to h = 10 cm",
+    pillTxt4: "Record & Plot D vs ρ Graph",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_beaker: "600 ml Tall Beaker + Liquid",
+    lbl_mano: "U-Tube Manometer + Ruler",
+    lbl_funnel: "Thistle Funnel + Rubber Tube",
+    mLbl0: "Liquid Density, ρ",
+    mLbl1: "Current Depth, h",
+    mLbl2: "Manometer Level Diff, D",
+    ctrlLiqLbl: "🧪 Select Liquid Type (Density, ρ):",
+    opt0: "Alcohol (ρ = 800 kg m⁻³)",
+    opt1: "Distilled Water (ρ = 1000 kg m⁻³)",
+    opt2: "Salt Solution (ρ = 1100 kg m⁻³)",
+    opt3: "Glycerine (ρ = 1260 kg m⁻³)",
+    btnImmerse: "⬇️ Immerse to h = 10.0 cm",
+    btnRecord: "➕ Record to Table 2.2",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Table 2.2: Liquid Density vs Pressure Results (h = 10.0 cm)",
+    thLiq: "Liquid Type",
+    thRho: "Density, ρ (kg m⁻³)",
+    thD: "Manometer Level Diff, D (cm)",
+    btnExport: "⬇️ Download CSV / Excel",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    dragHint: "🖐️ Drag the Thistle Funnel to the red line h = 10.0 cm inside the beaker!",
+    graphTitle: "Graph of Manometer Level Difference, D (cm) against Density, ρ (kg m⁻³)"
+  }
+};
 
-        let currentKey = 'A';
-        let recorded = new Map();
-        let isEng = false;
+const placed = { beaker: false, mano: false, funnel: false };
+let liqIdx = 0;
+let curDepth = 10.0;
+let records = [];
+let isDragging = false;
 
-        function selectBeaker(k) {
-            currentKey = k;
-            const info = BEAKERS[k];
-            document.getElementById('inputDiffD').value = info.D.toFixed(1);
-            ['A', 'B', 'C'].forEach(id => {
-                document.getElementById('bbtn-' + id).classList.toggle('active-b', id === k);
-            });
-            updateReminderUI();
-            drawApparatus();
-        }
+function allPlaced() { return placed.beaker && placed.mano && placed.funnel; }
 
-        function updateReminderUI() {
-            const rem = document.getElementById('reminderText');
-            const info = BEAKERS[currentKey];
-            if (recorded.has(currentKey)) {
-                rem.className = 'reminder success';
-                rem.innerText = isEng
-                    ? `✓ Beaker ${currentKey} (${info.nameEn}, ρ = ${info.rho} kg m⁻³) recorded: D = ${recorded.get(currentKey).D.toFixed(1)} cm!`
-                    : `✓ Bikar ${currentKey} (${info.name}, ρ = ${info.rho} kg m⁻³) telah direkodkan: D = ${recorded.get(currentKey).D.toFixed(1)} cm!`;
-            } else {
-                rem.className = 'reminder warning';
-                rem.innerText = isEng
-                    ? `⚠️ Please record D = ${info.D.toFixed(1)} cm for Beaker ${currentKey} (${info.nameEn})!`
-                    : `⚠️ Sila rekodkan D = ${info.D.toFixed(1)} cm untuk Bikar ${currentKey} (${info.name})!`;
-            }
-        }
+function toggleApparatus(key, checked) {
+  placed[key] = checked;
+  const el = document.getElementById('tray_' + key);
+  if (checked) el.classList.add('placed'); else el.classList.remove('placed');
+  updateCoach(); draw3D();
+}
 
-        function drawApparatus() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const info = BEAKERS[currentKey];
-            const baseY = 365;
-            const bX = 55, bW = 115, bTopY = 155;
-            const liqTopY = 180;
-            const markerY = baseY - 34; // Penanda 2 cm daripada dasar bikar
+function assembleAll() {
+  ['beaker', 'mano', 'funnel'].forEach(k => {
+    placed[k] = true;
+    const cb = document.querySelector('#tray_' + k + ' input');
+    if (cb) cb.checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  updateCoach(); draw3D();
+}
 
-            // 1. Active Beaker on Left
-            ctx.fillStyle = info.color;
-            ctx.fillRect(bX, liqTopY, bW, baseY - liqTopY);
+function changeLiquid(idx) {
+  if (!allPlaced()) assembleAll();
+  liqIdx = parseInt(idx);
+  updateReadouts(); updateCoach(); draw3D();
+}
 
-            ctx.strokeStyle = "#334155";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(bX, bTopY);
-            ctx.lineTo(bX, baseY);
-            ctx.lineTo(bX + bW, baseY);
-            ctx.lineTo(bX + bW, bTopY);
-            ctx.stroke();
+function immerseTo10() {
+  if (!allPlaced()) assembleAll();
+  curDepth = 10.0;
+  updateReadouts(); updateCoach(); draw3D();
+}
 
-            // Tape Marker (Penanda 2 cm dari dasar bikar)
-            ctx.fillStyle = "#ec4899";
-            ctx.fillRect(bX - 6, markerY - 2, 16, 5);
-            ctx.fillStyle = "#be185d";
-            ctx.font = "bold 11px Segoe UI";
-            ctx.fillText("Penanda (2 cm)", 4, markerY + 4);
+function updateReadouts() {
+  const item = liquids[liqIdx];
+  const curD = item.D * (curDepth / 10.0);
+  document.getElementById('mVal0').innerText = item.rho + ' kg m⁻³';
+  document.getElementById('mVal1').innerText = curDepth.toFixed(1) + ' cm';
+  document.getElementById('mVal2').innerText = curD.toFixed(1) + ' cm';
+}
 
-            ctx.fillStyle = "#0f172a";
-            ctx.font = "bold 13px Segoe UI";
-            ctx.fillText(`Bikar ${currentKey}: ${isEng ? info.nameEn : info.name}`, bX + 6, baseY + 22);
-            ctx.font = "11px Segoe UI";
-            ctx.fillText(`ρ = ${info.rho} kg m⁻³`, bX + 18, baseY + 38);
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3'), p4 = document.getElementById('pill4');
+  [p1, p2, p3, p4].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun bikar cecair, manometer tiub-U, dan corong tisel."
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus Tray</b> to assemble the liquid beaker, U-tube manometer, and thistle funnel.";
+  } else if (records.length < 4) {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? `🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Pastikan corong tisel berada pada kedalaman tetap <b>h = 10.0 cm</b> dan rekodkan bacaan D bagi kesemua 4 jenis cecair (${records.length}/4 direkod).`
+      : `🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Keep the thistle funnel at fixed depth <b>h = 10.0 cm</b> and record D for all 4 liquids (${records.length}/4 recorded).`;
+  } else {
+    [p1, p2, p3].forEach(p => p.classList.add('done')); p4.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Syabas! Semua 4 cecair direkodkan. Semakin tinggi ketumpatan cecair ρ, semakin besar tekanan cecair P pada kedalaman tetap!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Great job! All 4 liquids recorded. The higher the liquid density ρ, the greater the liquid pressure P at constant depth!";
+  }
+}
 
-            // 2. Thistle Funnel submerged right at Marker level
-            const funnelX = bX + bW / 2;
-            ctx.strokeStyle = "#475569";
-            ctx.lineWidth = 5;
-            ctx.beginPath();
-            ctx.moveTo(funnelX, markerY - 26);
-            ctx.lineTo(funnelX, 55);
-            ctx.stroke();
+function recordRow() {
+  if (!allPlaced()) assembleAll();
+  curDepth = 10.0;
+  updateReadouts();
+  const item = liquids[liqIdx];
+  if (records.some(r => r.rho === item.rho)) {
+    alert(lang === 'ms' ? 'Cecair ini sudah direkod!' : 'This liquid is already recorded!');
+    return;
+  }
+  records.push({ idx: liqIdx, rho: item.rho, D: item.D });
+  records.sort((a, b) => a.rho - b.rho);
+  renderTable(); drawGraph(); updateCoach(); draw3D();
+}
 
-            ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-            ctx.strokeStyle = "#334155";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(funnelX - 6, markerY - 26);
-            ctx.lineTo(funnelX - 18, markerY);
-            ctx.lineTo(funnelX + 18, markerY);
-            ctx.lineTo(funnelX + 6, markerY - 26);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
+function renderTable() {
+  const tb = document.getElementById('tableBody');
+  tb.innerHTML = '';
+  records.forEach(r => {
+    const tr = document.createElement('tr');
+    const name = liquids[r.idx][lang];
+    tr.innerHTML = `<td>${name}</td><td>${r.rho}</td><td style="color:#38bdf8;font-weight:700;">${r.D.toFixed(1)}</td>`;
+    tb.appendChild(tr);
+  });
+}
 
-            ctx.strokeStyle = "#d97706";
-            ctx.lineWidth = 3.5;
-            ctx.beginPath();
-            ctx.moveTo(funnelX - 20, markerY);
-            ctx.lineTo(funnelX + 20, markerY);
-            ctx.stroke();
+function resetSim() {
+  records = []; curDepth = 10.0;
+  renderTable(); updateReadouts(); drawGraph(); updateCoach(); draw3D();
+}
 
-            // 3. U-Tube Manometer in Center
-            const uLeftX = 240, uRightX = 305, uBotY = 335, uTopY = 95;
-            const uEqY = 225;
-            const halfShiftPx = (info.D / 2) * 7.5;
-            const leftLevelY = uEqY + halfShiftPx;
-            const rightLevelY = uEqY - halfShiftPx;
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  renderTable(); updateCoach(); draw3D(); drawGraph();
+}
 
-            // Retort stand
-            ctx.fillStyle = "#94a3b8";
-            ctx.fillRect(220, baseY, 155, 12);
-            ctx.fillRect(348, 70, 8, baseY - 70);
-            ctx.fillRect(300, 130, 50, 5);
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
 
-            // Silicone tube
-            ctx.strokeStyle = "rgba(99, 102, 241, 0.55)";
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.moveTo(funnelX, 58);
-            ctx.bezierCurveTo(funnelX, 15, uLeftX, 15, uLeftX, uTopY);
-            ctx.stroke();
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 380);
+  bg.addColorStop(0, '#0f172a'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 380);
+  ctx.fillStyle = '#334155'; ctx.fillRect(0, 380, canvas.width, 60);
 
-            // Coloured water in U-Tube
-            ctx.strokeStyle = "rgba(14, 165, 233, 0.72)";
-            ctx.lineWidth = 11;
-            ctx.beginPath();
-            ctx.moveTo(uLeftX, leftLevelY);
-            ctx.lineTo(uLeftX, uBotY - 22);
-            ctx.arc((uLeftX + uRightX) / 2, uBotY - 22, (uRightX - uLeftX) / 2, Math.PI, 0, true);
-            ctx.lineTo(uRightX, rightLevelY);
-            ctx.stroke();
+  if (!placed.beaker && !placed.mano && !placed.funnel) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 200);
+    return;
+  }
 
-            // U-Tube walls
-            ctx.strokeStyle = "#334155";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(uLeftX - 6, uTopY);
-            ctx.lineTo(uLeftX - 6, uBotY - 22);
-            ctx.arc((uLeftX + uRightX) / 2, uBotY - 22, (uRightX - uLeftX) / 2 + 6, Math.PI, 0, true);
-            ctx.lineTo(uRightX + 6, uTopY);
-            ctx.stroke();
+  const item = liquids[liqIdx];
+  const surfY = 140;
+  const pxPerCm = 14.0;
+  const funnelY = surfY + curDepth * pxPerCm;
+  const curD = item.D * (curDepth / 10.0);
 
-            ctx.beginPath();
-            ctx.moveTo(uLeftX + 6, uTopY);
-            ctx.lineTo(uLeftX + 6, uBotY - 22);
-            ctx.arc((uLeftX + uRightX) / 2, uBotY - 22, (uRightX - uLeftX) / 2 - 6, Math.PI, 0, true);
-            ctx.lineTo(uRightX - 6, uTopY);
-            ctx.stroke();
+  if (placed.beaker) {
+    const bx = 130, bw = 160, by = 105, bh = 270;
+    ctx.fillStyle = item.color;
+    ctx.fillRect(bx + 4, surfY, bw - 8, 375 - surfY);
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3;
+    ctx.strokeRect(bx, by, bw, bh);
 
-            // D indicator
-            ctx.setLineDash([4, 4]);
-            ctx.strokeStyle = "#0f172a";
-            ctx.beginPath();
-            ctx.moveTo(uLeftX, leftLevelY); ctx.lineTo(uRightX, leftLevelY);
-            ctx.moveTo(uLeftX, rightLevelY); ctx.lineTo(uRightX, rightLevelY);
-            ctx.stroke();
-            ctx.setLineDash([]);
+    // Fixed h = 10.0 cm dashed target line
+    const targetY = surfY + 10.0 * pxPerCm;
+    ctx.save();
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(bx - 15, targetY); ctx.lineTo(bx + bw + 15, targetY); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = '#f43f5e'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText('h = 10.0 cm', bx - 18, targetY + 4);
+    ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
+    ctx.fillText(`${item[lang]} (ρ = ${item.rho} kg m⁻³)`, bx + bw / 2, 95);
+  }
 
-            const midX = (uLeftX + uRightX) / 2;
-            ctx.strokeStyle = "#dc2626";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(midX, rightLevelY);
-            ctx.lineTo(midX, leftLevelY);
-            ctx.stroke();
-            ctx.fillStyle = "#dc2626";
-            ctx.font = "bold 12px Segoe UI";
-            ctx.fillText(`D = ${info.D.toFixed(1)} cm`, uRightX + 12, (leftLevelY + rightLevelY) / 2 + 4);
+  if (placed.mano) {
+    const mx = 460, baseU = 330, topU = 85, armGap = 70, eqY = 210;
+    const halfShift = (curD * 5.0) / 2;
+    const leftY = eqY + halfShift, rightY = eqY - halfShift;
+    ctx.fillStyle = '#78350f'; ctx.fillRect(mx - 30, 70, armGap + 60, 305);
+    ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 14; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(mx, leftY); ctx.lineTo(mx, baseU);
+    ctx.arc(mx + armGap / 2, baseU, armGap / 2, Math.PI, 0, true);
+    ctx.lineTo(mx + armGap, rightY); ctx.stroke();
 
-            // 4. Preview of the other 2 Beakers on the Right (Rajah 2.3 style)
-            const otherKeys = ['A', 'B', 'C'].filter(x => x !== currentKey);
-            otherKeys.forEach((ok, idx) => {
-                const ob = BEAKERS[ok];
-                const ox = 400 + idx * 62;
-                const oy = 250;
-                const ow = 50, oh = 115;
-                ctx.fillStyle = ob.color;
-                ctx.fillRect(ox, oy + 18, ow, oh - 18);
-                ctx.strokeStyle = "#475569";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(ox, oy); ctx.lineTo(ox, oy + oh); ctx.lineTo(ox + ow, oy + oh); ctx.lineTo(ox + ow, oy);
-                ctx.stroke();
-                ctx.fillStyle = "#ec4899";
-                ctx.fillRect(ox - 3, oy + oh - 22, 8, 4);
-                ctx.fillStyle = "#1e293b";
-                ctx.font = "bold 11px Segoe UI";
-                ctx.fillText(`Bikar ${ok}`, ox + 4, oy + oh + 16);
-                ctx.font = "10px Segoe UI";
-                ctx.fillText(ob.name, ox + 4, oy - 6);
-            });
-        }
+    ctx.strokeStyle = 'rgba(248,250,252,0.85)'; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(mx - 8, topU); ctx.lineTo(mx - 8, baseU);
+    ctx.arc(mx + armGap / 2, baseU, armGap / 2 + 8, Math.PI, 0, true);
+    ctx.lineTo(mx + armGap + 8, topU); ctx.stroke();
 
-        function rekodData() {
-            const val = parseFloat(document.getElementById('inputDiffD').value);
-            const info = BEAKERS[currentKey];
-            const usedD = !isNaN(val) ? +val.toFixed(1) : info.D;
-            recorded.set(currentKey, { key: currentKey, name: info.name, rho: info.rho, D: usedD });
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 13px Segoe UI, sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(`D = ${curD.toFixed(1)} cm`, mx + armGap + 24, (leftY + rightY) / 2 + 4);
+  }
 
-            const cell = document.getElementById('cell-' + currentKey);
-            if (cell) cell.innerHTML = `<strong style="color:#0284c7;">${usedD.toFixed(1)}</strong>`;
+  if (placed.funnel) {
+    const fx = 210;
+    ctx.fillStyle = '#cbd5e1'; ctx.fillRect(fx - 4, 55, 8, funnelY - 55);
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.moveTo(fx - 22, funnelY); ctx.lineTo(fx + 22, funnelY);
+    ctx.lineTo(fx + 6, funnelY - 18); ctx.lineTo(fx - 6, funnelY - 18);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.moveTo(fx, 55); ctx.bezierCurveTo(fx, 15, 460, 15, 460, 85); ctx.stroke();
 
-            drawGraph();
-            updateReminderUI();
-        }
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 422);
+  }
+}
 
-        function drawGraph() {
-            gctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-            const padL = 55, padB = 36, padT = 18, padR = 25;
-            const w = graphCanvas.width - padL - padR;
-            const h = graphCanvas.height - padT - padB;
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  isDragging = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDragging) handleDrag(e); });
+canvas.addEventListener('pointerup', () => { isDragging = false; updateCoach(); draw3D(); });
 
-            gctx.strokeStyle = "#e2e8f0";
-            gctx.lineWidth = 1;
-            for (let i = 0; i <= 5; i++) {
-                const gx = padL + (i / 5) * w;
-                const gy = padT + (i / 5) * h;
-                gctx.beginPath(); gctx.moveTo(gx, padT); gctx.lineTo(gx, padT + h); gctx.stroke();
-                gctx.beginPath(); gctx.moveTo(padL, gy); gctx.lineTo(padL + w, gy); gctx.stroke();
+function handleDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const py = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const rawCm = (py - 140) / 14.0;
+  curDepth = Math.round(Math.max(2, Math.min(14, rawCm)) * 2) / 2;
+  if (Math.abs(curDepth - 10.0) <= 1.0) curDepth = 10.0;
+  updateReadouts(); draw3D();
+}
 
-                gctx.fillStyle = "#475569";
-                gctx.font = "11px Segoe UI";
-                gctx.fillText((i * 300).toString(), gx - 12, padT + h + 15);
-                gctx.fillText(((5 - i) * 3.0).toFixed(1), padL - 28, gy + 4);
-            }
+function drawGraph() {
+  const gCanvas = document.getElementById('graphCanvas');
+  const gCtx = gCanvas.getContext('2d');
+  gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+  gCtx.fillStyle = '#38bdf8'; gCtx.font = 'bold 12px Segoe UI, sans-serif'; gCtx.textAlign = 'center';
+  gCtx.fillText(i18n[lang].graphTitle, gCanvas.width / 2, 20);
+  const ox = 55, oy = 185, gw = 430, gh = 140;
+  gCtx.strokeStyle = '#64748b'; gCtx.lineWidth = 1.5;
+  gCtx.beginPath(); gCtx.moveTo(ox, oy - gh); gCtx.lineTo(ox, oy); gCtx.lineTo(ox + gw, oy); gCtx.stroke();
+  if (records.length > 0) {
+    gCtx.strokeStyle = '#10b981'; gCtx.lineWidth = 2.5;
+    gCtx.beginPath(); gCtx.moveTo(ox, oy);
+    records.forEach(r => {
+      const px = ox + (r.rho / 1400) * gw;
+      const py = oy - (r.D / 13) * gh;
+      gCtx.lineTo(px, py);
+    });
+    gCtx.stroke();
+    records.forEach(r => {
+      const px = ox + (r.rho / 1400) * gw;
+      const py = oy - (r.D / 13) * gh;
+      gCtx.fillStyle = '#38bdf8'; gCtx.beginPath(); gCtx.arc(px, py, 4.5, 0, Math.PI * 2); gCtx.fill();
+    });
+  }
+}
 
-            gctx.strokeStyle = "#0f172a";
-            gctx.lineWidth = 2;
-            gctx.beginPath();
-            gctx.moveTo(padL, padT);
-            gctx.lineTo(padL, padT + h);
-            gctx.lineTo(padL + w, padT + h);
-            gctx.stroke();
+function exportCSV() {
+  if (records.length === 0) { alert(lang === 'ms' ? 'Tiada data!' : 'No data!'); return; }
+  let csv = 'Cecair,Ketumpatan rho (kg m^-3),Beza Aras D (cm)\n';
+  records.forEach(r => { csv += `${liquids[r.idx][lang]},${r.rho},${r.D.toFixed(1)}\n`; });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = 'Eksperimen_2.2_Tekanan_Ketumpatan_Cecair.csv';
+  a.click();
+}
 
-            gctx.fillStyle = "#0f172a";
-            gctx.font = "bold 12px Segoe UI";
-            gctx.fillText("Ketumpatan cecair, ρ / kg m⁻³", padL + w / 2 - 75, graphCanvas.height - 5);
-            gctx.save();
-            gctx.translate(15, padT + h / 2 + 20);
-            gctx.rotate(-Math.PI / 2);
-            gctx.fillText("D / cm", 0, 0);
-            gctx.restore();
-
-            const pts = Array.from(recorded.values()).sort((a, b) => a.rho - b.rho);
-            if (pts.length === 0) return;
-
-            gctx.strokeStyle = "#0284c7";
-            gctx.lineWidth = 2.5;
-            gctx.beginPath();
-            gctx.moveTo(padL, padT + h);
-            pts.forEach(p => {
-                const px = padL + (p.rho / 1500) * w;
-                const py = padT + h - (p.D / 15.0) * h;
-                gctx.lineTo(px, py);
-            });
-            gctx.stroke();
-
-            pts.forEach(p => {
-                const px = padL + (p.rho / 1500) * w;
-                const py = padT + h - (p.D / 15.0) * h;
-                gctx.fillStyle = "#dc2626";
-                gctx.beginPath();
-                gctx.arc(px, py, 5, 0, Math.PI * 2);
-                gctx.fill();
-                gctx.fillStyle = "#0f172a";
-                gctx.font = "bold 11px Segoe UI";
-                gctx.fillText(`Bikar ${p.key}`, px - 18, py - 8);
-            });
-        }
-
-        function muatTurunExcel() {
-            if (recorded.size === 0) {
-                alert("Sila rekodkan sekurang-kurangnya satu data terlebih dahulu!");
-                return;
-            }
-            let csv = "Bikar,Jenis cecair,Ketumpatan cecair (kg m-3),Perbezaan ketinggian turus air D (cm)\n";
-            ['A', 'B', 'C'].forEach(k => {
-                const b = BEAKERS[k];
-                const dVal = recorded.has(k) ? recorded.get(k).D.toFixed(1) : "";
-                csv += `${k},${b.name},${b.rho},${dVal}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Eksperimen_2_2_Tekanan_Ketumpatan_Cecair.csv';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function toggleLang() {
-            isEng = !isEng;
-            document.getElementById('mainTitle').innerText = isEng
-                ? "Experiment 2.2 (Form 5): Liquid Pressure & Density"
-                : "Eksperimen 2.2: Tekanan & Ketumpatan Cecair";
-            updateReminderUI();
-            drawApparatus();
-        }
-
-        selectBeaker('A');
-        drawGraph();
-    </script>
-
-    <!-- Firebase Activity Tracking -->
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-            authDomain: "velocity-valley-edu.firebaseapp.com",
-            projectId: "velocity-valley-edu",
-            storageBucket: "velocity-valley-edu.firebasestorage.app",
-            messagingSenderId: "340043533038",
-            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        function recordStationVisit(user) {
-            const stationItem = {
-                id: "f5_exp2_2",
-                title: "Form 5 Exp 2.2: Liquid Pressure & Density",
-                category: "Form 5 • Chapter 2",
-                webUrl: "/form5experiment3",
-                fileUrl: "form5eksperimen3.html",
-                timestamp: new Date().toLocaleString('en-GB')
-            };
-            try {
-                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
-                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
-            } catch (e) {}
-
-            if (!user) return;
-            const pageID = "visited_f5_exp2_2";
-            const isFirst = !sessionStorage.getItem(pageID);
-            sessionStorage.setItem(pageID, "true");
-
-            db.collection("users").doc(user.uid).get().then(doc => {
-                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
-                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                let payload = { recentActivities: updated };
-                if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
-                db.collection("users").doc(user.uid).set(payload, { merge: true });
-            });
-        }
-
-        firebase.auth().onAuthStateChanged(function(user) {
-            recordStationVisit(user);
-        });
-    </script>
+updateReadouts(); draw3D(); drawGraph();
+</script>
 </body>
 </html>

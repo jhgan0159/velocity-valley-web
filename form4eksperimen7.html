@@ -1,153 +1,328 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulasi Eksperimen 4.5: Hukum Charles</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .top-bar-wrapper { width: 100%; max-width: 1000px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .btn-back-menu { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(30,60,114,0.25); }
-        .principle-banner { width: 100%; max-width: 1000px; background: linear-gradient(135deg, #e0f2fe, #bae6fd); border-left: 5px solid #0284c7; padding: 14px 18px; border-radius: 8px; margin-bottom: 18px; color: #0f172a; font-size: 0.94rem; line-height: 1.5; }
-        .container { display: flex; flex-wrap: wrap; gap: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 1000px; width: 100%; }
-        .simulation-area { flex: 1; min-width: 300px; display: flex; flex-direction: column; align-items: center; border: 2px solid #ddd; padding: 20px; border-radius: 8px; background-color: #fafafa; }
-        .apparatus { position: relative; width: 250px; height: 400px; margin-top: 20px; }
-        .beaker { position: absolute; bottom: 40px; left: 50px; width: 150px; height: 200px; border: 3px solid #ccc; border-top: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; background: rgba(255, 255, 255, 0.5); z-index: 2; }
-        .water { position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; background: rgba(0, 150, 255, 0.3); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; transition: background 0.3s; }
-        .heater { position: absolute; bottom: 0; left: 100px; width: 50px; height: 30px; background: #555; border-radius: 5px; }
-        .flame { position: absolute; bottom: 30px; left: 115px; width: 20px; height: 30px; background: orange; border-radius: 50% 50% 20% 20%; opacity: 0.5; transition: height 0.3s, opacity 0.3s; }
-        .ruler { position: absolute; bottom: 10px; left: 30px; width: 20px; height: 250px; background: #f0e68c; border: 1px solid #aaa; z-index: 3; display: flex; flex-direction: column-reverse; }
-        .ruler-tick { width: 10px; border-top: 1px solid black; flex-grow: 1; }
-        .ruler-tick:nth-child(5n) { width: 100%; }
-        .capillary-tube { position: absolute; bottom: 10px; left: 60px; width: 12px; height: 250px; border: 2px solid #ccc; border-top: none; background: white; z-index: 3; display: flex; flex-direction: column; justify-content: flex-end; }
-        .gas { width: 100%; background: #e0f7fa; height: 100px; transition: height 0.3s ease; }
-        .acid-plug { width: 100%; height: 20px; background: #888; }
-        .thermometer { position: absolute; bottom: 20px; left: 110px; width: 10px; height: 200px; border: 2px solid #aaa; border-radius: 10px; background: white; z-index: 3; display: flex; flex-direction: column; justify-content: flex-end; padding: 2px; }
-        .mercury { width: 100%; background: red; height: 30%; border-radius: 10px; transition: height 0.3s ease; }
-        .controls-area { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px; }
-        .control-group { background: #eef2f5; padding: 15px; border-radius: 8px; border: 1px solid #d1d9e0; }
-        input[type="range"] { width: 100%; }
-        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
-        .btn-record { background-color: #28a745; }
-        .btn-download { background-color: #007bff; margin-top: 10px; width: 100%; }
-        .table-scroll { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        table, th, td { border: 1px solid #bbb; }
-        th, td { padding: 10px; text-align: center; }
-        th { background-color: #f8f9fa; }
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .container { flex-direction: column; padding: 14px; gap: 18px; }
-            .simulation-area, .controls-area { min-width: 100%; }
-            .btn-record { width: 100%; padding: 12px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 4.5: Hukum Charles (3D Interaktif) | Velocity Valley</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active { background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25)); border-color: #38bdf8; color: #fff; }
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+.card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.82rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: ns-resize; }
+.readout-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 10px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.75rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.15rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 115px; padding: 10px 12px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.84rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 8px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
-<div class="top-bar-wrapper">
-    <a href="/" class="btn-back-menu" onclick="if(window.location.protocol==='file:'){this.href='index.html';}">← Back to Main Menu</a>
-    <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 4.5</span>
-</div>
-<div class="principle-banner">
-    <strong>📘 Prinsip Fizik (Hukum Charles):</strong> Isi padu (<em>V</em>) adalah berkadar terus dengan suhu mutlak (<em>T</em> dalam Kelvin) bagi suatu gas berjisim tetap pada tekanan malar (<strong>V ∝ T</strong> atau <strong>V₁ / T₁ = V₂ / T₂</strong>).
-</div>
-<div class="container">
-    <div class="simulation-area">
-        <h2 style="margin-top:0;">Visual Radas</h2>
-        <div class="apparatus">
-            <div class="heater"></div><div class="flame" id="flame"></div>
-            <div class="beaker">
-                <div class="water" id="water">
-                    <div class="ruler" id="ruler"></div>
-                    <div class="capillary-tube"><div class="acid-plug"></div><div class="gas" id="gas"></div></div>
-                    <div class="thermometer"><div class="mercury" id="mercury"></div></div>
-                </div>
-            </div>
-        </div>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 4 • Eksperimen 4.5</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
     </div>
-    <div class="controls-area">
-        <h2 style="margin-top:0;">Panel Kawalan & Data</h2>
-        <div class="control-group">
-            <label for="tempSlider"><strong>Suhu Air, &theta; (&deg;C): </strong></label>
-            <span id="tempDisplay" style="font-size: 1.2em; font-weight: bold; color: red;">30</span> &deg;C<br><br>
-            <input type="range" id="tempSlider" min="30" max="80" step="10" value="30">
-        </div>
-        <div class="control-group">
-            <p><strong>Panjang Turus Udara, L: </strong> <span id="lengthDisplay">9.0</span> cm</p>
-            <button class="btn btn-record" onclick="rekodData()">➕ Rekod Data ke Jadual</button>
-        </div>
-        <div>
-            <h3>Jadual Keputusan</h3>
-            <div class="table-scroll">
-                <table id="dataTable">
-                    <thead><tr><th>Suhu, &theta; (&deg;C)</th><th>Panjang turus udara, L (cm)</th></tr></thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-            <button class="btn btn-download" onclick="muatTurunExcel()">⬇ Muat Turun Data (Excel/CSV)</button>
-        </div>
+  </div>
+
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 4.5: Hukum Charles (Hubungan antara Suhu, θ dengan Isi Padu Gas / Panjang Turus Udara, L)</h1>
+    <p id="pageDesc">Tujuan: Mengkaji hubungan antara suhu gas, θ (30 °C hingga 80 °C) dengan panjang turus udara terperangkap oleh asid sulfurik pekat di dalam tiub kapilari, L (V₁/T₁ = V₂/T₂). Pasang radas 3D, laraskan suhu kukus air, dan rekodkan bacaan L!</p>
+  </div>
+
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas 3D</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Panaskan Kukus Air (30–80 °C)</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Ukur Panjang Turus Udara L</span></div>
     </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang bikar kukus air, tiub kapilari bersama pembaris, termometer, dan penunu Bunsen 3D!
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
+        </div>
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_bath"><input type="checkbox" onchange="toggleApparatus('bath', this.checked)"> <span id="lbl_bath">Bikar Kukus Air + Penunu Bunsen</span></label>
+          <label class="tray-item" id="tray_cap"><input type="checkbox" onchange="toggleApparatus('cap', this.checked)"> <span id="lbl_cap">Tiub Kapilari + Asid Sulfurik + Pembaris</span></label>
+          <label class="tray-item" id="tray_thermo"><input type="checkbox" onchange="toggleApparatus('thermo', this.checked)"> <span id="lbl_thermo">Termometer + Pengacau</span></label>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="simCanvas" width="680" height="400"></canvas>
+      </div>
+
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Suhu Kukus Air, θ</span><span class="val" id="tempDisplay">30 °C</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Panjang Turus Udara, L</span><span class="val" id="lengthDisplay">9.0 cm</span></div>
+      </div>
+    </div>
+
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlTLbl">🔥 Laraskan Suhu Air, θ (°C) (atau Seret di Kanvas 3D):</label>
+        <input type="range" id="tempSlider" min="30" max="80" step="10" value="30" style="width:100%;" oninput="setTemp(this.value)">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#94a3b8;margin-top:4px;">
+          <span>30 °C</span><span>40 °C</span><span>50 °C</span><span>60 °C</span><span>70 °C</span><span>80 °C</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn-act" onclick="rekodData()" id="btnRecord">➕ Rekod Data ke Jadual</button>
+          <button class="btn-act purple" onclick="muatTurunExcel()" id="btnExport">⬇️ Muat Turun Data (Excel/CSV)</button>
+        </div>
+      </div>
+
+      <h3 style="margin:10px 0 6px 0;font-size:0.98rem;color:#38bdf8;" id="tblTitle">📊 Jadual Keputusan Hukum Charles</h3>
+      <div class="table-wrap">
+        <table class="data-tbl" id="dataTable">
+          <thead>
+            <tr>
+              <th>Suhu, θ (°C)</th>
+              <th>Suhu Mutlak, T (K)</th>
+              <th>Panjang turus udara, L (cm)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
+
 <script>
-    const ruler = document.getElementById('ruler');
-    for (let i = 0; i < 20; i++) { let tick = document.createElement('div'); tick.className = 'ruler-tick'; ruler.appendChild(tick); }
-    const tempSlider = document.getElementById('tempSlider'), tempDisplay = document.getElementById('tempDisplay'), lengthDisplay = document.getElementById('lengthDisplay'), gas = document.getElementById('gas'), mercury = document.getElementById('mercury'), flame = document.getElementById('flame'), water = document.getElementById('water'), tableBody = document.getElementById('tableBody'), factor = 0.02976;
-    function updateSimulation() {
-        let suhuC = parseInt(tempSlider.value); tempDisplay.innerText = suhuC;
-        let panjangL = ((suhuC + 273.15) * factor).toFixed(1); lengthDisplay.innerText = panjangL;
-        gas.style.height = (panjangL * 15) + 'px'; mercury.style.height = suhuC + '%';
-        let intensity = (suhuC - 30) / 50;
-        flame.style.opacity = 0.5 + (intensity * 0.5); flame.style.height = 30 + (intensity * 20) + 'px';
-        water.style.background = `rgba(${intensity * 100}, 150, 255, 0.3)`;
+let lang = 'ms';
+const placed = { bath: false, cap: false, thermo: false };
+let suhuC = 30;
+const factor = 0.02976; // 30C -> 9.0 cm, 80C -> 10.5 cm
+let isDragging = false;
+
+function allPlaced() { return placed.bath && placed.cap && placed.thermo; }
+function toggleApparatus(k, c) {
+  placed[k] = c;
+  document.getElementById('tray_' + k).classList.toggle('placed', c);
+  draw3D();
+}
+function assembleAll() {
+  ['bath', 'cap', 'thermo'].forEach(k => {
+    placed[k] = true;
+    document.querySelector('#tray_' + k + ' input').checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  draw3D();
+}
+function setTemp(val) {
+  if (!allPlaced()) assembleAll();
+  suhuC = parseInt(val);
+  document.getElementById('tempSlider').value = suhuC;
+  const L = ((suhuC + 273.15) * factor).toFixed(1);
+  document.getElementById('tempDisplay').innerText = suhuC + ' °C';
+  document.getElementById('lengthDisplay').innerText = L + ' cm';
+  draw3D();
+}
+function rekodData() {
+  if (!allPlaced()) assembleAll();
+  const L = ((suhuC + 273.15) * factor).toFixed(1);
+  const tb = document.getElementById('tableBody');
+  for (let r of tb.rows) {
+    if (parseInt(r.cells[0].innerText) === suhuC) {
+      alert(`Data untuk ${suhuC} °C sudah direkod!`);
+      return;
     }
-    updateSimulation();
-    tempSlider.addEventListener('input', updateSimulation);
-    function rekodData() {
-        let suhuC = tempSlider.value, panjangL = lengthDisplay.innerText;
-        for (let row of tableBody.getElementsByTagName('tr')) {
-            if (row.getElementsByTagName('td')[0].innerText == suhuC) return alert(`Data untuk suhu ${suhuC} °C telah direkodkan!`);
-        }
-        let row = document.createElement('tr'); row.innerHTML = `<td>${suhuC}</td><td>${panjangL}</td>`; tableBody.appendChild(row);
-    }
-    function muatTurunExcel() {
-        let rows = document.querySelectorAll("#dataTable tr");
-        if (rows.length <= 1) return alert("Tiada data untuk dimuat turun.");
-        let csvContent = "\uFEFF";
-        rows.forEach(row => { csvContent += Array.from(row.querySelectorAll("th, td")).map(c => c.innerText).join(",") + "\n"; });
-        let link = document.createElement("a");
-        link.setAttribute("href", URL.createObjectURL(new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })));
-        link.setAttribute("download", "Data_Hukum_Charles.csv");
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
-    }
-</script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
-<script>
-    const firebaseConfig = { apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo", authDomain: "velocity-valley-edu.firebaseapp.com", projectId: "velocity-valley-edu", storageBucket: "velocity-valley-edu.firebasestorage.app", messagingSenderId: "340043533038", appId: "1:340043533038:web:0abf2444b8ac6da07f41ff" };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            const stationItem = { id: "exp4_5", title: "Experiment 4.5: Charles's Law", category: "Form 4 • Chapter 4", webUrl: "/form4experiment7", fileUrl: "form4eksperimen7.html", timestamp: new Date().toLocaleString('en-GB') };
-            try {
-                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
-                localStorage.setItem('vv_recent_activities', JSON.stringify([stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5)));
-            } catch (e) {}
-            const pageID = "visited_Charles_eksperimen4_5";
-            const isFirst = !sessionStorage.getItem(pageID);
-            sessionStorage.setItem(pageID, "true");
-            db.collection("users").doc(user.uid).get().then(doc => {
-                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
-                let payload = { recentActivities: [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5) };
-                if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
-                db.collection("users").doc(user.uid).set(payload, { merge: true });
-            });
-        } else {
-            window.location.replace(window.location.protocol === 'file:' ? 'login.html' : '/login');
-        }
-    });
+  }
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${suhuC}</td><td>${(suhuC + 273)}</td><td style="color:#38bdf8;font-weight:700;">${L}</td>`;
+  tb.appendChild(tr);
+}
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  draw3D();
+}
+
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 400);
+  bg.addColorStop(0, '#0f172a'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 400);
+
+  if (!placed.bath && !placed.cap && !placed.thermo) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 200);
+    return;
+  }
+
+  const L = (suhuC + 273.15) * factor;
+
+  if (placed.bath) {
+    // Tripod & Bunsen Burner
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(230, 295); ctx.lineTo(450, 295); ctx.stroke();
+    ctx.fillStyle = '#f97316';
+    ctx.beginPath(); ctx.ellipse(340, 315, 16, 20 + (suhuC - 30) * 0.25, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#64748b'; ctx.fillRect(326, 335, 28, 45);
+
+    // Beaker Water Bath
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+    ctx.fillRect(255, 115, 170, 178);
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3;
+    ctx.strokeRect(252, 85, 176, 210);
+  }
+
+  if (placed.cap) {
+    // Wooden Ruler + Capillary Tube tied with rubber bands
+    ctx.fillStyle = '#fde047'; ctx.fillRect(285, 65, 24, 220);
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(315, 65, 14, 220);
+    const gasPx = L * 14;
+    ctx.fillStyle = '#bae6fd';
+    ctx.fillRect(317, 285 - gasPx, 10, gasPx);
+    // Concentrated Sulfuric Acid Plug
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(317, 285 - gasPx - 16, 10, 16);
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'left';
+    ctx.fillText(`L = ${L.toFixed(1)} cm`, 338, 285 - gasPx);
+  }
+
+  if (placed.thermo) {
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(390, 55, 12, 220);
+    const mH = (suhuC / 100) * 190;
+    ctx.fillStyle = '#ef4444'; ctx.fillRect(393, 275 - mH, 6, mH);
+    ctx.beginPath(); ctx.arc(396, 278, 8, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  isDragging = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDragging) handleDrag(e); });
+canvas.addEventListener('pointerup', () => { isDragging = false; });
+function handleDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const py = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const rawT = 80 - ((py - 80) / 220) * 50;
+  const snapped = Math.round(Math.max(30, Math.min(80, rawT)) / 10) * 10;
+  setTemp(snapped);
+}
+
+function muatTurunExcel() {
+  let rows = document.querySelectorAll("#dataTable tr");
+  if (rows.length <= 1) { alert("Tiada data!"); return; }
+  let csv = "\uFEFF";
+  rows.forEach(r => {
+    csv += Array.from(r.querySelectorAll("th, td")).map(c => c.innerText).join(",") + "\n";
+  });
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = "Data_Hukum_Charles.csv";
+  a.click();
+}
+
+draw3D();
 </script>
 </body>
 </html>

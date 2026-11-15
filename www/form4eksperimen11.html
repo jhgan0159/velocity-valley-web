@@ -1,467 +1,328 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulasi Eksperimen 6.3: Kanta Cembung</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eef2f3;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .top-bar-wrapper {
-            width: 100%;
-            max-width: 1420px;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .btn-back-menu {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
-        }
-        .principle-banner {
-            width: 100%;
-            max-width: 1420px;
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-            border-left: 5px solid #0284c7;
-            padding: 14px 18px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            color: #0f172a;
-            font-size: 0.94rem;
-            line-height: 1.5;
-        }
-        h1 { text-align: center; color: #2c3e50; margin: 0 0 5px 0; }
-        p.subtitle { text-align: center; color: #7f8c8d; margin-bottom: 20px; }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            width: 100%;
-            max-width: 1420px;
-        }
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 500px;
-            max-width: 700px;
-        }
-        canvas {
-            border: 2px solid #bdc3c7;
-            background-color: #2c3e50;
-            display: block;
-            margin: 0 auto 15px auto;
-            border-radius: 5px;
-            max-width: 100%;
-            height: auto;
-        }
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .control-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #ecf0f1;
-            padding: 15px;
-            border-radius: 5px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        input[type="range"] { width: 55%; }
-        .info-box {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        button:hover { background-color: #2980b9; }
-        .btn-excel {
-            background-color: #27ae60;
-            margin-top: 15px;
-            width: 100%;
-        }
-        .btn-excel:hover { background-color: #2ecc71; }
-        .reminder {
-            font-weight: bold;
-            text-align: center;
-            margin-top: 5px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .reminder.warning {
-            background-color: #fdecea;
-            color: #e74c3c;
-            border: 1px solid #e74c3c;
-        }
-        .reminder.success {
-            background-color: #eafaf1;
-            color: #27ae60;
-            border: 1px solid #27ae60;
-        }
-        .table-scroll { width: 100%; overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        table, th, td { border: 1px solid #95a5a6; }
-        th, td { padding: 10px; text-align: center; }
-        th { background-color: #ecf0f1; color: #2c3e50; }
-
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .panel { min-width: 100%; padding: 15px; }
-            input[type="range"] { width: 100%; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 6.3: Formula Kanta Cembung (3D Interaktif) | Velocity Valley</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active { background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25)); border-color: #38bdf8; color: #fff; }
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+.card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.82rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: ew-resize; }
+.readout-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 10px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.75rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.15rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 115px; padding: 10px 12px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.84rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 8px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
-
-    <div class="top-bar-wrapper">
-        <a href="index.html" class="btn-back-menu" onclick="if(true){this.href='index.html';}">← Back to Main Menu</a>
-        <span style="font-weight: bold; color: #2c3e50;">🔬 KSSM Tingkatan 4 • Eksperimen 6.3</span>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 6 • Eksperimen 6.3</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
     </div>
+  </div>
 
-    <h1>Simulasi Formula Kanta Cembung</h1>
-    <p class="subtitle">Eksperimen 6.3: Mengkaji hubungan antara jarak objek (u) dan jarak imej (v)</p>
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 6.3: Formula Kanta Cembung (1/f = 1/u + 1/v, Panjang Fokus f = 10.0 cm)</h1>
+    <p id="pageDesc">Tujuan: Mengkaji hubungan antara jarak objek, u (15.0 cm hingga 35.0 cm) dengan jarak imej nyata, v bagi kanta cembung (f = 10.0 cm). Pasang radas optik 3D, seret kotak objek bercahaya di sepanjang pembaris meter 3D, dan rekodkan Jadual 6.9!</p>
+  </div>
 
-    <div class="principle-banner">
-        <strong>📘 Prinsip Fizik (Formula Kanta Nipis):</strong> Hubungan antara jarak objek (<em>u</em>), jarak imej (<em>v</em>), dan panjang fokus kanta (<em>f</em>) dinyatakan oleh persamaan <strong>1/f = 1/u + 1/v</strong>. Apabila jarak objek (<em>u</em>) bagi suatu kanta cembung (dengan <em>u > f</em>) bertambah, jarak imej nyata (<em>v</em>) yang terbentuk pada skrin berkurang.
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas Optik 3D</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Seret Objek (u = 15–35 cm)</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Rekod Jadual 6.9 (u, v, 1/u, 1/v)</span></div>
     </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun bangku optik 3D bersama objek bercahaya, kanta cembung (f = 10.0 cm), dan skrin putih!
+    </div>
+  </div>
 
-    <div class="container">
-        <div class="panel">
-            <canvas id="simCanvas" width="650" height="350"></canvas>
-            
-            <div class="controls">
-                <div class="info-box">
-                    Panjang Fokus Kanta, <i>f</i> = 10.0 cm (Dimalarkan)
-                </div>
-                <div class="control-group">
-                    <label for="jarakObjek"><strong>Jarak Objek, <i>u</i> : <span id="nilaiU">15.0</span> cm</strong></label>
-                    <input type="range" id="jarakObjek" min="15.0" max="35.0" value="15.0" step="5.0">
-                </div>
-                <button id="btnRekod" onclick="rekodData()">➕ Rekod Data ke Jadual</button>
-                <div id="reminderText" class="reminder warning">⚠️ Sila rekodkan data untuk jarak objek u = 15.0 cm!</div>
-            </div>
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
         </div>
-
-        <div class="panel">
-            <h3 style="margin-top:0;">Jadual 6.9 Keputusan</h3>
-            <div class="table-scroll">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th><i>u</i> / cm</th>
-                            <th><i>v</i> / cm</th>
-                            <th>1/<i>u</i> / cm<sup>-1</sup></th>
-                            <th>1/<i>v</i> / cm<sup>-1</sup></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            
-            <button class="btn-excel" onclick="muatTurunExcel()">⬇ Muat Turun Jadual (Excel / CSV)</button>
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_bench"><input type="checkbox" onchange="toggleApparatus('bench', this.checked)"> <span id="lbl_bench">Pembaris Meter + Kotak Objek</span></label>
+          <label class="tray-item" id="tray_lens"><input type="checkbox" onchange="toggleApparatus('lens', this.checked)"> <span id="lbl_lens">Kanta Cembung (f = 10.0 cm)</span></label>
+          <label class="tray-item" id="tray_screen"><input type="checkbox" onchange="toggleApparatus('screen', this.checked)"> <span id="lbl_screen">Skrin Putih Imej Nyata</span></label>
         </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="simCanvas" width="680" height="380"></canvas>
+      </div>
+
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl">Jarak Objek, u</span><span class="val" id="nilaiU">15.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl">Jarak Imej Tajam, v</span><span class="val" id="nilaiV">30.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl">Panjang Fokus, f</span><span class="val">10.0 cm</span></div>
+      </div>
     </div>
 
-    <script>
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
-        const sliderU = document.getElementById('jarakObjek');
-        const labelU = document.getElementById('nilaiU');
-        const reminderText = document.getElementById('reminderText');
-        const jadualBody = document.querySelector('#dataTable tbody');
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:8px;">🖐️ Seret Objek di Kanvas 3D atau Pilih Jarak Objek, u (cm):</label>
+        <input type="range" id="jarakObjek" min="15.0" max="35.0" value="15.0" step="5.0" style="width:100%;" oninput="setU(this.value)">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#94a3b8;margin-top:4px;">
+          <span>15.0 cm</span><span>20.0 cm</span><span>25.0 cm</span><span>30.0 cm</span><span>35.0 cm</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn-act" onclick="rekodData()">➕ Rekod Data ke Jadual 6.9</button>
+          <button class="btn-act purple" onclick="muatTurunExcel()">⬇️ Muat Turun Jadual (CSV)</button>
+        </div>
+      </div>
 
-        const f = 10.0;
-        const skala = 6;
-        let u_semasa = 15.0;
-        let v_semasa = 0;
-        let dataSet = new Set();
+      <h3 style="margin:10px 0 6px 0;font-size:0.98rem;color:#38bdf8;" id="tblTitle">📊 Jadual 6.9: Keputusan Eksperimen Kanta Cembung</h3>
+      <div class="table-wrap">
+        <table class="data-tbl" id="dataTable">
+          <thead>
+            <tr>
+              <th>u / cm</th>
+              <th>v / cm</th>
+              <th>1/u / cm⁻¹</th>
+              <th>1/v / cm⁻¹</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function kiraNilai() {
-            if (u_semasa === f) {
-                v_semasa = Infinity;
-            } else {
-                v_semasa = (u_semasa * f) / (u_semasa - f);
-            }
-        }
+<script>
+let lang = 'ms';
+const placed = { bench: false, lens: false, screen: false };
+const f = 10.0;
+let u_cm = 15.0;
+let isDragging = false;
+const dataSet = new Set();
 
-        function lukisRadas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            kiraNilai();
+function allPlaced() { return placed.bench && placed.lens && placed.screen; }
+function toggleApparatus(k, c) {
+  placed[k] = c;
+  document.getElementById('tray_' + k).classList.toggle('placed', c);
+  draw3D();
+}
+function assembleAll() {
+  ['bench', 'lens', 'screen'].forEach(k => {
+    placed[k] = true;
+    document.querySelector('#tray_' + k + ' input').checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  draw3D();
+}
+function setU(val) {
+  if (!allPlaced()) assembleAll();
+  u_cm = parseFloat(val);
+  document.getElementById('jarakObjek').value = u_cm;
+  const v_cm = (u_cm * f) / (u_cm - f);
+  document.getElementById('nilaiU').innerText = u_cm.toFixed(1) + ' cm';
+  document.getElementById('nilaiV').innerText = v_cm.toFixed(1) + ' cm';
+  draw3D();
+}
+function rekodData() {
+  if (!allPlaced()) assembleAll();
+  if (dataSet.has(u_cm)) { alert(`Data u = ${u_cm.toFixed(1)} cm sudah direkod!`); return; }
+  const v_cm = (u_cm * f) / (u_cm - f);
+  const tb = document.querySelector('#dataTable tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${u_cm.toFixed(1)}</td><td style="color:#38bdf8;font-weight:700;">${v_cm.toFixed(1)}</td><td>${(1/u_cm).toFixed(4)}</td><td>${(1/v_cm).toFixed(4)}</td>`;
+  tb.appendChild(tr);
+  dataSet.add(u_cm);
+}
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  draw3D();
+}
 
-            const pusatY = 180;
-            const kantaX = 325;
-            const dasarY = 280;
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+const lensX = 340, axisY = 185, baseY = 290, scale = 6.5;
 
-            // 1. Lukis Pembaris Meter (Dasar)
-            ctx.fillStyle = "#f1c40f";
-            ctx.fillRect(25, dasarY, 600, 20);
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= 100; i += 2) {
-                let xPos = 25 + (i * (600 / 100));
-                ctx.beginPath();
-                ctx.moveTo(xPos, dasarY);
-                if (i % 10 === 0) {
-                    ctx.lineTo(xPos, dasarY + 12);
-                } else {
-                    ctx.lineTo(xPos, dasarY + 6);
-                }
-                ctx.stroke();
-            }
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 380);
+  bg.addColorStop(0, '#090d16'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 380);
 
-            let objX = kantaX - (u_semasa * skala);
-            let imejX = kantaX + (v_semasa * skala);
+  if (!placed.bench && !placed.lens && !placed.screen) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 190);
+    return;
+  }
 
-            // 2. Lukis Sinar Cahaya (Rays)
-            ctx.strokeStyle = "rgba(255, 255, 0, 0.65)";
-            ctx.lineWidth = 2;
+  const v_cm = (u_cm * f) / (u_cm - f);
+  const objX = lensX - u_cm * scale;
+  const imgX = lensX + v_cm * scale;
 
-            ctx.beginPath();
-            ctx.moveTo(objX, pusatY - 40);
-            ctx.lineTo(kantaX, pusatY - 40);
-            ctx.lineTo(imejX, pusatY + 40);
-            ctx.stroke();
+  if (placed.bench) {
+    ctx.fillStyle = '#fde047'; ctx.fillRect(25, baseY, 630, 18);
+    // Illuminated Object Arrow
+    ctx.fillStyle = '#8b5cf6'; ctx.fillRect(objX - 12, axisY + 25, 24, baseY - axisY - 25);
+    ctx.strokeStyle = '#fde047'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(objX, axisY); ctx.lineTo(objX, axisY - 45); ctx.stroke();
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`u = ${u_cm.toFixed(1)} cm`, (objX + lensX) / 2, baseY + 38);
+  }
 
-            ctx.beginPath();
-            ctx.moveTo(objX, pusatY - 40);
-            ctx.lineTo(imejX, pusatY + 40);
-            ctx.stroke();
+  if (placed.lens) {
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.45)'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.ellipse(lensX, axisY, 14, 65, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f43f5e';
+    ctx.beginPath(); ctx.arc(lensX - f * scale, axisY, 4, 0, Math.PI * 2); ctx.arc(lensX + f * scale, axisY, 4, 0, Math.PI * 2); ctx.fill();
+  }
 
-            // 3. Lukis Paksi Utama (Garis Putus-putus)
-            ctx.beginPath();
-            ctx.setLineDash([5, 5]);
-            ctx.moveTo(10, pusatY);
-            ctx.lineTo(640, pusatY);
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-            ctx.stroke();
-            ctx.setLineDash([]);
+  if (placed.screen) {
+    const imgH = 45 * (v_cm / u_cm);
+    // Light Rays
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.7)'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(objX, axisY - 45); ctx.lineTo(lensX, axisY - 45); ctx.lineTo(imgX, axisY + imgH);
+    ctx.moveTo(objX, axisY - 45); ctx.lineTo(imgX, axisY + imgH);
+    ctx.stroke();
 
-            // 4. Lukis Kanta Cembung dan Pemegang
-            ctx.fillStyle = "#e67e22";
-            ctx.fillRect(kantaX - 10, pusatY + 60, 20, dasarY - (pusatY + 60));
+    // White Screen
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(imgX - 4, axisY - 75, 8, baseY - axisY + 75);
+    ctx.strokeStyle = '#10b981'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(imgX, axisY); ctx.lineTo(imgX, axisY + imgH); ctx.stroke();
+    ctx.fillStyle = '#10b981'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`v = ${v_cm.toFixed(1)} cm`, (lensX + imgX) / 2, baseY + 38);
+  }
+}
 
-            ctx.beginPath();
-            ctx.ellipse(kantaX, pusatY, 15, 60, 0, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(135, 206, 250, 0.5)";
-            ctx.fill();
-            ctx.strokeStyle = "#fff";
-            ctx.stroke();
-            ctx.fillStyle = "white";
-            ctx.font = "14px Arial";
-            ctx.fillText("Kanta", kantaX - 20, pusatY - 70);
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  isDragging = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDragging) handleDrag(e); });
+canvas.addEventListener('pointerup', () => { isDragging = false; });
 
-            // Tanda Fokus (F)
-            ctx.fillStyle = "red";
-            ctx.fillRect(kantaX - (f * skala) - 2, pusatY - 2, 4, 4);
-            ctx.fillRect(kantaX + (f * skala) - 2, pusatY - 2, 4, 4);
-            ctx.fillText("F", kantaX + (f * skala) - 5, pusatY + 20);
+function handleDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const px = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const rawU = (lensX - px) / scale;
+  const snapped = Math.round(Math.max(15, Math.min(35, rawU)) / 5) * 5;
+  setU(snapped);
+}
 
-            // 5. Lukis Objek (Mentol + Kadbod berlubang)
-            ctx.fillStyle = "#8e44ad";
-            ctx.fillRect(objX - 15, pusatY + 30, 30, dasarY - (pusatY + 30));
-            ctx.fillStyle = "#bdc3c7";
-            ctx.fillRect(objX - 5, pusatY - 50, 10, 80);
-            ctx.fillStyle = "#f1c40f";
-            ctx.beginPath();
-            ctx.moveTo(objX, pusatY - 40);
-            ctx.lineTo(objX - 5, pusatY - 10);
-            ctx.lineTo(objX + 5, pusatY - 10);
-            ctx.fill();
-            ctx.fillStyle = "white";
-            ctx.fillText("Objek", objX - 15, pusatY - 60);
+function muatTurunExcel() {
+  if (dataSet.size === 0) { alert("Tiada data!"); return; }
+  let csv = "Jarak objek u (cm),Jarak imej v (cm),1/u (cm^-1),1/v (cm^-1)\n";
+  document.querySelectorAll("#dataTable tbody tr").forEach(r => {
+    csv += Array.from(r.cells).map(c => c.innerText).join(",") + "\n";
+  });
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = "Data_Eksperimen_Kanta_Cembung.csv";
+  a.click();
+}
 
-            // 6. Lukis Skrin Putih (Tempat Imej terbentuk)
-            ctx.fillStyle = "#ecf0f1";
-            ctx.fillRect(imejX - 5, pusatY - 80, 10, dasarY - (pusatY - 80));
-            ctx.fillStyle = "rgba(241, 196, 15, 0.85)";
-            ctx.beginPath();
-            ctx.moveTo(imejX, pusatY + 40);
-            ctx.lineTo(imejX - 5, pusatY + 10);
-            ctx.lineTo(imejX + 5, pusatY + 10);
-            ctx.fill();
-            ctx.fillStyle = "white";
-            ctx.fillText("Skrin (Imej)", imejX - 35, pusatY - 90);
-
-            // 7. Label Jarak (u dan v)
-            ctx.strokeStyle = "#3498db";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(objX, dasarY + 30); ctx.lineTo(kantaX, dasarY + 30);
-            ctx.moveTo(objX, dasarY + 25); ctx.lineTo(objX, dasarY + 35);
-            ctx.moveTo(kantaX, dasarY + 25); ctx.lineTo(kantaX, dasarY + 35);
-            ctx.stroke();
-            ctx.fillStyle = "#3498db";
-            ctx.fillText("u = " + u_semasa.toFixed(1) + " cm", (objX + kantaX)/2 - 30, dasarY + 45);
-
-            ctx.strokeStyle = "#2ecc71";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(kantaX, dasarY + 30); ctx.lineTo(imejX, dasarY + 30);
-            ctx.moveTo(imejX, dasarY + 25); ctx.lineTo(imejX, dasarY + 35);
-            ctx.stroke();
-            ctx.fillStyle = "#2ecc71";
-            ctx.fillText("v = " + v_semasa.toFixed(1) + " cm", (kantaX + imejX)/2 - 30, dasarY + 45);
-        }
-
-        function kemaskiniPeringatan() {
-            if (dataSet.has(u_semasa)) {
-                reminderText.className = "reminder success";
-                reminderText.innerText = "✓ Data untuk u = " + u_semasa.toFixed(1) + " cm telah direkodkan.";
-            } else {
-                reminderText.className = "reminder warning";
-                reminderText.innerText = "⚠️ Sila rekodkan data untuk jarak objek u = " + u_semasa.toFixed(1) + " cm!";
-            }
-        }
-
-        sliderU.addEventListener('input', function() {
-            u_semasa = parseFloat(this.value);
-            labelU.innerText = u_semasa.toFixed(1);
-            kemaskiniPeringatan();
-            lukisRadas();
-        });
-
-        function rekodData() {
-            if (dataSet.has(u_semasa)) {
-                alert("Data untuk u = " + u_semasa.toFixed(1) + " cm telah pun direkodkan.");
-                return;
-            }
-            let u_str = u_semasa.toFixed(1);
-            let v_str = v_semasa.toFixed(1);
-            let inv_u = (1 / u_semasa).toFixed(4);
-            let inv_v = (1 / v_semasa).toFixed(4);
-
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${u_str}</td><td>${v_str}</td><td>${inv_u}</td><td>${inv_v}</td>`;
-            jadualBody.appendChild(row);
-            dataSet.add(u_semasa);
-            kemaskiniPeringatan();
-        }
-
-        function muatTurunExcel() {
-            if (dataSet.size === 0) {
-                alert("Jadual masih kosong. Sila rekodkan sekurang-kurangnya satu data.");
-                return;
-            }
-            let csvContent = "Jarak objek u (cm),Jarak imej v (cm),1/u (cm^-1),1/v (cm^-1)\n";
-            let rows = jadualBody.querySelectorAll("tr");
-            rows.forEach(function(row) {
-                let cols = row.querySelectorAll("td");
-                let rowData = [];
-                cols.forEach(function(col) { rowData.push(col.innerText); });
-                csvContent += rowData.join(",") + "\n";
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.setAttribute("href", URL.createObjectURL(blob));
-            link.setAttribute("download", "Data_Eksperimen_Kanta_Cembung.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        lukisRadas();
-    </script>
-
-    <!-- Firebase Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-            authDomain: "velocity-valley-edu.firebaseapp.com",
-            projectId: "velocity-valley-edu",
-            storageBucket: "velocity-valley-edu.firebasestorage.app",
-            messagingSenderId: "340043533038",
-            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-        };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-
-        function recordStationVisit(user) {
-            const stationItem = {
-                id: "exp6_3",
-                title: "Experiment 6.3: Convex Lens Formula",
-                category: "Form 4 • Chapter 6",
-                webUrl: "form4eksperimen11.html",
-                fileUrl: "form4eksperimen11.html",
-                timestamp: new Date().toLocaleString('en-GB')
-            };
-            try {
-                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
-                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
-            } catch (e) {}
-
-            const pageID = "visited_kanta_cembung_eksperimen6_3";
-            const isFirstInSession = !sessionStorage.getItem(pageID);
-            sessionStorage.setItem(pageID, "true");
-
-            db.collection("users").doc(user.uid).get().then(doc => {
-                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
-                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                let payload = { recentActivities: updated };
-                if (isFirstInSession) {
-                    payload.simsExplored = firebase.firestore.FieldValue.increment(1);
-                }
-                db.collection("users").doc(user.uid).set(payload, { merge: true });
-            });
-        }
-
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                recordStationVisit(user);
-            } else {
-                window.location.replace(true ? 'login.html' : 'login.html');
-            }
-        });
-    </script>
+draw3D();
+</script>
 </body>
 </html>

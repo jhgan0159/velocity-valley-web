@@ -1,6 +1,8 @@
 import os
 import re
 import json
+import base64
+import uuid
 import urllib.request
 import urllib.error
 from datetime import datetime
@@ -9,7 +11,10 @@ from flask import Flask, render_template, send_from_directory, request, jsonify
 app = Flask(__name__)
 
 # ==============================================================================
-# ILMU AI CONFIGURATION (YTL AI Labs - OpenAI-Compatible Endpoint)
+# ILMU AI CONFIGURATION (YTL AI Labs - OpenAI-Compatible Endpoints)
+# - LLM Endpoint: /v1/chat/completions (ilmu-mini-v3.3 or ilmu-v3.1)
+# - ASR Endpoint: /v1/audio/transcriptions (ilmu-asr-v4.2 for Malaysian Accent & 4 Languages)
+#   (No TTS used — Prof. Vector replies purely in clean text!)
 # ==============================================================================
 ILMU_API_KEY = os.environ.get("ILMU_API_KEY", "(paste your key here)")
 
@@ -27,19 +32,30 @@ def get_ilmu_api_key():
     return ""
 
 ILMU_BASE_URL = os.environ.get("ILMU_BASE_URL", "https://api.ilmu.ai/v1/chat/completions")
+ILMU_ASR_URL = os.environ.get("ILMU_ASR_URL", "https://api.ilmu.ai/v1/audio/transcriptions")
+
 ILMU_MODEL = os.environ.get("ILMU_MODEL", "ilmu-mini-v3.3")
+ILMU_ASR_MODEL = os.environ.get("ILMU_ASR_MODEL", "ilmu-asr-v4.2")
 
 # ==============================================================================
-# ULTRA-COMPACT TOKEN-SAVING SYSTEM PROMPT (~110 TOKENS INSTEAD OF 1,700 TOKENS!)
-# Fixed prefix is automatically cached by ILMU API at 90% discount, and only the
-# student's active KSSM chapter summary is injected per request.
+# ULTRA-COMPACT TOKEN-SAVING SYSTEM PROMPT (~125 TOKENS INSTEAD OF 1,737 TOKENS!)
+# Supports Malaysia's 4 Main Languages: Bahasa Melayu, English, Chinese, Tamil
 # ==============================================================================
 CORE_SYSTEM_PREFIX = (
     "You are Prof. Vector, the KSSM Form 4 & 5 Physics AI Tutor inside Velocity Valley (by Gan Jun Heng, UTM). "
     "Rules: Use secondary school SPM algebra only (never calculus). "
-    "Reply concisely (150-300 words) in the student's language using plain Unicode math (F = ma, m s⁻², Δθ, √, ×) and **bold** for key terms. "
+    "Support all 4 Malaysian languages: Bahasa Melayu (BM), English (EN), Chinese (中文), and Tamil (தமிழ்). "
+    "Always reply in the exact language requested or spoken by the student. "
+    "Reply concisely (120-260 words) using plain Unicode math (F = ma, m s⁻², Δθ, √, ×) and **bold** for key terms. "
     "Never output #, ##, ### headers, --- lines, or \\[ \\] / \\( \\) LaTeX brackets."
 )
+
+LANG_INSTRUCTION_MAP = {
+    "ms-MY": "Reply in clear Bahasa Melayu (KSSM Fizik terminology).",
+    "en-MY": "Reply in clear Malaysian English (KSSM Physics terminology).",
+    "zh-CN": "请使用清晰易懂的马来西亚华语（结合KSSM物理中英/中巫术语）回答。",
+    "ta-MY": "தயவுசெய்து தெளிவான தமிழ் மொழியில் (KSSM இயற்பியல் கலைச்சொற்களுடன்) பதிலளிக்கவும்."
+}
 
 CHAPTER_COMPACT_NOTES = {
     "F4_B1": "Form 4 Bab 1 Pengukuran: Base/derived quantities, scalar/vector, Exp 1.1 Simple Pendulum (T = 2π√(l/g), T² vs l gradient = 4π²/g).",
@@ -50,8 +66,8 @@ CHAPTER_COMPACT_NOTES = {
     "F4_B6": "Form 4 Bab 6 Cahaya & Optik: Exp 6.1 Snell's Law (n = sin i / sin r ≈ 1.50), Exp 6.2 Apparent Depth (n = H/h ≈ 1.33), critical angle (n = 1/sin c), Exp 6.3 Convex Lens (1/f = 1/u + 1/v).",
     "F5_B1": "Form 5 Bab 1 Daya & Gerakan II: Resolution/equilibrium of forces, Exp 1.1 Hooke's Law (F = kx, extension x = l - l₀, E_p = ½Fx = ½kx²).",
     "F5_B2": "Form 5 Bab 2 Tekanan: Exp 2.1 Liquid Pressure vs Depth (P = hρg, U-tube D ∝ h), Exp 2.2 Liquid Pressure vs Density (Alcohol 790, Water 1000, Glycerine 1300 kg m⁻³, D ∝ ρ), Pascal's Principle, Exp 2.3 Archimedes' Principle (Buoyant force F_B = W_U - W_A = W_S displaced water weight), Bernoulli's Principle.",
-    "F5_B3": "Form 5 Bab 3 Elektrik & Keelektromagnetan: Exp 3.1 Ohm's Law (Part A constantan wire V=IR straight line; Part B filament bulb V vs I curves up as temperature & R increase), E = V + Ir, Electromagnetism F = BIL, Faraday/Lenz Law, transformer.",
-    "F5_B4": "Form 5 Bab 4-7 Elektronik, Nuklear & Kuantum: Diode rectification, transistor, radioactive half-life, E = mc², Einstein photoelectric hf = W + ½mv²_max."
+    "F5_B3": "Form 5 Bab 3 & 4 Elektrik & Keelektromagnetan: Exp 3.1 Ohm's Law (constantan V=IR vs bulb), Exp 3.2 Length & R (R ∝ l), Exp 3.3 Area & R (s.w.g. 22-30, A=πj², R ∝ 1/A), Exp 3.4 Resistivity & R (Constantan vs Nichrome, R=ρl/A), Exp 3.5 Dry cell e.m.f. & internal r (V = -rI + E), Activity 4.0/4.10 EM Induction (straight copper rod & solenoid with zero-centered galvanometer, Faraday/Lenz Law).",
+    "F5_B4": "Form 5 Bab 5-7 Elektronik, Nuklear & Kuantum: Diode rectification, transistor, radioactive half-life, E = mc², Einstein photoelectric hf = W + ½mv²_max."
 }
 
 def clean_ai_text(text):
@@ -204,13 +220,13 @@ SYLLABUS_QUESTION_BANK = {
         ]
     },
     "F5_B3": {
-        "chapterTitle": "Form 5 • Bab 3: Elektrik & Keelektromagnetan",
+        "chapterTitle": "Form 5 • Bab 3 & 4: Elektrik & Keelektromagnetan",
         "questions": [
             {
-                "q": "In Form 5 Experiment 3.1B (Non-Ohmic Conductor), why does the graph of V against I for a filament bulb curve upwards with an increasing gradient?",
-                "options": ["Because the bulb length increases", "Because as current increases, filament temperature rises and resistance increases", "Because electromotive force increases", "Because resistance decreases with temperature"],
+                "q": "In Form 5 Experiment 3.5 (E.M.F. and Internal Resistance of a Dry Cell), a student plots a linear graph of terminal potential difference V against current I (V = −rI + E). How are E and r determined from the graph?",
+                "options": ["E is the gradient; r is the V-intercept", "E is the V-intercept (at I = 0); r is the negative of the gradient (−m)", "Both E and r are equal to the area under the graph", "E = I × r at the midpoint"],
                 "correct": 1,
-                "explanation": "For a filament bulb, higher current I heats up the tungsten filament, increasing its resistance R (gradient of V vs I)."
+                "explanation": "Comparing V = −rI + E with y = mx + c, the V-intercept c gives the e.m.f. E, while the gradient m = −r gives internal resistance r = −m."
             }
         ]
     },
@@ -295,30 +311,31 @@ def api_daily_question():
 
 @app.route('/api/ilmu/ask-tutor', methods=['POST', 'OPTIONS'])
 def api_ask_tutor():
-    """Token-optimized AI Tutor endpoint: sends only the active chapter note (~120 input tokens instead of 1,737)."""
+    """Token-optimized 4-Language AI Tutor endpoint (~125 input tokens instead of 1,737). Replies in pure text!"""
     if request.method == 'OPTIONS':
         return jsonify({"status": "ok"})
 
     data = request.get_json(silent=True) or {}
     user_question = (data.get("question") or "").strip()
     syllabus_code = data.get("syllabus", "F4_B2")
+    preferred_lang = data.get("lang", "en-MY")
     recent_activities = data.get("recentActivities", [])
     chat_history = data.get("chatHistory", [])
 
     if not user_question:
-        return jsonify({"answer": "Please type a physics question so Prof. Vector can help you!"})
+        return jsonify({"answer": "Please ask or record a physics question so Prof. Vector can help you!"})
 
     chapter_note = CHAPTER_COMPACT_NOTES.get(syllabus_code, CHAPTER_COMPACT_NOTES["F4_B2"])
     latest_lab = recent_activities[0].get("title", "None") if (isinstance(recent_activities, list) and len(recent_activities) > 0) else "None"
+    lang_rule = LANG_INSTRUCTION_MAP.get(preferred_lang, LANG_INSTRUCTION_MAP["en-MY"])
 
     messages = [
         {
             "role": "system",
-            "content": f"{CORE_SYSTEM_PREFIX}\nStudent Chapter: {chapter_note}\nLatest Lab: {latest_lab}"
+            "content": f"{CORE_SYSTEM_PREFIX}\nLanguage Preference: {lang_rule}\nStudent Chapter: {chapter_note}\nLatest Lab: {latest_lab}"
         }
     ]
 
-    # Include at most the last 2 short messages (capped at 160 chars) so old essays don't waste input tokens
     if isinstance(chat_history, list):
         for msg in chat_history[-2:]:
             role = msg.get("role")
@@ -336,7 +353,11 @@ def api_ask_tutor():
     ai_reply, err = call_ilmu_llm(messages, temperature=0.4, max_tokens=2048)
 
     if ai_reply:
-        return jsonify({"answer": clean_ai_text(ai_reply), "source": "ILMU AI"})
+        return jsonify({
+            "answer": clean_ai_text(ai_reply),
+            "lang": preferred_lang,
+            "source": "ILMU AI"
+        })
 
     if err == "MISSING_API_KEY":
         return jsonify({
@@ -352,8 +373,90 @@ def api_ask_tutor():
         "source": "System Diagnostic"
     })
 
+@app.route('/api/ilmu/transcribe', methods=['POST', 'OPTIONS'])
+def api_ilmu_transcribe():
+    """
+    Calls YTL ILMU ASR (ilmu-asr-v4.2) at /v1/audio/transcriptions.
+    Specifically tuned for Malaysian accents, Bahasa Melayu (ms), English (en), Chinese (zh), Tamil (ta), & Manglish.
+    """
+    if request.method == 'OPTIONS':
+        return jsonify({"status": "ok"})
+
+    api_key = get_ilmu_api_key()
+    if not api_key:
+        return jsonify({"error": "MISSING_API_KEY", "text": ""}), 400
+
+    audio_bytes = None
+    filename = "voice_question.webm"
+    mime_type = "audio/webm"
+    lang_code = "en"
+
+    if 'audio' in request.files:
+        f = request.files['audio']
+        audio_bytes = f.read()
+        filename = f.filename or "voice_question.webm"
+        mime_type = f.mimetype or "audio/webm"
+        lang_code = request.form.get("lang", "en-MY")[:2].lower()
+    else:
+        data = request.get_json(silent=True) or {}
+        b64_str = data.get("audioBase64", "")
+        lang_code = (data.get("lang", "en-MY") or "en-MY")[:2].lower()
+        if "," in b64_str:
+            b64_str = b64_str.split(",", 1)[1]
+        if b64_str:
+            audio_bytes = base64.b64decode(b64_str)
+
+    if not audio_bytes:
+        return jsonify({"error": "No audio provided", "text": ""}), 400
+
+    boundary = f"----VelocityValleyBoundary{uuid.uuid4().hex}"
+    body_parts = []
+
+    def add_field(name, value):
+        body_parts.append(f"--{boundary}\r\n".encode("utf-8"))
+        body_parts.append(f'Content-Disposition: form-data; name="{name}"\r\n\r\n{value}\r\n'.encode("utf-8"))
+
+    add_field("model", ILMU_ASR_MODEL)
+    if lang_code in ("ms", "en", "zh", "ta"):
+        add_field("language", lang_code)
+
+    body_parts.append(f"--{boundary}\r\n".encode("utf-8"))
+    body_parts.append(
+        f'Content-Disposition: form-data; name="file"; filename="{filename}"\r\n'
+        f'Content-Type: {mime_type}\r\n\r\n'.encode("utf-8")
+    )
+    body_parts.append(audio_bytes)
+    body_parts.append(f"\r\n--{boundary}--\r\n".encode("utf-8"))
+    multipart_body = b"".join(body_parts)
+
+    req = urllib.request.Request(
+        ILMU_ASR_URL,
+        data=multipart_body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Authorization": f"Bearer {api_key}",
+            "User-Agent": "VelocityValley-KSSM-ASR/1.0"
+        },
+        method="POST"
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=45) as resp:
+            resp_data = json.loads(resp.read().decode("utf-8"))
+            transcribed_text = (resp_data.get("text") or "").strip()
+            return jsonify({
+                "text": transcribed_text,
+                "model": ILMU_ASR_MODEL,
+                "source": "ILMU ASR"
+            })
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "text": "",
+            "fallback": "use_browser_speech_recognition"
+        }), 200
+
 # ==============================================================================
-# STANDARD PAGE ROUTES (FORM 4 & FORM 5 EXPERIMENTS)
+# STANDARD PAGE ROUTES (FORM 4 & ALL 10 FORM 5 EXPERIMENTS)
 # ==============================================================================
 @app.route('/')
 def home():
@@ -430,6 +533,26 @@ def form5experiment4():
 @app.route('/form5experiment5')
 def form5experiment5():
     return render_template('form5eksperimen5.html')
+
+@app.route('/form5experiment6')
+def form5experiment6():
+    return render_template('form5eksperimen6.html')
+
+@app.route('/form5experiment7')
+def form5experiment7():
+    return render_template('form5eksperimen7.html')
+
+@app.route('/form5experiment8')
+def form5experiment8():
+    return render_template('form5eksperimen8.html')
+
+@app.route('/form5experiment9')
+def form5experiment9():
+    return render_template('form5eksperimen9.html')
+
+@app.route('/form5experiment10')
+def form5experiment10():
+    return render_template('form5eksperimen10.html')
 
 @app.route('/dashboard')
 def dashboard():

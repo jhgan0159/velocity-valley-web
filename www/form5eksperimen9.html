@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 3.5: D.g.e. & Rintangan Dalam Sel Kering (3D Interaktif) | Velocity Valley</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active { background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25)); border-color: #38bdf8; color: #fff; }
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+.card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.82rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: pointer; }
+.readout-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 8px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.72rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.02rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 115px; padding: 10px 12px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.85rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+button.btn-act.green { background: linear-gradient(135deg, #10b981, #059669); }
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+button.btn-act.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 7px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+canvas#graphCanvas {
+  width: 100%; height: auto; background: #090d16; border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.25); margin-top: 12px; display: block;
+}
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 5 • Bab 3 • Eksperimen 3.5</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+    </div>
+  </div>
+
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 3.5: Menentukan D.g.e., ε dan Rintangan Dalam, r bagi Sel Kering (V = ε - Ir)</h1>
+    <p id="pageDesc">Tujuan: Menentukan daya gerak elektrik, ε dan rintangan dalam, r bagi satu sel kering 1.5 V. Ukur bacaan voltmeter apabila suis dibuka (ε = 1.50 V), kemudian tutup suis dan seret reostat untuk arus I = 0.2 A hingga 1.0 A (Jadual 3.9).</p>
+  </div>
+
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Suis Buka: Ukur ε</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Suis Tutup & Seret Reostat</span></div>
+      <div class="step-pill" id="pill4"><span class="step-num">4</span><span id="pillTxt4">Plot Graf V vs I (Kecerunan = -r)</span></div>
+    </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang sel kering 1.5 V, voltmeter merentasi sel kering, suis, ammeter, dan reostat!
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
+        </div>
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_cell"><input type="checkbox" onchange="toggleApparatus('cell', this.checked)"> <span id="lbl_cell">Sel Kering 1.5 V + Pemegang Sel</span></label>
+          <label class="tray-item" id="tray_volt"><input type="checkbox" onchange="toggleApparatus('volt', this.checked)"> <span id="lbl_volt">Voltmeter Merentasi Sel</span></label>
+          <label class="tray-item" id="tray_ammeter"><input type="checkbox" onchange="toggleApparatus('ammeter', this.checked)"> <span id="lbl_ammeter">Suis + Ammeter</span></label>
+          <label class="tray-item" id="tray_rheo"><input type="checkbox" onchange="toggleApparatus('rheo', this.checked)"> <span id="lbl_rheo">Reostat (Perintang Boleh Ubah)</span></label>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="simCanvas" width="680" height="440"></canvas>
+      </div>
+
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Status Suis</span><span class="val" id="mVal0">BUKA (OPEN)</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">D.g.e. Sel, ε</span><span class="val" id="mVal1">1.50 V</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Arus, I</span><span class="val" id="mVal2">0.00 A</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl3">Beza Keupayaan, V</span><span class="val" id="mVal3">1.50 V</span></div>
+      </div>
+    </div>
+
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlCurrLbl">🖐️ Seret Reostat di Kanvas 3D atau Pilih Arus Litar, I (A):</label>
+        <input type="range" id="currSlider" min="0.2" max="1.0" step="0.2" value="0.2" style="width:100%;" oninput="setCurr(this.value)">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#94a3b8;margin-top:4px;">
+          <span>0.2 A</span><span>0.4 A</span><span>0.6 A</span><span>0.8 A</span><span>1.0 A</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn-act" onclick="toggleSw()" id="btnSwitch">🔌 Buka / Tutup Suis</button>
+          <button class="btn-act green" onclick="recordRow()" id="btnRecord">➕ Rekod ke Jadual 3.9</button>
+          <button class="btn-act red" onclick="resetSim()" id="btnReset">🔄 Reset</button>
+        </div>
+      </div>
+
+      <h3 style="margin:10px 0 6px 0;font-size:1rem;color:#38bdf8;" id="tblTitle">📊 Jadual 3.9: Keputusan D.g.e. (ε = 1.50 V) & Rintangan Dalam (r = 0.50 Ω)</h3>
+      <div class="table-wrap">
+        <table class="data-tbl">
+          <thead>
+            <tr>
+              <th id="thI">Arus, I / A</th>
+              <th id="thV">Beza keupayaan, V / V</th>
+              <th id="thDrop">Susut Voltan, Ir = ε - V (V)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-act purple" onclick="exportCSV()" id="btnExport">⬇️ Muat Turun CSV / Excel</button>
+      </div>
+
+      <canvas id="graphCanvas" width="520" height="210"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+let lang = 'ms';
+const EMF = 1.50;
+const r_int = 0.50; // Ohm
+
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 5 • Bab 3 • Eksperimen 3.5",
+    pageTitle: "Eksperimen 3.5: Menentukan D.g.e., ε dan Rintangan Dalam, r bagi Sel Kering (V = ε - Ir)",
+    pageDesc: "Tujuan: Menentukan daya gerak elektrik, ε dan rintangan dalam, r bagi satu sel kering 1.5 V. Ukur bacaan voltmeter apabila suis dibuka (ε = 1.50 V), kemudian tutup suis dan seret reostat untuk arus I = 0.2 A hingga 1.0 A (Jadual 3.9).",
+    pillTxt1: "Pilih & Pasang Radas",
+    pillTxt2: "Suis Buka: Ukur ε",
+    pillTxt3: "Suis Tutup & Seret Reostat",
+    pillTxt4: "Plot Graf V vs I (Kecerunan = -r)",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_cell: "Sel Kering 1.5 V + Pemegang Sel",
+    lbl_volt: "Voltmeter Merentasi Sel",
+    lbl_ammeter: "Suis + Ammeter",
+    lbl_rheo: "Reostat (Perintang Boleh Ubah)",
+    mLbl0: "Status Suis",
+    mLbl1: "D.g.e. Sel, ε",
+    mLbl2: "Arus, I",
+    mLbl3: "Beza Keupayaan, V",
+    ctrlCurrLbl: "🖐️ Seret Reostat di Kanvas 3D atau Pilih Arus Litar, I (A):",
+    btnSwitch: "🔌 Buka / Tutup Suis",
+    btnRecord: "➕ Rekod ke Jadual 3.9",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Jadual 3.9: Keputusan D.g.e. (ε = 1.50 V) & Rintangan Dalam (r = 0.50 Ω)",
+    thI: "Arus, I / A",
+    thV: "Beza keupayaan, V / V",
+    thDrop: "Susut Voltan, Ir = ε - V (V)",
+    btnExport: "⬇️ Muat Turun CSV / Excel",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    dragHint: "🖐️ Klik suis untuk tutup litar, kemudian seret pelaras kuning Reostat di atas kanvas 3D!",
+    graphTitle: "Graf V (V) melawan I (A) — Pintasan-V = ε (1.50 V), Kecerunan = -r (-0.50 Ω)"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 5 • Chapter 3 • Experiment 3.5",
+    pageTitle: "Experiment 3.5: Determining E.m.f., ε and Internal Resistance, r of a Dry Cell (V = ε - Ir)",
+    pageDesc: "Objective: To determine the electromotive force, ε and internal resistance, r of a 1.5 V dry cell. Record the open-switch voltmeter reading (ε = 1.50 V), then close the switch and drag the rheostat for current I = 0.2 A to 1.0 A (Table 3.9).",
+    pillTxt1: "Select & Assemble Apparatus",
+    pillTxt2: "Open Switch: Measure ε",
+    pillTxt3: "Close Switch & Drag Rheostat",
+    pillTxt4: "Plot V vs I Graph (Gradient = -r)",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_cell: "1.5 V Dry Cell + Cell Holder",
+    lbl_volt: "Voltmeter Across Cell",
+    lbl_ammeter: "Switch + Ammeter",
+    lbl_rheo: "Rheostat (Variable Resistor)",
+    mLbl0: "Switch Status",
+    mLbl1: "Cell E.m.f., ε",
+    mLbl2: "Current, I",
+    mLbl3: "Terminal P.d., V",
+    ctrlCurrLbl: "🖐️ Drag Rheostat on 3D Canvas or Select Circuit Current, I (A):",
+    btnSwitch: "🔌 Open / Close Switch",
+    btnRecord: "➕ Record to Table 3.9",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Table 3.9: E.m.f. (ε = 1.50 V) & Internal Resistance (r = 0.50 Ω) Results",
+    thI: "Current, I / A",
+    thV: "Potential difference, V / V",
+    thDrop: "Voltage Drop, Ir = ε - V (V)",
+    btnExport: "⬇️ Download CSV / Excel",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    dragHint: "🖐️ Click the switch to close the circuit, then drag the yellow Rheostat slider on the 3D canvas!",
+    graphTitle: "Graph of V (V) against I (A) — V-intercept = ε (1.50 V), Gradient = -r (-0.50 Ω)"
+  }
+};
+
+const placed = { cell: false, volt: false, ammeter: false, rheo: false };
+let swClosed = false;
+let currI = 0.2;
+let records = [];
+let isDragging = false;
+
+function allPlaced() { return placed.cell && placed.volt && placed.ammeter && placed.rheo; }
+
+function toggleApparatus(key, checked) {
+  placed[key] = checked;
+  const el = document.getElementById('tray_' + key);
+  if (checked) el.classList.add('placed'); else el.classList.remove('placed');
+  updateCoach(); draw3D();
+}
+
+function assembleAll() {
+  ['cell', 'volt', 'ammeter', 'rheo'].forEach(k => {
+    placed[k] = true;
+    const cb = document.querySelector('#tray_' + k + ' input');
+    if (cb) cb.checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  updateCoach(); draw3D();
+}
+
+function toggleSw() {
+  if (!allPlaced()) assembleAll();
+  swClosed = !swClosed;
+  updateReadouts(); updateCoach(); draw3D();
+}
+
+function setCurr(val) {
+  if (!allPlaced()) assembleAll();
+  swClosed = true;
+  currI = parseFloat(val);
+  document.getElementById('currSlider').value = currI;
+  updateReadouts(); updateCoach(); draw3D();
+}
+
+function updateReadouts() {
+  const I = swClosed ? currI : 0;
+  const V = EMF - I * r_int;
+  document.getElementById('mVal0').innerText = swClosed ? (lang === 'ms' ? 'TUTUP (ON)' : 'CLOSED') : (lang === 'ms' ? 'BUKA (OFF)' : 'OPEN');
+  document.getElementById('mVal1').innerText = EMF.toFixed(2) + ' V';
+  document.getElementById('mVal2').innerText = I.toFixed(2) + ' A';
+  document.getElementById('mVal3').innerText = V.toFixed(2) + ' V';
+}
+
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3'), p4 = document.getElementById('pill4');
+  [p1, p2, p3, p4].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun litar Rajah 3.27."
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus Tray</b> to assemble Figure 3.27.";
+  } else if (!swClosed) {
+    p1.classList.add('done'); p2.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 — Perhatikan apabila suis dibuka (I = 0.00 A), bacaan voltmeter ialah <b>ε = 1.50 V</b>. Klik <b>🔌 Buka / Tutup Suis</b> untuk menutup suis!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 2 — Notice that when the switch is open (I = 0.00 A), the voltmeter reads <b>ε = 1.50 V</b>. Click <b>🔌 Open / Close Switch</b> to close the switch!";
+  } else if (records.length < 5) {
+    p1.classList.add('done'); p2.classList.add('done'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? `🧑‍🏫 <b>Prof. Vector:</b> Langkah 3 — Seret pelaras Reostat untuk menetapkan arus <b>I = 0.2, 0.4, 0.6, 0.8, 1.0 A</b> dan klik <b>➕ Rekod ke Jadual 3.9</b> (${records.length}/5 direkod).`
+      : `🧑‍🏫 <b>Prof. Vector:</b> Step 3 — Drag the Rheostat wiper to set current <b>I = 0.2, 0.4, 0.6, 0.8, 1.0 A</b> and click <b>➕ Record to Table 3.9</b> (${records.length}/5 recorded).`;
+  } else {
+    [p1, p2, p3].forEach(p => p.classList.add('done')); p4.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Syabas! Graf V melawan I bercerun negatif (V = ε - Ir). Pintasan-V memberi ε = 1.50 V dan kecerunan = -r = -0.50 Ω!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Well done! The V vs I graph has a negative slope (V = ε - Ir). The V-intercept gives ε = 1.50 V and gradient = -r = -0.50 Ω!";
+  }
+}
+
+function recordRow() {
+  if (!allPlaced()) assembleAll();
+  swClosed = true;
+  updateReadouts();
+  if (records.some(r => Math.abs(r.I - currI) < 0.01)) {
+    alert(lang === 'ms' ? `Data untuk I = ${currI.toFixed(1)} A sudah direkod!` : `Data for I = ${currI.toFixed(1)} A is already recorded!`);
+    return;
+  }
+  const V = EMF - currI * r_int;
+  const drop = EMF - V;
+  records.push({ I: currI, V, drop });
+  records.sort((a, b) => a.I - b.I);
+  const tb = document.getElementById('tableBody');
+  tb.innerHTML = '';
+  records.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.I.toFixed(2)}</td><td style="color:#38bdf8;font-weight:700;">${r.V.toFixed(2)}</td><td>${r.drop.toFixed(2)}</td>`;
+    tb.appendChild(tr);
+  });
+  drawGraph(); updateCoach();
+}
+
+function resetSim() {
+  records = []; swClosed = false; currI = 0.2;
+  document.getElementById('currSlider').value = 0.2;
+  document.getElementById('tableBody').innerHTML = '';
+  updateReadouts(); drawGraph(); updateCoach(); draw3D();
+}
+
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateReadouts(); updateCoach(); draw3D(); drawGraph();
+}
+
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 440);
+  bg.addColorStop(0, '#0f172a'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 440);
+
+  if (!placed.cell && !placed.volt && !placed.ammeter && !placed.rheo) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 210);
+    return;
+  }
+
+  const I = swClosed ? currI : 0;
+  const V = EMF - I * r_int;
+
+  ctx.strokeStyle = swClosed ? '#38bdf8' : '#64748b';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(120, 140, 440, 200);
+
+  if (placed.cell) {
+    // 1.5V Dry Cell + internal resistance r box
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
+    ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2;
+    ctx.strokeRect(255, 110, 170, 62);
+    ctx.fillStyle = '#f59e0b'; ctx.fillRect(270, 122, 75, 36);
+    ctx.fillStyle = '#94a3b8'; ctx.fillRect(360, 128, 45, 24);
+    ctx.fillStyle = '#0f172a'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('ε = 1.5V', 307, 145);
+    ctx.fillText('r=0.5Ω', 382, 144);
+  }
+
+  if (placed.volt) {
+    // Voltmeter connected across dry cell terminals
+    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2.5;
+    ctx.strokeRect(245, 45, 190, 95);
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.roundRect(285, 22, 110, 52, 8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#c084fc'; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('V = ' + V.toFixed(2) + ' V', 340, 52);
+  }
+
+  if (placed.ammeter) {
+    // Switch on right
+    ctx.fillStyle = '#334155'; ctx.fillRect(465, 125, 65, 30);
+    ctx.strokeStyle = swClosed ? '#10b981' : '#ef4444'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(475, 140); ctx.lineTo(515, swClosed ? 140 : 118); ctx.stroke();
+
+    // Ammeter on right vertical branch
+    ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.roundRect(515, 210, 90, 54, 8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('I = ' + I.toFixed(2) + ' A', 560, 242);
+  }
+
+  if (placed.rheo) {
+    // Rheostat on bottom branch
+    const rx = 250, ry = 322, rw = 180, rh = 36;
+    ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 8); ctx.fill();
+    const wiperX = rx + 14 + ((currI - 0.2) / 0.8) * (rw - 28);
+    ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.roundRect(wiperX - 9, ry - 8, 18, rh + 16, 4); ctx.fill();
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 422);
+  }
+}
+
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  const rect = canvas.getBoundingClientRect();
+  const px = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const py = (e.clientY - rect.top) * (canvas.height / rect.height);
+  if (px > 455 && px < 535 && py > 105 && py < 165) {
+    toggleSw(); return;
+  }
+  swClosed = true; isDragging = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDragging) handleDrag(e); });
+canvas.addEventListener('pointerup', () => { isDragging = false; updateCoach(); draw3D(); });
+
+function handleDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const px = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const norm = Math.max(0, Math.min(1, (px - 260) / 160));
+  currI = Math.round((0.2 + norm * 0.8) / 0.2) * 0.2;
+  document.getElementById('currSlider').value = currI;
+  updateReadouts(); draw3D();
+}
+
+function drawGraph() {
+  const gCanvas = document.getElementById('graphCanvas');
+  const gCtx = gCanvas.getContext('2d');
+  gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+  gCtx.fillStyle = '#38bdf8'; gCtx.font = 'bold 11px Segoe UI, sans-serif'; gCtx.textAlign = 'center';
+  gCtx.fillText(i18n[lang].graphTitle, gCanvas.width / 2, 20);
+  const ox = 55, oy = 180, gw = 430, gh = 135;
+  gCtx.strokeStyle = '#64748b'; gCtx.lineWidth = 1.5;
+  gCtx.beginPath(); gCtx.moveTo(ox, oy - gh); gCtx.lineTo(ox, oy); gCtx.lineTo(ox + gw, oy); gCtx.stroke();
+
+  // Extrapolated dashed line from (0, 1.50V)
+  const y15 = oy - (1.50 / 1.6) * gh;
+  const y10 = oy - (1.00 / 1.6) * gh;
+  gCtx.save();
+  gCtx.setLineDash([4, 4]); gCtx.strokeStyle = 'rgba(148,163,184,0.5)';
+  gCtx.beginPath(); gCtx.moveTo(ox, y15); gCtx.lineTo(ox + gw, y10); gCtx.stroke();
+  gCtx.restore();
+
+  if (records.length > 0) {
+    gCtx.strokeStyle = '#10b981'; gCtx.lineWidth = 2.5;
+    gCtx.beginPath();
+    records.forEach((r, idx) => {
+      const px = ox + (r.I / 1.0) * gw;
+      const py = oy - (r.V / 1.6) * gh;
+      if (idx === 0) gCtx.moveTo(px, py); else gCtx.lineTo(px, py);
+    });
+    gCtx.stroke();
+    records.forEach(r => {
+      const px = ox + (r.I / 1.0) * gw;
+      const py = oy - (r.V / 1.6) * gh;
+      gCtx.fillStyle = '#38bdf8'; gCtx.beginPath(); gCtx.arc(px, py, 4.5, 0, Math.PI * 2); gCtx.fill();
+    });
+  }
+}
+
+function exportCSV() {
+  if (records.length === 0) { alert(lang === 'ms' ? 'Tiada data!' : 'No data!'); return; }
+  let csv = 'Arus I (A),Beza Keupayaan V (V),Susut Voltan Ir (V)\n';
+  records.forEach(r => { csv += `${r.I.toFixed(2)},${r.V.toFixed(2)},${r.drop.toFixed(2)}\n`; });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = 'Eksperimen_3.5_Dge_Rintangan_Dalam.csv';
+  a.click();
+}
+
+updateReadouts(); draw3D(); drawGraph();
+</script>
+</body>
+</html>

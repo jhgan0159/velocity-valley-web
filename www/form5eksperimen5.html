@@ -1,735 +1,577 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eksperimen 3.1 (Tingkatan 5): Hukum Ohm (Konduktor Ohm & Bukan Ohm) | Velocity Valley</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            margin: 0;
-            padding: 20px;
-            color: #1e293b;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .top-bar-wrapper {
-            width: 100%;
-            max-width: 1280px;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .btn-back-menu {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 10px rgba(30,60,114,0.25);
-        }
-        .lang-switch-btn {
-            background: #0ea5e9;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.88rem;
-        }
-        h1 { text-align: center; color: #0f172a; margin: 0 0 6px 0; font-size: 1.75rem; }
-        .subtitle { text-align: center; color: #475569; margin: 0 0 16px 0; font-size: 0.98rem; }
-        .principle-banner {
-            width: 100%;
-            max-width: 1280px;
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-            border-left: 5px solid #0284c7;
-            padding: 14px 18px;
-            border-radius: 10px;
-            margin-bottom: 18px;
-            color: #0f172a;
-            font-size: 0.93rem;
-            line-height: 1.55;
-        }
-        .mode-switcher {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 18px;
-            width: 100%;
-            max-width: 1280px;
-            flex-wrap: wrap;
-        }
-        .mode-tab-btn {
-            flex: 1;
-            min-width: 260px;
-            padding: 14px 18px;
-            border-radius: 12px;
-            border: 2px solid #cbd5e1;
-            background: white;
-            color: #1e293b;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .mode-tab-btn.active-mode {
-            background: linear-gradient(135deg, #0284c7, #2563eb);
-            color: white;
-            border-color: #38bdf8;
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
-        }
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1.15fr;
-            gap: 20px;
-            width: 100%;
-            max-width: 1280px;
-        }
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-        }
-        canvas {
-            border: 1.5px solid #cbd5e1;
-            background-color: #ffffff;
-            display: block;
-            margin: 0 auto 14px auto;
-            border-radius: 8px;
-            max-width: 100%;
-            height: auto;
-        }
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .control-group {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 12px 14px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .curr-btn-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .curr-btn {
-            flex: 1;
-            min-width: 72px;
-            padding: 9px 10px;
-            background: #e2e8f0;
-            color: #1e293b;
-            border: 2px solid transparent;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 0.86rem;
-        }
-        .curr-btn.active-i {
-            background: #0284c7;
-            color: white;
-            border-color: #38bdf8;
-        }
-        .student-input-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .student-input-row input {
-            flex: 1;
-            min-width: 120px;
-            padding: 9px 12px;
-            border: 1.5px solid #94a3b8;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: bold;
-        }
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 11px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-        .btn-excel {
-            background: #16a34a;
-            color: white;
-            border: none;
-            padding: 11px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
-        }
-        .reminder {
-            font-weight: bold;
-            text-align: center;
-            padding: 9px;
-            border-radius: 6px;
-            font-size: 0.88rem;
-        }
-        .reminder.warning { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-        .reminder.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-        .table-scroll { width: 100%; overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }
-        th, td {
-            border: 1px solid #cbd5e1;
-            padding: 9px 8px;
-            text-align: center;
-        }
-        th { background: #0f4c81; color: white; }
-        .discussion-box {
-            margin-top: 16px;
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            border-radius: 8px;
-            padding: 12px 14px;
-            font-size: 0.88rem;
-            line-height: 1.5;
-        }
-        @media (max-width: 900px) {
-            .container { grid-template-columns: 1fr; }
-            body { padding: 12px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen 3.1: Hukum Ohm (3D Interaktif) | Velocity Valley</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 100%);
+  color: #f8fafc; min-height: 100vh;
+}
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 16px; width: 100%; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px; padding: 12px 18px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+  text-decoration: none; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+}
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge-kssm {
+  background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem;
+}
+.btn-lang {
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.hero-header {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.22); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px;
+}
+.hero-header h1 { margin: 0 0 6px 0; font-size: 1.45rem; color: #38bdf8; }
+.hero-header p { margin: 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.5; }
+.step-coach-card {
+  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px; overflow: hidden;
+}
+.stepper-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; margin-bottom: 12px; width: 100%;
+}
+.step-pill {
+  min-width: 0; word-break: break-word; overflow-wrap: anywhere;
+  background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.83rem; font-weight: 600; color: #94a3b8;
+}
+.step-pill.active { background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(14,165,233,0.25)); border-color: #38bdf8; color: #fff; }
+.step-pill.done { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(148,163,184,0.25);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+}
+.step-pill.active .step-num { background: #38bdf8; color: #0f172a; }
+.step-pill.done .step-num { background: #10b981; color: #052e16; }
+.coach-banner {
+  background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
+  border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
+}
+.main-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+.card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
+.apparatus-tray {
+  background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 12px; padding: 14px; margin-bottom: 14px;
+}
+.tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.tray-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 9px; cursor: pointer; font-size: 0.82rem; color: #cbd5e1;
+}
+.tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
+.canvas-wrap {
+  position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+}
+canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: pointer; }
+.readout-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.metric-pill {
+  background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px; padding: 10px; text-align: center;
+}
+.metric-pill .lbl { font-size: 0.76rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.12rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.control-box {
+  background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.btn-act {
+  flex: 1; min-width: 115px; padding: 10px 12px; border-radius: 10px; border: none;
+  font-weight: 700; font-size: 0.85rem; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+button.btn-act.green { background: linear-gradient(135deg, #10b981, #059669); }
+button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+button.btn-act.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+select.sel-box {
+  width: 100%; padding: 10px; border-radius: 8px; background: #0f172a;
+  color: #f8fafc; border: 1px solid #38bdf8; font-weight: 600; margin-bottom: 10px;
+}
+.table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
+table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 7px; text-align: center; }
+table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
+table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+canvas#graphCanvas {
+  width: 100%; height: auto; background: #090d16; border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.25); margin-top: 12px; display: block;
+}
+@media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
+<div class="app-shell">
+  <div class="top-bar">
+    <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
+    <div class="top-right">
+      <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 5 • Bab 3 • Eksperimen 3.1</span>
+      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+    </div>
+  </div>
 
-    <div class="top-bar-wrapper">
-        <a href="index.html" class="btn-back-menu" onclick="if(true || window.Capacitor || (window.location.hostname==='localhost' && !window.location.port)){this.href='index.html';}">← Back to Main Menu</a>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-weight: bold; color: #1e3a8a;">🚀 KSSM Tingkatan 5 • Eksperimen 3.1</span>
-            <button class="lang-switch-btn" onclick="toggleLang()">🌐 English / BM</button>
+  <div class="hero-header">
+    <h1 id="pageTitle">Eksperimen 3.1: Hukum Ohm (Konduktor Ohm vs Konduktor Bukan Ohm)</h1>
+    <p id="pageDesc">Tujuan: Mengkaji hubungan antara arus, I dengan beza keupayaan, V bagi dawai konstantan (Konduktor Ohm) dan mentol filamen (Konduktor Bukan Ohm). Pasang litar 3D, hidupkan suis, dan seret pelaras reostat secara terus di atas kanvas 3D!</p>
+  </div>
+
+  <div class="step-coach-card">
+    <div class="stepper-row">
+      <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Litar 3D</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Hidupkan Suis</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Seret Reostat (I = 0.2–0.6 A)</span></div>
+      <div class="step-pill" id="pill4"><span class="step-num">4</span><span id="pillTxt4">Rekod & Plot Graf V vs I</span></div>
+    </div>
+    <div class="coach-banner" id="coachBanner">
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang sel kering, suis, reostat, ammeter, voltmeter, dan komponen ujian di atas papan litar 3D!
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card-panel">
+      <div class="apparatus-tray">
+        <div class="tray-header">
+          <h3 id="trayTitle">🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)</h3>
+          <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
         </div>
-    </div>
-
-    <h1 id="mainTitle">Eksperimen 3.1: Hukum Ohm (Konduktor Ohm & Bukan Ohm)</h1>
-    <p class="subtitle" id="subTitle">Mengkaji hubungan antara arus, I dengan beza keupayaan, V bagi dawai konstantan (A) dan mentol berfilamen (B) (Rajah 3.12)</p>
-
-    <div class="principle-banner">
-        <strong>📘 Inferens & Hipotesis (Hukum Ohm, V = IR):</strong> Beza keupayaan, <em>V</em> yang merentasi suatu konduktor bergantung pada arus, <em>I</em> yang mengalir. Bagi <strong>Konduktor Ohm (Dawai konstantan)</strong>, graf <em>V</em> melawan <em>I</em> ialah garis lurus melalui asalan (rintangan <em>R</em> malar). Bagi <strong>Konduktor Bukan Ohm (Mentol berfilamen)</strong>, apabila arus bertambah, suhu filamen meningkat dan rintangan bertambah (graf melengkung ke atas).
-    </div>
-
-    <div class="mode-switcher">
-        <button class="mode-tab-btn active-mode" id="mode-A" onclick="switchMode('A')">
-            🅰 Konduktor Ohm: Dawai Konstantan (Jadual 3.2)
-        </button>
-        <button class="mode-tab-btn" id="mode-B" onclick="switchMode('B')">
-            🅱 Konduktor Bukan Ohm: Mentol Berfilamen (Jadual 3.3)
-        </button>
-    </div>
-
-    <div class="container">
-        <!-- LEFT PANEL -->
-        <div class="panel">
-            <canvas id="simCanvas" width="530" height="390"></canvas>
-
-            <div class="controls">
-                <div class="control-group">
-                    <label><strong id="lblRheostat">1. Hidupkan suis & laraskan Reostat untuk menetapkan bacaan Ammeter, I:</strong></label>
-                    <div class="curr-btn-row" id="currentButtonsRow"></div>
-                </div>
-
-                <div class="control-group">
-                    <label><strong>2. Catatkan bacaan Voltmeter, V (V) ke dalam Jadual:</strong></label>
-                    <div class="student-input-row">
-                        <input type="number" step="0.01" id="inputVoltV" placeholder="Bacaan V (V)">
-                        <button class="btn-primary" onclick="rekodData()">➕ Rekod ke Jadual</button>
-                    </div>
-                </div>
-
-                <div id="reminderText" class="reminder warning">⚠️ Sila rekodkan bacaan Voltmeter V untuk arus semasa!</div>
-            </div>
+        <div class="tray-grid">
+          <label class="tray-item" id="tray_battery"><input type="checkbox" onchange="toggleApparatus('battery', this.checked)"> <span id="lbl_battery">Sel Kering 3.0 V + Suis</span></label>
+          <label class="tray-item" id="tray_rheostat"><input type="checkbox" onchange="toggleApparatus('rheostat', this.checked)"> <span id="lbl_rheostat">Reostat (Perintang Boleh Ubah)</span></label>
+          <label class="tray-item" id="tray_meters"><input type="checkbox" onchange="toggleApparatus('meters', this.checked)"> <span id="lbl_meters">Ammeter & Voltmeter</span></label>
+          <label class="tray-item" id="tray_load"><input type="checkbox" onchange="toggleApparatus('load', this.checked)"> <span id="lbl_load">Dawai Konstantan / Mentol</span></label>
         </div>
+      </div>
 
-        <!-- RIGHT PANEL -->
-        <div class="panel">
-            <h3 style="margin-top:0;" id="tableHeaderTitle">Jadual 3.2: Konduktor Ohm (Dawai Konstantan s.w.g. 24, 20 cm)</h3>
-            <div class="table-scroll">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Arus, <i>I</i> / A</th>
-                            <th>Beza keupayaan, <i>V</i> / V</th>
-                            <th>Rintangan, <i>R = V / I</i> / Ω</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+      <div class="canvas-wrap">
+        <canvas id="simCanvas" width="680" height="440"></canvas>
+      </div>
 
-            <h4 style="margin: 18px 0 8px 0; color:#0f172a;" id="graphTitle">📈 Graf Beza Keupayaan, V (V) melawan Arus, I (A)</h4>
-            <canvas id="graphCanvas" width="520" height="220"></canvas>
-
-            <button class="btn-excel" onclick="muatTurunExcel()">⬇ Muat Turun Jadual 3.2 & 3.3 (Excel / CSV)</button>
-
-            <div class="discussion-box">
-                <strong>⚠️ Langkah Berjaga-jaga (Rajah 3.12):</strong><br>
-                • Pastikan dawai penyambung disambungkan dengan ketat.<br>
-                • Elakkan ralat paralaks semasa mengambil bacaan ammeter dan voltmeter.<br>
-                • <strong>Matikan suis sebaik sahaja bacaan diambil</strong> supaya suhu dawai konstantan kekal malar sepanjang eksperimen dijalankan.
-            </div>
-        </div>
+      <div class="readout-strip">
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Status Suis</span><span class="val" id="mVal0">MATI (OFF)</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Arus, I (Ammeter)</span><span class="val" id="mVal1">0.00 A</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Beza Keupayaan, V</span><span class="val" id="mVal2">0.00 V</span></div>
+      </div>
     </div>
 
-    <script>
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
-        const graphCanvas = document.getElementById('graphCanvas');
-        const gctx = graphCanvas.getContext('2d');
+    <div class="card-panel">
+      <div class="control-box">
+        <label style="font-weight:700;display:block;margin-bottom:6px;" id="ctrlModeLbl">🔬 Pilih Bahagian Eksperimen:</label>
+        <select class="sel-box" id="modeSelect" onchange="setMode(this.value)">
+          <option value="ohmic" id="optOhm">Bahagian A: Dawai Konstantan (Konduktor Ohm)</option>
+          <option value="bulb" id="optBulb">Bahagian B: Mentol Filamen (Konduktor Bukan Ohm)</option>
+        </select>
+        <label style="font-weight:700;display:block;margin-bottom:6px;" id="ctrlRheoLbl">🖐️ Seret Pelaras Reostat di Kanvas 3D untuk Melaraskan Arus, I (A):</label>
+        <input type="range" id="currSlider" min="0.2" max="0.6" step="0.1" value="0.2" style="width:100%;" oninput="setCurrent(this.value)">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#94a3b8;margin-top:4px;">
+          <span>0.2 A</span><span>0.3 A</span><span>0.4 A</span><span>0.5 A</span><span>0.6 A</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn-act" onclick="toggleSwitch()" id="btnSwitch">🔌 Hidupkan / Matikan Suis</button>
+          <button class="btn-act green" onclick="recordRow()" id="btnRecord">➕ Rekod Bacaan</button>
+          <button class="btn-act red" onclick="resetSim()" id="btnReset">🔄 Reset</button>
+        </div>
+      </div>
 
-        // Experiment A: Constantan wire (R = 2.0 Ohm constant) -> Jadual 3.2: I = 0.2, 0.3, 0.4, 0.5, 0.6 A
-        const DATA_A = [
-            { I: 0.20, V: 0.40 },
-            { I: 0.30, V: 0.60 },
-            { I: 0.40, V: 0.80 },
-            { I: 0.50, V: 1.00 },
-            { I: 0.60, V: 1.20 }
-        ];
-        // Experiment B: Filament bulb (Non-Ohmic, R increases with T) -> Jadual 3.3: I = 0.14, 0.16, 0.18, 0.20, 0.22 A
-        const DATA_B = [
-            { I: 0.14, V: 0.35 },
-            { I: 0.16, V: 0.48 },
-            { I: 0.18, V: 0.66 },
-            { I: 0.20, V: 0.90 },
-            { I: 0.22, V: 1.22 }
-        ];
+      <h3 style="margin:10px 0 6px 0;font-size:1rem;color:#38bdf8;" id="tblTitle">📊 Jadual 3.1: Keputusan Eksperimen Hukum Ohm</h3>
+      <div class="table-wrap">
+        <table class="data-tbl">
+          <thead>
+            <tr>
+              <th id="thComp">Komponen</th>
+              <th id="thI">Arus, I / A</th>
+              <th id="thV">Beza Keupayaan, V / V</th>
+              <th id="thR">Rintangan, R = V/I (Ω)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
 
-        let currentMode = 'A'; // 'A' or 'B'
-        let selectedIdx = 0;
-        let recordedA = new Map();
-        let recordedB = new Map();
-        let isEng = false;
+      <div class="btn-row">
+        <button class="btn-act purple" onclick="exportCSV()" id="btnExport">⬇️ Muat Turun CSV / Excel</button>
+      </div>
 
-        function switchMode(m) {
-            currentMode = m;
-            selectedIdx = 0;
-            document.getElementById('mode-A').classList.toggle('active-mode', m === 'A');
-            document.getElementById('mode-B').classList.toggle('active-mode', m === 'B');
-            document.getElementById('tableHeaderTitle').innerText = m === 'A'
-                ? 'Jadual 3.2: Konduktor Ohm (Dawai Konstantan s.w.g. 24, 20 cm)'
-                : 'Jadual 3.3: Konduktor Bukan Ohm (Mentol Berfilamen 2.5 V, 3 W)';
-            buildCurrentButtons();
-            selectCurrentIndex(0);
-            renderTableAndGraph();
-        }
+      <canvas id="graphCanvas" width="520" height="210"></canvas>
+    </div>
+  </div>
+</div>
 
-        function buildCurrentButtons() {
-            const row = document.getElementById('currentButtonsRow');
-            row.innerHTML = '';
-            const list = currentMode === 'A' ? DATA_A : DATA_B;
-            list.forEach((item, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'curr-btn' + (idx === selectedIdx ? ' active-i' : '');
-                btn.id = 'ibtn-' + idx;
-                btn.innerText = `I = ${currentMode === 'A' ? item.I.toFixed(1) : item.I.toFixed(2)} A`;
-                btn.onclick = () => selectCurrentIndex(idx);
-                row.appendChild(btn);
-            });
-        }
+<script>
+let lang = 'ms';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 5 • Bab 3 • Eksperimen 3.1",
+    pageTitle: "Eksperimen 3.1: Hukum Ohm (Konduktor Ohm vs Konduktor Bukan Ohm)",
+    pageDesc: "Tujuan: Mengkaji hubungan antara arus, I dengan beza keupayaan, V bagi dawai konstantan (Konduktor Ohm) dan mentol filamen (Konduktor Bukan Ohm). Pasang litar 3D, hidupkan suis, dan seret pelaras reostat secara terus di atas kanvas 3D!",
+    pillTxt1: "Pilih & Pasang Litar 3D",
+    pillTxt2: "Hidupkan Suis",
+    pillTxt3: "Seret Reostat (I = 0.2–0.6 A)",
+    pillTxt4: "Rekod & Plot Graf V vs I",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_battery: "Sel Kering 3.0 V + Suis",
+    lbl_rheostat: "Reostat (Perintang Boleh Ubah)",
+    lbl_meters: "Ammeter & Voltmeter",
+    lbl_load: "Dawai Konstantan / Mentol",
+    mLbl0: "Status Suis",
+    mLbl1: "Arus, I (Ammeter)",
+    mLbl2: "Beza Keupayaan, V",
+    ctrlModeLbl: "🔬 Pilih Bahagian Eksperimen:",
+    optOhm: "Bahagian A: Dawai Konstantan (Konduktor Ohm)",
+    optBulb: "Bahagian B: Mentol Filamen (Konduktor Bukan Ohm)",
+    ctrlRheoLbl: "🖐️ Seret Pelaras Reostat di Kanvas 3D untuk Melaraskan Arus, I (A):",
+    btnSwitch: "🔌 Hidupkan / Matikan Suis",
+    btnRecord: "➕ Rekod Bacaan",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Jadual 3.1: Keputusan Eksperimen Hukum Ohm",
+    thComp: "Komponen",
+    thI: "Arus, I / A",
+    thV: "Beza Keupayaan, V / V",
+    thR: "Rintangan, R = V/I (Ω)",
+    btnExport: "⬇️ Muat Turun CSV / Excel",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    dragHint: "🖐️ Seret pemegang kuning Reostat ke kiri/kanan di atas kanvas 3D!",
+    graphTitle: "Graf Beza Keupayaan, V (V) melawan Arus, I (A)"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 5 • Chapter 3 • Experiment 3.1",
+    pageTitle: "Experiment 3.1: Ohm's Law (Ohmic vs Non-Ohmic Conductor)",
+    pageDesc: "Objective: To study the relationship between current, I and potential difference, V for a constantan wire (Ohmic) and a filament bulb (Non-Ohmic). Assemble the 3D circuit, close the switch, and drag the rheostat slider directly on the 3D canvas!",
+    pillTxt1: "Select & Assemble 3D Circuit",
+    pillTxt2: "Turn On Switch",
+    pillTxt3: "Drag Rheostat (I = 0.2–0.6 A)",
+    pillTxt4: "Record & Plot V vs I Graph",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_battery: "3.0 V Dry Cells + Switch",
+    lbl_rheostat: "Rheostat (Variable Resistor)",
+    lbl_meters: "Ammeter & Voltmeter",
+    lbl_load: "Constantan Wire / Filament Bulb",
+    mLbl0: "Switch Status",
+    mLbl1: "Current, I (Ammeter)",
+    mLbl2: "Potential Diff, V",
+    ctrlModeLbl: "🔬 Select Experiment Part:",
+    optOhm: "Part A: Constantan Wire (Ohmic Conductor)",
+    optBulb: "Part B: Filament Bulb (Non-Ohmic Conductor)",
+    ctrlRheoLbl: "🖐️ Drag Rheostat Slider on 3D Canvas to Adjust Current, I (A):",
+    btnSwitch: "🔌 Toggle Switch ON / OFF",
+    btnRecord: "➕ Record Reading",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Table 3.1: Ohm's Law Experimental Results",
+    thComp: "Component",
+    thI: "Current, I / A",
+    thV: "Potential Diff, V / V",
+    thR: "Resistance, R = V/I (Ω)",
+    btnExport: "⬇️ Download CSV / Excel",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    dragHint: "🖐️ Drag the yellow Rheostat wiper left/right on the 3D canvas!",
+    graphTitle: "Graph of Potential Difference, V (V) against Current, I (A)"
+  }
+};
 
-        function selectCurrentIndex(idx) {
-            selectedIdx = idx;
-            const list = currentMode === 'A' ? DATA_A : DATA_B;
-            const item = list[idx];
-            document.getElementById('inputVoltV').value = item.V.toFixed(2);
-            list.forEach((_, i) => {
-                const b = document.getElementById('ibtn-' + i);
-                if (b) b.classList.toggle('active-i', i === idx);
-            });
-            updateReminderUI();
-            drawCircuit();
-        }
+const placed = { battery: false, rheostat: false, meters: false, load: false };
+let swOn = false;
+let mode = 'ohmic';
+let targetI = 0.2;
+let records = [];
+let isDragging = false;
 
-        function updateReminderUI() {
-            const rem = document.getElementById('reminderText');
-            const list = currentMode === 'A' ? DATA_A : DATA_B;
-            const map = currentMode === 'A' ? recordedA : recordedB;
-            const item = list[selectedIdx];
-            const iStr = currentMode === 'A' ? item.I.toFixed(1) : item.I.toFixed(2);
+function allPlaced() { return placed.battery && placed.rheostat && placed.meters && placed.load; }
 
-            if (map.has(item.I)) {
-                rem.className = 'reminder success';
-                rem.innerText = `✓ Bacaan I = ${iStr} A (V = ${item.V.toFixed(2)} V) telah direkodkan dalam ${currentMode === 'A' ? 'Jadual 3.2' : 'Jadual 3.3'}!`;
-            } else {
-                rem.className = 'reminder warning';
-                rem.innerText = `⚠️ Sila rekodkan V = ${item.V.toFixed(2)} V bagi arus I = ${iStr} A!`;
-            }
-        }
+function toggleApparatus(key, checked) {
+  placed[key] = checked;
+  const el = document.getElementById('tray_' + key);
+  if (checked) el.classList.add('placed'); else el.classList.remove('placed');
+  updateCoach(); draw3D();
+}
 
-        function drawCircuit() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const list = currentMode === 'A' ? DATA_A : DATA_B;
-            const item = list[selectedIdx];
-            const iStr = currentMode === 'A' ? item.I.toFixed(1) : item.I.toFixed(2);
+function assembleAll() {
+  ['battery', 'rheostat', 'meters', 'load'].forEach(k => {
+    placed[k] = true;
+    const cb = document.querySelector('#tray_' + k + ' input');
+    if (cb) cb.checked = true;
+    document.getElementById('tray_' + k).classList.add('placed');
+  });
+  updateCoach(); draw3D();
+}
 
-            // Main Circuit Loop Coordinates (matching Rajah 3.12)
-            const leftX = 85, rightX = 445, topY = 75, botY = 310;
-            const loadLeftX = 195, loadRightX = 335;
+function toggleSwitch() {
+  if (!allPlaced()) assembleAll();
+  swOn = !swOn;
+  updateReadouts(); updateCoach(); draw3D();
+}
 
-            ctx.strokeStyle = "#1e293b";
-            ctx.lineWidth = 2.5;
+function setMode(val) {
+  mode = val;
+  updateReadouts(); updateCoach(); draw3D();
+}
 
-            // Top wire with Switch & 1.5 V Dry Cell
-            ctx.beginPath();
-            ctx.moveTo(leftX, topY);
-            ctx.lineTo(155, topY); // to switch
-            ctx.moveTo(195, topY);
-            ctx.lineTo(265, topY); // to battery
-            ctx.moveTo(285, topY);
-            ctx.lineTo(rightX, topY);
-            ctx.stroke();
+function setCurrent(val) {
+  if (!allPlaced()) assembleAll();
+  swOn = true;
+  targetI = parseFloat(val);
+  document.getElementById('currSlider').value = targetI;
+  updateReadouts(); updateCoach(); draw3D();
+}
 
-            // Closed Switch (Suis)
-            ctx.fillStyle = "#1e293b";
-            ctx.beginPath(); ctx.arc(155, topY, 3.5, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(195, topY, 3.5, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = "#16a34a";
-            ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.moveTo(155, topY); ctx.lineTo(195, topY - 4); ctx.stroke();
-            ctx.fillStyle = "#0f172a";
-            ctx.font = "bold 12px Segoe UI";
-            ctx.fillText("Suis (ON)", 148, topY - 14);
+function calcV(I_val, m) {
+  if (m === 'ohmic') return I_val * 2.5; // constant R = 2.5 Ohm
+  return 1.5 * I_val + 4.2 * Math.pow(I_val, 3); // non-linear filament heating
+}
 
-            // 1.5 V Dry Cell (Sel kering 1.5 V)
-            ctx.strokeStyle = "#0f172a";
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(265, topY - 18); ctx.lineTo(265, topY + 18); // Long line (+)
-            ctx.lineWidth = 4.5;
-            ctx.moveTo(278, topY - 10); ctx.lineTo(278, topY + 10); // Short thick line (-)
-            ctx.stroke();
-            ctx.fillText("Sel kering 1.5 V", 232, topY - 24);
+function updateReadouts() {
+  const I = swOn ? targetI : 0;
+  const V = swOn ? calcV(targetI, mode) : 0;
+  document.getElementById('mVal0').innerText = swOn ? (lang === 'ms' ? 'HIDUP (ON)' : 'ON') : (lang === 'ms' ? 'MATI (OFF)' : 'OFF');
+  document.getElementById('mVal1').innerText = I.toFixed(2) + ' A';
+  document.getElementById('mVal2').innerText = V.toFixed(2) + ' V';
+}
 
-            // Left vertical wire with Ammeter (A)
-            const amY = (topY + botY) / 2;
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(leftX, topY); ctx.lineTo(leftX, amY - 22);
-            ctx.moveTo(leftX, amY + 22); ctx.lineTo(leftX, botY);
-            ctx.stroke();
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3'), p4 = document.getElementById('pill4');
+  [p1, p2, p3, p4].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyambungkan litar Hukum Ohm 3D."
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus Tray</b> to wire the 3D Ohm's Law circuit.";
+  } else if (!swOn) {
+    p1.classList.add('done'); p2.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 — Klik <b>🔌 Hidupkan / Matikan Suis</b> atau klik suis di atas kanvas 3D untuk mengalirkan arus!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 2 — Click <b>🔌 Toggle Switch ON / OFF</b> or click the switch on the 3D canvas to close the circuit!";
+  } else if (records.length < 5) {
+    p1.classList.add('done'); p2.classList.add('done'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? `🧑‍🏫 <b>Prof. Vector:</b> Langkah 3 — Seret pelaras kuning pada <b>Reostat 3D</b> untuk menetapkan arus <b>I = 0.2, 0.3, 0.4, 0.5, 0.6 A</b> dan klik <b>➕ Rekod Bacaan</b> (${records.length} direkod).`
+      : `🧑‍🏫 <b>Prof. Vector:</b> Step 3 — Drag the yellow wiper on the <b>3D Rheostat</b> to set current <b>I = 0.2, 0.3, 0.4, 0.5, 0.6 A</b> and click <b>➕ Record Reading</b> (${records.length} recorded).`;
+  } else {
+    [p1, p2, p3].forEach(p => p.classList.add('done')); p4.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Syabas! Graf V melawan I bagi dawai konstantan ialah garis lurus (R malar), manakala mentol filamen melengkung ke atas kerana suhu dan rintangan filamen meningkat!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Great! The V vs I graph for constantan wire is linear (constant R), whereas the filament bulb curves upward as filament temperature and resistance increase!";
+  }
+}
 
-            ctx.fillStyle = "#eff6ff";
-            ctx.strokeStyle = "#2563eb";
-            ctx.beginPath();
-            ctx.arc(leftX, amY, 22, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            ctx.fillStyle = "#1e3a8a";
-            ctx.font = "bold 16px Segoe UI";
-            ctx.fillText("A", leftX - 6, amY + 6);
-            ctx.font = "bold 12px Segoe UI";
-            ctx.fillText(`Ammeter`, 14, amY - 6);
-            ctx.fillStyle = "#dc2626";
-            ctx.fillText(`I = ${iStr} A`, 14, amY + 12);
+function recordRow() {
+  if (!allPlaced()) assembleAll();
+  swOn = true;
+  updateReadouts();
+  const V = calcV(targetI, mode);
+  const R = V / targetI;
+  if (records.some(r => r.mode === mode && Math.abs(r.I - targetI) < 0.01)) {
+    alert(lang === 'ms' ? 'Bacaan ini sudah direkod!' : 'This reading is already recorded!');
+    return;
+  }
+  records.push({ mode, I: targetI, V, R });
+  records.sort((a, b) => a.I - b.I);
+  renderTable(); drawGraph(); updateCoach();
+}
 
-            // Right vertical wire with Rheostat (Reostat)
-            const rhY = (topY + botY) / 2;
-            ctx.strokeStyle = "#1e293b";
-            ctx.beginPath();
-            ctx.moveTo(rightX, topY); ctx.lineTo(rightX, rhY - 28);
-            ctx.moveTo(rightX, rhY + 28); ctx.lineTo(rightX, botY);
-            ctx.stroke();
+function renderTable() {
+  const tb = document.getElementById('tableBody');
+  tb.innerHTML = '';
+  records.forEach(r => {
+    const tr = document.createElement('tr');
+    const compName = r.mode === 'ohmic'
+      ? (lang === 'ms' ? 'Dawai Konstantan' : 'Constantan Wire')
+      : (lang === 'ms' ? 'Mentol Filamen' : 'Filament Bulb');
+    tr.innerHTML = `<td>${compName}</td><td>${r.I.toFixed(2)}</td><td style="color:#38bdf8;font-weight:700;">${r.V.toFixed(2)}</td><td>${r.R.toFixed(2)}</td>`;
+    tb.appendChild(tr);
+  });
+}
 
-            // Rheostat box + diagonal arrow
-            ctx.fillStyle = "#f8fafc";
-            ctx.strokeStyle = "#334155";
-            ctx.fillRect(rightX - 10, rhY - 28, 20, 56);
-            ctx.strokeRect(rightX - 10, rhY - 28, 20, 56);
-            ctx.strokeStyle = "#7c3aed";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(rightX - 18, rhY + 22);
-            ctx.lineTo(rightX + 18, rhY - 22);
-            ctx.stroke();
-            ctx.fillStyle = "#0f172a";
-            ctx.fillText("Reostat", rightX + 18, rhY + 4);
+function resetSim() {
+  records = []; swOn = false; targetI = 0.2;
+  document.getElementById('currSlider').value = 0.2;
+  renderTable(); updateReadouts(); drawGraph(); updateCoach(); draw3D();
+}
 
-            // Bottom wire connecting to Load (Constantan wire OR Filament bulb)
-            ctx.strokeStyle = "#1e293b";
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(leftX, botY); ctx.lineTo(loadLeftX, botY);
-            ctx.moveTo(loadRightX, botY); ctx.lineTo(rightX, botY);
-            ctx.stroke();
+function toggleLang() {
+  lang = (lang === 'ms') ? 'en' : 'ms';
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  renderTable(); updateReadouts(); updateCoach(); draw3D(); drawGraph();
+}
 
-            // Parallel Voltmeter (V) above the load
-            const voltY = 205;
-            const voltX = (loadLeftX + loadRightX) / 2;
-            ctx.beginPath();
-            ctx.moveTo(loadLeftX, botY); ctx.lineTo(loadLeftX, voltY); ctx.lineTo(voltX - 22, voltY);
-            ctx.moveTo(voltX + 22, voltY); ctx.lineTo(loadRightX, voltY); ctx.lineTo(loadRightX, botY);
-            ctx.stroke();
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
 
-            ctx.fillStyle = "#fef2f2";
-            ctx.strokeStyle = "#dc2626";
-            ctx.beginPath();
-            ctx.arc(voltX, voltY, 22, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            ctx.fillStyle = "#991b1b";
-            ctx.font = "bold 16px Segoe UI";
-            ctx.fillText("V", voltX - 6, voltY + 6);
-            ctx.font = "bold 12px Segoe UI";
-            ctx.fillText(`Voltmeter: V = ${item.V.toFixed(2)} V`, voltX - 62, voltY - 30);
+function draw3D() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, 0, 440);
+  bg.addColorStop(0, '#0f172a'); bg.addColorStop(1, '#1e293b');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 440);
 
-            // Draw the Load between loadLeftX and loadRightX at botY
-            if (currentMode === 'A') {
-                // Curved Constantan Wire (Dawai konstantan s.w.g. 24) as in Rajah 3.12
-                ctx.strokeStyle = "#b45309";
-                ctx.lineWidth = 4;
-                ctx.beginPath();
-                ctx.arc(voltX, botY + 12, (loadRightX - loadLeftX) / 2, Math.PI * 1.08, Math.PI * 1.92, false);
-                ctx.stroke();
+  if (!placed.battery && !placed.rheostat && !placed.meters && !placed.load) {
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 210);
+    return;
+  }
 
-                ctx.fillStyle = "#0f172a";
-                ctx.beginPath(); ctx.arc(loadLeftX, botY, 4.5, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.arc(loadRightX, botY, 4.5, 0, Math.PI * 2); ctx.fill();
+  // Wires
+  ctx.strokeStyle = swOn ? '#38bdf8' : '#64748b';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(95, 75, 490, 220);
 
-                ctx.fillStyle = "#92400e";
-                ctx.font = "bold 12px Segoe UI";
-                ctx.fillText("Dawai konstantan (s.w.g. 24, 20 cm)", voltX - 95, botY + 38);
-            } else {
-                // Filament Bulb (Mentol berfilamen) that glows brighter with higher current!
-                ctx.strokeStyle = "#1e293b";
-                ctx.lineWidth = 2.5;
-                ctx.beginPath();
-                ctx.moveTo(loadLeftX, botY); ctx.lineTo(voltX - 24, botY);
-                ctx.moveTo(voltX + 24, botY); ctx.lineTo(loadRightX, botY);
-                ctx.stroke();
+  if (placed.battery) {
+    // 3V Dry Cell Holder
+    ctx.fillStyle = '#1e293b'; ctx.fillRect(215, 52, 110, 44);
+    ctx.fillStyle = '#f59e0b'; ctx.fillRect(222, 58, 45, 32);
+    ctx.fillStyle = '#ef4444'; ctx.fillRect(272, 58, 45, 32);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('3.0 V', 270, 78);
 
-                // Glow intensity based on selectedIdx
-                const glowAlpha = 0.25 + (selectedIdx / 4) * 0.65;
-                ctx.fillStyle = `rgba(250, 204, 21, ${glowAlpha})`;
-                ctx.beginPath();
-                ctx.arc(voltX, botY, 28 + selectedIdx * 3, 0, Math.PI * 2);
-                ctx.fill();
+    // Switch
+    ctx.fillStyle = '#334155'; ctx.fillRect(390, 58, 70, 32);
+    ctx.strokeStyle = swOn ? '#10b981' : '#ef4444'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(405, 74);
+    ctx.lineTo(445, swOn ? 74 : 52); ctx.stroke();
+  }
 
-                ctx.fillStyle = "#fef9c3";
-                ctx.strokeStyle = "#ca8a04";
-                ctx.lineWidth = 2.5;
-                ctx.beginPath();
-                ctx.arc(voltX, botY, 22, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
+  if (placed.rheostat) {
+    // 3D Cylindrical Rheostat on left/top-left
+    const rx = 65, ry = 145, rw = 115, rh = 36;
+    ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 8); ctx.fill();
+    // Wiper position mapped to targetI (0.2 -> 0.6)
+    const wiperX = rx + 12 + ((targetI - 0.2) / 0.4) * (rw - 24);
+    ctx.fillStyle = '#fde047';
+    ctx.beginPath(); ctx.roundRect(wiperX - 8, ry - 10, 16, rh + 20, 4); ctx.fill();
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Reostat', rx + rw / 2, ry + rh + 22);
+  }
 
-                // Filament loop inside bulb
-                ctx.strokeStyle = "#dc2626";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(voltX - 10, botY + 12);
-                ctx.lineTo(voltX - 5, botY - 8);
-                ctx.lineTo(voltX + 5, botY - 8);
-                ctx.lineTo(voltX + 10, botY + 12);
-                ctx.stroke();
+  if (placed.meters) {
+    const I = swOn ? targetI : 0;
+    const V = swOn ? calcV(targetI, mode) : 0;
+    // Ammeter (Right)
+    ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.roundRect(535, 145, 90, 65, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 14px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('AMMETER', 580, 165);
+    ctx.fillText(I.toFixed(2) + ' A', 580, 192);
 
-                ctx.fillStyle = "#854d0e";
-                ctx.font = "bold 12px Segoe UI";
-                ctx.fillText("Mentol berfilamen (Suhu meningkat → R bertambah)", voltX - 135, botY + 44);
-            }
-        }
+    // Voltmeter (Parallel below load)
+    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2.5;
+    ctx.strokeRect(245, 295, 190, 75);
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.roundRect(290, 335, 100, 58, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#c084fc';
+    ctx.fillText('VOLTMETER', 340, 355);
+    ctx.fillText(V.toFixed(2) + ' V', 340, 380);
+  }
 
-        function rekodData() {
-            const list = currentMode === 'A' ? DATA_A : DATA_B;
-            const map = currentMode === 'A' ? recordedA : recordedB;
-            const item = list[selectedIdx];
-            const val = parseFloat(document.getElementById('inputVoltV').value);
-            const usedV = !isNaN(val) ? +val.toFixed(2) : item.V;
+  if (placed.load) {
+    if (mode === 'ohmic') {
+      // Constantan wire PQ
+      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(245, 295); ctx.lineTo(435, 295); ctx.stroke();
+      ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(lang === 'ms' ? 'Dawai Konstantan (Konduktor Ohm)' : 'Constantan Wire (Ohmic)', 340, 275);
+    } else {
+      // Glowing 3D Filament Bulb
+      const glow = swOn ? (targetI / 0.6) : 0;
+      if (glow > 0) {
+        const gGrad = ctx.createRadialGradient(340, 285, 4, 340, 285, 45 * glow + 15);
+        gGrad.addColorStop(0, 'rgba(254, 240, 138, 0.95)');
+        gGrad.addColorStop(1, 'rgba(250, 204, 21, 0)');
+        ctx.fillStyle = gGrad;
+        ctx.beginPath(); ctx.arc(340, 285, 50, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.strokeStyle = '#fde047'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(340, 285, 22, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 422);
+  }
+}
 
-            map.set(item.I, { I: item.I, V: usedV, R: +(usedV / item.I).toFixed(2) });
-            renderTableAndGraph();
-            updateReminderUI();
-        }
+canvas.addEventListener('pointerdown', e => {
+  if (!allPlaced()) assembleAll();
+  const rect = canvas.getBoundingClientRect();
+  const px = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const py = (e.clientY - rect.top) * (canvas.height / rect.height);
+  if (px > 375 && px < 475 && py > 40 && py < 105) {
+    toggleSwitch();
+    return;
+  }
+  swOn = true; isDragging = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
+});
+canvas.addEventListener('pointermove', e => { if (isDragging) handleDrag(e); });
+canvas.addEventListener('pointerup', () => { isDragging = false; updateCoach(); draw3D(); });
 
-        function renderTableAndGraph() {
-            const tbody = document.querySelector('#dataTable tbody');
-            tbody.innerHTML = '';
-            const map = currentMode === 'A' ? recordedA : recordedB;
-            const sorted = Array.from(map.values()).sort((a, b) => a.I - b.I);
-            sorted.forEach(r => {
-                const tr = document.createElement('tr');
-                const iFormatted = currentMode === 'A' ? r.I.toFixed(1) : r.I.toFixed(2);
-                tr.innerHTML = `
-                    <td>${iFormatted}</td>
-                    <td><strong style="color:#0284c7;">${r.V.toFixed(2)}</strong></td>
-                    <td>${r.R.toFixed(2)}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-            drawGraph(sorted);
-        }
+function handleDrag(e) {
+  const rect = canvas.getBoundingClientRect();
+  const px = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const norm = Math.max(0, Math.min(1, (px - 75) / 100));
+  targetI = Math.round((0.2 + norm * 0.4) * 10) / 10;
+  document.getElementById('currSlider').value = targetI;
+  updateReadouts(); draw3D();
+}
 
-        function drawGraph(points) {
-            gctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-            const padL = 55, padB = 36, padT = 18, padR = 25;
-            const w = graphCanvas.width - padL - padR;
-            const h = graphCanvas.height - padT - padB;
+function drawGraph() {
+  const gCanvas = document.getElementById('graphCanvas');
+  const gCtx = gCanvas.getContext('2d');
+  gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+  gCtx.fillStyle = '#38bdf8'; gCtx.font = 'bold 12px Segoe UI, sans-serif'; gCtx.textAlign = 'center';
+  gCtx.fillText(i18n[lang].graphTitle, gCanvas.width / 2, 20);
+  const ox = 55, oy = 180, gw = 430, gh = 135;
+  gCtx.strokeStyle = '#64748b'; gCtx.lineWidth = 1.5;
+  gCtx.beginPath(); gCtx.moveTo(ox, oy - gh); gCtx.lineTo(ox, oy); gCtx.lineTo(ox + gw, oy); gCtx.stroke();
+  ['ohmic', 'bulb'].forEach(m => {
+    const pts = records.filter(r => r.mode === m);
+    if (pts.length > 0) {
+      gCtx.strokeStyle = m === 'ohmic' ? '#10b981' : '#f59e0b';
+      gCtx.lineWidth = 2.5;
+      gCtx.beginPath(); gCtx.moveTo(ox, oy);
+      pts.forEach(r => {
+        const px = ox + (r.I / 0.65) * gw;
+        const py = oy - (r.V / 2.0) * gh;
+        gCtx.lineTo(px, py);
+      });
+      gCtx.stroke();
+    }
+  });
+}
 
-            const maxI = currentMode === 'A' ? 0.65 : 0.25;
-            const maxV = 1.40;
+function exportCSV() {
+  if (records.length === 0) { alert(lang === 'ms' ? 'Tiada data!' : 'No data!'); return; }
+  let csv = 'Komponen,Arus I (A),Beza Keupayaan V (V),Rintangan R (Ohm)\n';
+  records.forEach(r => { csv += `${r.mode},${r.I.toFixed(2)},${r.V.toFixed(2)},${r.R.toFixed(2)}\n`; });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = 'Eksperimen_3.1_Hukum_Ohm.csv';
+  a.click();
+}
 
-            gctx.strokeStyle = "#e2e8f0";
-            gctx.lineWidth = 1;
-            for (let i = 0; i <= 5; i++) {
-                const gx = padL + (i / 5) * w;
-                const gy = padT + (i / 5) * h;
-                gctx.beginPath(); gctx.moveTo(gx, padT); gctx.lineTo(gx, padT + h); gctx.stroke();
-                gctx.beginPath(); gctx.moveTo(padL, gy); gctx.lineTo(padL + w, gy); gctx.stroke();
-
-                gctx.fillStyle = "#475569";
-                gctx.font = "11px Segoe UI";
-                gctx.fillText(((i / 5) * maxI).toFixed(2), gx - 12, padT + h + 15);
-                gctx.fillText((((5 - i) / 5) * maxV).toFixed(2), padL - 32, gy + 4);
-            }
-
-            gctx.strokeStyle = "#0f172a";
-            gctx.lineWidth = 2;
-            gctx.beginPath();
-            gctx.moveTo(padL, padT);
-            gctx.lineTo(padL, padT + h);
-            gctx.lineTo(padL + w, padT + h);
-            gctx.stroke();
-
-            gctx.fillStyle = "#0f172a";
-            gctx.font = "bold 12px Segoe UI";
-            gctx.fillText("Arus, I / A", padL + w / 2 - 30, graphCanvas.height - 5);
-            gctx.save();
-            gctx.translate(15, padT + h / 2 + 20);
-            gctx.rotate(-Math.PI / 2);
-            gctx.fillText("V / V", 0, 0);
-            gctx.restore();
-
-            if (points.length === 0) return;
-
-            gctx.strokeStyle = currentMode === 'A' ? "#0284c7" : "#d97706";
-            gctx.lineWidth = 2.5;
-            gctx.beginPath();
-            gctx.moveTo(padL, padT + h);
-            points.forEach(p => {
-                const px = padL + (p.I / maxI) * w;
-                const py = padT + h - (p.V / maxV) * h;
-                gctx.lineTo(px, py);
-            });
-            gctx.stroke();
-
-            points.forEach(p => {
-                const px = padL + (p.I / maxI) * w;
-                const py = padT + h - (p.V / maxV) * h;
-                gctx.fillStyle = "#dc2626";
-                gctx.beginPath();
-                gctx.arc(px, py, 4.5, 0, Math.PI * 2);
-                gctx.fill();
-            });
-        }
-
-        function muatTurunExcel() {
-            if (recordedA.size === 0 && recordedB.size === 0) {
-                alert("Sila rekodkan sekurang-kurangnya satu data terlebih dahulu!");
-                return;
-            }
-            let csv = "Kategori,Arus I (A),Beza keupayaan V (V),Rintangan R (Ohm)\n";
-            Array.from(recordedA.values()).sort((a, b) => a.I - b.I).forEach(r => {
-                csv += `Konduktor Ohm (Dawai Konstantan),${r.I.toFixed(1)},${r.V.toFixed(2)},${r.R.toFixed(2)}\n`;
-            });
-            Array.from(recordedB.values()).sort((a, b) => a.I - b.I).forEach(r => {
-                csv += `Konduktor Bukan Ohm (Mentol Berfilamen),${r.I.toFixed(2)},${r.V.toFixed(2)},${r.R.toFixed(2)}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Eksperimen_3_1_Hukum_Ohm.csv';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function toggleLang() {
-            isEng = !isEng;
-            document.getElementById('mainTitle').innerText = isEng
-                ? "Experiment 3.1 (Form 5): Ohm's Law (Ohmic & Non-Ohmic Conductors)"
-                : "Eksperimen 3.1: Hukum Ohm (Konduktor Ohm & Bukan Ohm)";
-            drawCircuit();
-        }
-
-        switchMode('A');
-    </script>
-
-    <!-- Firebase Activity Tracking -->
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA13Ven5xlpBW0ub_Wou92ZgQgiV2BzYzo",
-            authDomain: "velocity-valley-edu.firebaseapp.com",
-            projectId: "velocity-valley-edu",
-            storageBucket: "velocity-valley-edu.firebasestorage.app",
-            messagingSenderId: "340043533038",
-            appId: "1:340043533038:web:0abf2444b8ac6da07f41ff"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        function recordStationVisit(user) {
-            const stationItem = {
-                id: "f5_exp3_1",
-                title: "Form 5 Exp 3.1: Ohmic & Non-Ohmic Conductors (V = IR)",
-                category: "Form 5 • Chapter 2/3",
-                webUrl: "form5eksperimen5.html",
-                fileUrl: "form5eksperimen5.html",
-                timestamp: new Date().toLocaleString('en-GB')
-            };
-            try {
-                let localList = JSON.parse(localStorage.getItem('vv_recent_activities') || '[]');
-                localList = [stationItem, ...localList.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                localStorage.setItem('vv_recent_activities', JSON.stringify(localList));
-            } catch (e) {}
-
-            if (!user) return;
-            const pageID = "visited_f5_exp3_1";
-            const isFirst = !sessionStorage.getItem(pageID);
-            sessionStorage.setItem(pageID, "true");
-
-            db.collection("users").doc(user.uid).get().then(doc => {
-                let existing = (doc.exists && Array.isArray(doc.data().recentActivities)) ? doc.data().recentActivities : [];
-                let updated = [stationItem, ...existing.filter(x => x.id !== stationItem.id)].slice(0, 5);
-                let payload = { recentActivities: updated };
-                if (isFirst) payload.simsExplored = firebase.firestore.FieldValue.increment(1);
-                db.collection("users").doc(user.uid).set(payload, { merge: true });
-            });
-        }
-
-        firebase.auth().onAuthStateChanged(function(user) {
-            recordStationVisit(user);
-        });
-    </script>
+updateReadouts(); draw3D(); drawGraph();
+</script>
 </body>
 </html>
