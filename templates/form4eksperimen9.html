@@ -118,7 +118,7 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
     <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
     <div class="top-right">
       <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 6 • Eksperimen 6.1</span>
-      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+      <button class="btn-lang" onclick="toggleLang()" id="btnLang">🌐 Bahasa Melayu / English</button>
     </div>
   </div>
 
@@ -165,11 +165,11 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
 
     <div class="card-panel">
       <div class="control-box">
-        <label style="font-weight:700;display:block;margin-bottom:8px;">🖐️ Seret Kotak Sinar Laser di Kanvas 3D atau Pilih Sudut Tuju, i (°):</label>
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlILbl">🖐️ Seret Kotak Sinar Laser di Kanvas 3D atau Pilih Sudut Tuju, i (°):</label>
         <input type="range" id="sudutTuju" min="10" max="80" value="20" step="10" style="width:100%;" oninput="setAngleI(this.value)">
         <div class="btn-row">
-          <button class="btn-act" onclick="rekodData()">➕ Rekod Data ke Jadual 6.2</button>
-          <button class="btn-act purple" onclick="muatTurunExcel()">⬇️ Muat Turun Jadual (CSV)</button>
+          <button class="btn-act" onclick="rekodData()" id="btnRecord">➕ Rekod Data ke Jadual 6.2</button>
+          <button class="btn-act purple" onclick="muatTurunExcel()" id="btnExport">⬇️ Muat Turun Jadual (CSV)</button>
         </div>
       </div>
 
@@ -178,8 +178,8 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
         <table class="data-tbl" id="dataTable">
           <thead>
             <tr>
-              <th>Sudut tuju, i / °</th>
-              <th>Sudut biasan, r / °</th>
+              <th id="thI">Sudut tuju, i / °</th>
+              <th id="thR">Sudut biasan, r / °</th>
               <th>sin i</th>
               <th>sin r</th>
             </tr>
@@ -193,6 +193,61 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
 
 <script>
 let lang = 'ms';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 4 • Bab 6 • Eksperimen 6.1",
+    pageTitle: "Eksperimen 6.1: Hukum Snell & Menentukan Indeks Biasan Blok Kaca (n = sin i / sin r)",
+    pageDesc: "Tujuan: Mengkaji hubungan antara sudut tuju, i dengan sudut biasan, r apabila sinar laser merambat dari udara ke dalam blok kaca 3D (n ≈ 1.50). Tandakan radas untuk memasang blok kaca, jangka sudut, dan kotak sinar laser, kemudian seret Kotak Sinar Laser secara terus di atas kanvas 3D!",
+    pillTxt1: "Pilih & Pasang Radas 3D",
+    pillTxt2: "Seret Kotak Sinar Laser (i)",
+    pillTxt3: "Rekod Jadual 6.2 (i, r, sin i, sin r)",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_glass: "Blok Kaca 3D (n = 1.50)",
+    lbl_prot: "Jangka Sudut + Garis Normal",
+    lbl_laser: "Kotak Sinar Laser 3D",
+    mLbl0: "Sudut Tuju, i",
+    mLbl1: "Sudut Biasan, r",
+    mLbl2: "Nisbah sin i / sin r",
+    ctrlILbl: "🖐️ Seret Kotak Sinar Laser di Kanvas 3D atau Pilih Sudut Tuju, i (°):",
+    btnRecord: "➕ Rekod Data ke Jadual 6.2",
+    btnExport: "⬇️ Muat Turun Jadual (CSV)",
+    tblTitle: "📊 Jadual 6.2: Keputusan Eksperimen Indeks Biasan Blok Kaca",
+    thI: "Sudut tuju, i / °",
+    thR: "Sudut biasan, r / °",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    glassLbl: "Blok Kaca 3D (n = 1.50)",
+    dragHint: "🖐️ Seret Kotak Sinar Laser di bahagian atas kanvas 3D untuk mengubah sudut tuju i!"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 4 • Chapter 6 • Experiment 6.1",
+    pageTitle: "Experiment 6.1: Snell's Law & Refractive Index of a Glass Block (n = sin i / sin r)",
+    pageDesc: "Objective: To study the relationship between the angle of incidence, i and the angle of refraction, r when a laser ray travels from air into a 3D glass block (n ≈ 1.50). Tick apparatus to assemble the glass block, protractor, and laser ray box, then drag the Laser Ray Box directly on the 3D canvas!",
+    pillTxt1: "Select & Assemble 3D Apparatus",
+    pillTxt2: "Drag Laser Ray Box (i)",
+    pillTxt3: "Record Table 6.2 (i, r, sin i, sin r)",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_glass: "3D Glass Block (n = 1.50)",
+    lbl_prot: "Protractor + Normal Line",
+    lbl_laser: "3D Laser Ray Box",
+    mLbl0: "Angle of Incidence, i",
+    mLbl1: "Angle of Refraction, r",
+    mLbl2: "Ratio sin i / sin r",
+    ctrlILbl: "🖐️ Drag Laser Ray Box on 3D Canvas or Select Angle of Incidence, i (°):",
+    btnRecord: "➕ Record Data to Table 6.2",
+    btnExport: "⬇️ Download Table (CSV)",
+    tblTitle: "📊 Table 6.2: Glass Block Refractive Index Results",
+    thI: "Angle of incidence, i / °",
+    thR: "Angle of refraction, r / °",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    glassLbl: "3D Glass Block (n = 1.50)",
+    dragHint: "🖐️ Drag the Laser Ray Box in the upper half of the 3D canvas to change angle i!"
+  }
+};
+
 const placed = { glass: false, prot: false, laser: false };
 const n_glass = 1.50;
 let angleI = 20;
@@ -203,7 +258,7 @@ function allPlaced() { return placed.glass && placed.prot && placed.laser; }
 function toggleApparatus(k, c) {
   placed[k] = c;
   document.getElementById('tray_' + k).classList.toggle('placed', c);
-  draw3D();
+  updateCoach(); draw3D();
 }
 function assembleAll() {
   ['glass', 'prot', 'laser'].forEach(k => {
@@ -211,7 +266,22 @@ function assembleAll() {
     document.querySelector('#tray_' + k + ' input').checked = true;
     document.getElementById('tray_' + k).classList.add('placed');
   });
-  draw3D();
+  updateCoach(); draw3D();
+}
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3');
+  [p1, p2, p3].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun kertas putih berjangka sudut, blok kaca 3D, dan kotak sinar laser!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus & Materials Tray</b> to place the protractor sheet, 3D glass block, and laser ray box!";
+  } else {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Seret <b>Kotak Sinar Laser 3D</b> untuk mengubah sudut tuju <b>i = 10° hingga 80°</b> dan klik <b>➕ Rekod Data ke Jadual 6.2</b>!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Drag the <b>3D Laser Ray Box</b> to vary the angle of incidence <b>i = 10° to 80°</b> and click <b>➕ Record Data to Table 6.2</b>!";
+  }
 }
 function setAngleI(val) {
   if (!allPlaced()) assembleAll();
@@ -226,7 +296,7 @@ function setAngleI(val) {
 }
 function rekodData() {
   if (!allPlaced()) assembleAll();
-  if (dataSet.has(angleI)) { alert(`Sudut ${angleI}° sudah direkod!`); return; }
+  if (dataSet.has(angleI)) { alert(lang === 'ms' ? `Sudut ${angleI}° sudah direkod!` : `Angle ${angleI}° is already recorded!`); return; }
   const radI = (angleI * Math.PI) / 180;
   const sinI = Math.sin(radI);
   const sinR = sinI / n_glass;
@@ -239,7 +309,12 @@ function rekodData() {
 }
 function toggleLang() {
   lang = (lang === 'ms') ? 'en' : 'ms';
-  draw3D();
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateCoach(); draw3D();
 }
 
 const canvas = document.getElementById('simCanvas');
@@ -254,7 +329,7 @@ function draw3D() {
 
   if (!placed.glass && !placed.prot && !placed.laser) {
     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 200);
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 200);
     return;
   }
 
@@ -267,7 +342,7 @@ function draw3D() {
     ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
     ctx.strokeRect(120, cy, 440, 145);
     ctx.fillStyle = '#bae6fd'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'right';
-    ctx.fillText(lang === 'ms' ? 'Blok Kaca 3D (n = 1.50)' : '3D Glass Block (n = 1.50)', 548, cy + 24);
+    ctx.fillText(i18n[lang].glassLbl, 548, cy + 24);
   }
 
   if (placed.prot) {
@@ -286,14 +361,12 @@ function draw3D() {
     const len = 165;
     const startX = cx - len * Math.sin(radI);
     const startY = cy - len * Math.cos(radI);
-    const endX = cx + 150 * Math.sin(radR);
-    const endY = cy + 150 * Math.cos(radR);
+    const endX = cx + 145 * Math.sin(radR);
+    const endY = cy + 145 * Math.cos(radR);
 
-    // Laser Beam
     ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5;
     ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(cx, cy); ctx.lineTo(endX, endY); ctx.stroke();
 
-    // 3D Ray Box
     ctx.save();
     ctx.translate(startX, startY);
     ctx.rotate(-radI);
@@ -306,6 +379,9 @@ function draw3D() {
     ctx.fillStyle = '#10b981';
     ctx.fillText(`r = ${((radR * 180) / Math.PI).toFixed(1)}°`, cx + 45, cy + 55);
   }
+
+  ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 388);
 }
 
 canvas.addEventListener('pointerdown', e => {
@@ -327,7 +403,7 @@ function handleDrag(e) {
 }
 
 function muatTurunExcel() {
-  if (dataSet.size === 0) { alert("Tiada data!"); return; }
+  if (dataSet.size === 0) { alert(lang === 'ms' ? "Tiada data!" : "No data!"); return; }
   let csv = "Sudut tuju i (darjah),Sudut biasan r (darjah),sin i,sin r\n";
   document.querySelectorAll("#dataTable tbody tr").forEach(r => {
     csv += Array.from(r.cells).map(c => c.innerText).join(",") + "\n";
@@ -338,6 +414,7 @@ function muatTurunExcel() {
   a.click();
 }
 
+updateCoach();
 draw3D();
 </script>
 </body>

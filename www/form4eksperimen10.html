@@ -118,7 +118,7 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
     <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
     <div class="top-right">
       <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 6 • Eksperimen 6.2</span>
-      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+      <button class="btn-lang" onclick="toggleLang()" id="btnLang">🌐 Bahasa Melayu / English</button>
     </div>
   </div>
 
@@ -157,19 +157,19 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
       </div>
 
       <div class="readout-strip">
-        <div class="metric-pill"><span class="lbl">Dalam Nyata, H</span><span class="val" id="nilaiH">6.0 cm</span></div>
-        <div class="metric-pill"><span class="lbl">Jarak Pin P_i dari Dasar, y</span><span class="val" id="nilaiY">1.5 cm</span></div>
-        <div class="metric-pill"><span class="lbl">Dalam Ketara, h = H - y</span><span class="val" id="nilaiApp">4.5 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Dalam Nyata, H</span><span class="val" id="nilaiH">6.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Jarak Pin P_i dari Dasar, y</span><span class="val" id="nilaiY">1.5 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Dalam Ketara, h = H - y</span><span class="val" id="nilaiApp">4.5 cm</span></div>
       </div>
     </div>
 
     <div class="card-panel">
       <div class="control-box">
-        <label style="font-weight:700;display:block;margin-bottom:8px;">💧 Pilih Dalam Nyata Air, H (cm) (atau Seret di Kanvas 3D):</label>
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlHLbl">💧 Pilih Dalam Nyata Air, H (cm) (atau Seret di Kanvas 3D):</label>
         <input type="range" id="dalamNyata" min="6.0" max="10.0" value="6.0" step="1.0" style="width:100%;" oninput="setDepthH(this.value)">
         <div class="btn-row">
-          <button class="btn-act" onclick="rekodData()">➕ Rekod Data ke Jadual 6.3</button>
-          <button class="btn-act purple" onclick="muatTurunExcel()">⬇️ Muat Turun Jadual (CSV)</button>
+          <button class="btn-act" onclick="rekodData()" id="btnRecord">➕ Rekod Data ke Jadual 6.3</button>
+          <button class="btn-act purple" onclick="muatTurunExcel()" id="btnExport">⬇️ Muat Turun Jadual (CSV)</button>
         </div>
       </div>
 
@@ -178,9 +178,9 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
         <table class="data-tbl" id="dataTable">
           <thead>
             <tr>
-              <th>Dalam nyata, H / cm</th>
-              <th>Jarak pin P_i dari dasar, y / cm</th>
-              <th>Dalam ketara, h / cm (h = H - y)</th>
+              <th id="thH">Dalam nyata, H / cm</th>
+              <th id="thY">Jarak pin P_i dari dasar, y / cm</th>
+              <th id="thApp">Dalam ketara, h / cm (h = H - y)</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -192,6 +192,69 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
 
 <script>
 let lang = 'ms';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 4 • Bab 6 • Eksperimen 6.2",
+    pageTitle: "Eksperimen 6.2: Hubungan antara Dalam Nyata, H dengan Dalam Ketara, h (Kaedah Tanpa Paralaks 3D)",
+    pageDesc: "Tujuan: Mengkaji hubungan antara dalam nyata air, H (6.0 cm hingga 10.0 cm) dengan dalam ketara, h = H - y bagi menentukan indeks biasan air (n = H / h ≈ 1.33). Pasang radas 3D, seret Pin Pencari P_i sehingga sebaris dengan imej maya I, dan rekodkan Jadual 6.3!",
+    pillTxt1: "Pilih & Pasang Radas 3D",
+    pillTxt2: "Laraskan Dalam Nyata H (6–10 cm)",
+    pillTxt3: "Seret Pin P_i & Rekod Jadual 6.3",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_beaker: "Bikar Tinggi + Air + Pin Objek P_o",
+    lbl_stand: "Kaki Retort + Pembaris Tegak",
+    lbl_pin: "Pin Pencari P_i + Gabus Gelongsor",
+    mLbl0: "Dalam Nyata, H",
+    mLbl1: "Jarak Pin P_i dari Dasar, y",
+    mLbl2: "Dalam Ketara, h = H - y",
+    ctrlHLbl: "💧 Pilih Dalam Nyata Air, H (cm) (atau Seret di Kanvas 3D):",
+    btnRecord: "➕ Rekod Data ke Jadual 6.3",
+    btnExport: "⬇️ Muat Turun Jadual (CSV)",
+    tblTitle: "📊 Jadual 6.3: Keputusan Eksperimen Dalam Nyata & Dalam Ketara",
+    thH: "Dalam nyata, H / cm",
+    thY: "Jarak pin P_i dari dasar, y / cm",
+    thApp: "Dalam ketara, h / cm (h = H - y)",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    objPinLbl: "Pin Objek P_o",
+    virtImgLbl: "Imej Maya I",
+    eyeLbl: "👁️ Pemerhati",
+    searchPinLbl: "Pin Pencari P_i",
+    dragHint: "🖐️ Seret ke atas/bawah di atas kanvas 3D untuk melaraskan kedalaman air H & Pin Pencari P_i!"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 4 • Chapter 6 • Experiment 6.2",
+    pageTitle: "Experiment 6.2: Relationship between Real Depth, H and Apparent Depth, h (3D Non-Parallax Method)",
+    pageDesc: "Objective: To study the relationship between real depth of water, H (6.0 cm to 10.0 cm) and apparent depth, h = H - y to determine the refractive index of water (n = H / h ≈ 1.33). Assemble the 3D apparatus, drag Search Pin P_i to align with virtual image I, and record Table 6.3!",
+    pillTxt1: "Select & Assemble 3D Apparatus",
+    pillTxt2: "Adjust Real Depth H (6–10 cm)",
+    pillTxt3: "Drag Pin P_i & Record Table 6.3",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_beaker: "Tall Beaker + Water + Object Pin P_o",
+    lbl_stand: "Retort Stand + Vertical Ruler",
+    lbl_pin: "Search Pin P_i + Sliding Cork",
+    mLbl0: "Real Depth, H",
+    mLbl1: "Pin P_i Height from Base, y",
+    mLbl2: "Apparent Depth, h = H - y",
+    ctrlHLbl: "💧 Select Real Depth of Water, H (cm) (or Drag on 3D Canvas):",
+    btnRecord: "➕ Record Data to Table 6.3",
+    btnExport: "⬇️ Download Table (CSV)",
+    tblTitle: "📊 Table 6.3: Real Depth & Apparent Depth Results",
+    thH: "Real depth, H / cm",
+    thY: "Search pin P_i height, y / cm",
+    thApp: "Apparent depth, h / cm (h = H - y)",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    objPinLbl: "Object Pin P_o",
+    virtImgLbl: "Virtual Image I",
+    eyeLbl: "👁️ Observer",
+    searchPinLbl: "Search Pin P_i",
+    dragHint: "🖐️ Drag up/down on the 3D canvas to adjust water depth H & Search Pin P_i!"
+  }
+};
+
 const placed = { beaker: false, stand: false, pin: false };
 const n_air = 1.33;
 let H_cm = 6.0;
@@ -202,7 +265,7 @@ function allPlaced() { return placed.beaker && placed.stand && placed.pin; }
 function toggleApparatus(k, c) {
   placed[k] = c;
   document.getElementById('tray_' + k).classList.toggle('placed', c);
-  draw3D();
+  updateCoach(); draw3D();
 }
 function assembleAll() {
   ['beaker', 'stand', 'pin'].forEach(k => {
@@ -210,7 +273,22 @@ function assembleAll() {
     document.querySelector('#tray_' + k + ' input').checked = true;
     document.getElementById('tray_' + k).classList.add('placed');
   });
-  draw3D();
+  updateCoach(); draw3D();
+}
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3');
+  [p1, p2, p3].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang bikar tinggi berisi air dengan pin objek P_o, kaki retort berpembaris, dan pin pencari P_i!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus & Materials Tray</b> to assemble the tall water beaker with object pin P_o, retort stand with vertical ruler, and search pin P_i!";
+  } else {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Laraskan kedalaman nyata air <b>H = 6.0, 7.0, 8.0, 9.0, 10.0 cm</b> dan klik <b>➕ Rekod Data ke Jadual 6.3</b>!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Adjust real water depth <b>H = 6.0, 7.0, 8.0, 9.0, 10.0 cm</b> and click <b>➕ Record Data to Table 6.3</b>!";
+  }
 }
 function setDepthH(v) {
   if (!allPlaced()) assembleAll();
@@ -225,7 +303,7 @@ function setDepthH(v) {
 }
 function rekodData() {
   if (!allPlaced()) assembleAll();
-  if (dataSet.has(H_cm)) { alert(`Data H = ${H_cm.toFixed(1)} cm sudah direkod!`); return; }
+  if (dataSet.has(H_cm)) { alert(lang === 'ms' ? `Data H = ${H_cm.toFixed(1)} cm sudah direkod!` : `Data H = ${H_cm.toFixed(1)} cm is already recorded!`); return; }
   const h_cm = H_cm / n_air;
   const y_cm = H_cm - h_cm;
   const tb = document.querySelector('#dataTable tbody');
@@ -236,7 +314,12 @@ function rekodData() {
 }
 function toggleLang() {
   lang = (lang === 'ms') ? 'en' : 'ms';
-  draw3D();
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateCoach(); draw3D();
 }
 
 const canvas = document.getElementById('simCanvas');
@@ -251,7 +334,7 @@ function draw3D() {
 
   if (!placed.beaker && !placed.stand && !placed.pin) {
     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 200);
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 200);
     return;
   }
 
@@ -267,18 +350,16 @@ function draw3D() {
     ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3;
     ctx.strokeRect(148, 70, 164, 280);
 
-    // Pin Po at base
     ctx.fillStyle = '#ef4444';
     ctx.fillRect(215, baseY - 6, 30, 6);
     ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('Pin Objek P_o', 230, baseY + 18);
+    ctx.fillText(i18n[lang].objPinLbl, 230, baseY + 18);
 
-    // Virtual Image I at apparent depth h
     ctx.fillStyle = 'rgba(239, 68, 68, 0.55)';
     ctx.fillRect(215, imgY - 3, 30, 6);
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText(`Imej Maya I (h = ${h_cm.toFixed(1)} cm)`, 230, imgY - 10);
-    ctx.fillText('👁️ Pemerhati', 230, 45);
+    ctx.fillText(`${i18n[lang].virtImgLbl} (h = ${h_cm.toFixed(1)} cm)`, 230, imgY - 10);
+    ctx.fillText(i18n[lang].eyeLbl, 230, 45);
   }
 
   if (placed.stand) {
@@ -288,13 +369,15 @@ function draw3D() {
   }
 
   if (placed.pin) {
-    // Search Pin Pi aligned with imgY
     ctx.fillStyle = '#d97706'; ctx.fillRect(420, imgY - 10, 36, 20);
     ctx.strokeStyle = '#10b981'; ctx.lineWidth = 3.5;
     ctx.beginPath(); ctx.moveTo(320, imgY); ctx.lineTo(420, imgY); ctx.stroke();
     ctx.fillStyle = '#10b981'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left';
-    ctx.fillText(`Pin Pencari P_i (y = ${y_cm.toFixed(1)} cm)`, 325, imgY - 12);
+    ctx.fillText(`${i18n[lang].searchPinLbl} (y = ${y_cm.toFixed(1)} cm)`, 325, imgY - 12);
   }
+
+  ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 390);
 }
 
 canvas.addEventListener('pointerdown', e => {
@@ -313,7 +396,7 @@ function handleDrag(e) {
 }
 
 function muatTurunExcel() {
-  if (dataSet.size === 0) { alert("Tiada data!"); return; }
+  if (dataSet.size === 0) { alert(lang === 'ms' ? "Tiada data!" : "No data!"); return; }
   let csv = "Dalam nyata H (cm),Jarak pin Pi dari dasar y (cm),Dalam ketara h (cm)\n";
   document.querySelectorAll("#dataTable tbody tr").forEach(r => {
     csv += Array.from(r.cells).map(c => c.innerText).join(",") + "\n";
@@ -324,6 +407,7 @@ function muatTurunExcel() {
   a.click();
 }
 
+updateCoach();
 draw3D();
 </script>
 </body>

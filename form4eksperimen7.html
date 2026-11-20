@@ -118,7 +118,7 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
     <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
     <div class="top-right">
       <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 4 • Eksperimen 4.5</span>
-      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+      <button class="btn-lang" onclick="toggleLang()" id="btnLang">🌐 Bahasa Melayu / English</button>
     </div>
   </div>
 
@@ -180,9 +180,9 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
         <table class="data-tbl" id="dataTable">
           <thead>
             <tr>
-              <th>Suhu, θ (°C)</th>
-              <th>Suhu Mutlak, T (K)</th>
-              <th>Panjang turus udara, L (cm)</th>
+              <th id="thT">Suhu, θ (°C)</th>
+              <th id="thK">Suhu Mutlak, T (K)</th>
+              <th id="thL">Panjang turus udara, L (cm)</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -194,16 +194,71 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
 
 <script>
 let lang = 'ms';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 4 • Bab 4 • Eksperimen 4.5",
+    pageTitle: "Eksperimen 4.5: Hukum Charles (Hubungan antara Suhu, θ dengan Isi Padu Gas / Panjang Turus Udara, L)",
+    pageDesc: "Tujuan: Mengkaji hubungan antara suhu gas, θ (30 °C hingga 80 °C) dengan panjang turus udara terperangkap oleh asid sulfurik pekat di dalam tiub kapilari, L (V₁/T₁ = V₂/T₂). Pasang radas 3D, laraskan suhu kukus air, dan rekodkan bacaan L!",
+    pillTxt1: "Pilih & Pasang Radas 3D",
+    pillTxt2: "Panaskan Kukus Air (30–80 °C)",
+    pillTxt3: "Ukur Panjang Turus Udara L",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_bath: "Bikar Kukus Air + Penunu Bunsen",
+    lbl_cap: "Tiub Kapilari + Asid Sulfurik + Pembaris",
+    lbl_thermo: "Termometer + Pengacau",
+    mLbl0: "Suhu Kukus Air, θ",
+    mLbl1: "Panjang Turus Udara, L",
+    ctrlTLbl: "🔥 Laraskan Suhu Air, θ (°C) (atau Seret di Kanvas 3D):",
+    btnRecord: "➕ Rekod Data ke Jadual",
+    btnExport: "⬇️ Muat Turun Data (Excel/CSV)",
+    tblTitle: "📊 Jadual Keputusan Hukum Charles",
+    thT: "Suhu, θ (°C)",
+    thK: "Suhu Mutlak, T (K)",
+    thL: "Panjang turus udara, L (cm)",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    acidLbl: "Palam Asid Sulfurik Pekat",
+    dragHint: "🖐️ Seret ke atas/bawah di atas kanvas 3D untuk melaraskan suhu kukus air θ!"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 4 • Chapter 4 • Experiment 4.5",
+    pageTitle: "Experiment 4.5: Charles's Law (Relationship between Temperature, θ and Trapped Air Column Length, L)",
+    pageDesc: "Objective: To study the relationship between gas temperature, θ (30 °C to 80 °C) and the length of the air column trapped by concentrated sulfuric acid in a capillary tube, L (V₁/T₁ = V₂/T₂). Assemble the 3D apparatus, adjust the water bath temperature, and record L!",
+    pillTxt1: "Select & Assemble 3D Apparatus",
+    pillTxt2: "Heat Water Bath (30–80 °C)",
+    pillTxt3: "Measure Trapped Air Column L",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_bath: "Water Bath Beaker + Bunsen Burner",
+    lbl_cap: "Capillary Tube + Sulfuric Acid + Ruler",
+    lbl_thermo: "Thermometer + Stirrer",
+    mLbl0: "Water Bath Temp, θ",
+    mLbl1: "Trapped Air Column Length, L",
+    ctrlTLbl: "🔥 Adjust Water Temperature, θ (°C) (or Drag on 3D Canvas):",
+    btnRecord: "➕ Record Data to Table",
+    btnExport: "⬇️ Download Data (Excel/CSV)",
+    tblTitle: "📊 Charles's Law Results Table",
+    thT: "Temperature, θ (°C)",
+    thK: "Absolute Temp, T (K)",
+    thL: "Air column length, L (cm)",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    acidLbl: "Concentrated Sulfuric Acid Plug",
+    dragHint: "🖐️ Drag up/down on the 3D canvas to adjust the water bath temperature θ!"
+  }
+};
+
 const placed = { bath: false, cap: false, thermo: false };
 let suhuC = 30;
-const factor = 0.02976; // 30C -> 9.0 cm, 80C -> 10.5 cm
+const factor = 0.02976;
 let isDragging = false;
 
 function allPlaced() { return placed.bath && placed.cap && placed.thermo; }
 function toggleApparatus(k, c) {
   placed[k] = c;
   document.getElementById('tray_' + k).classList.toggle('placed', c);
-  draw3D();
+  updateCoach(); draw3D();
 }
 function assembleAll() {
   ['bath', 'cap', 'thermo'].forEach(k => {
@@ -211,7 +266,22 @@ function assembleAll() {
     document.querySelector('#tray_' + k + ' input').checked = true;
     document.getElementById('tray_' + k).classList.add('placed');
   });
-  draw3D();
+  updateCoach(); draw3D();
+}
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3');
+  [p1, p2, p3].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang bikar kukus air, tiub kapilari bersama pembaris, termometer, dan penunu Bunsen 3D!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus & Materials Tray</b> to assemble the water bath beaker, capillary tube with ruler, thermometer, and 3D Bunsen burner!";
+  } else {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? `🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Laraskan suhu kukus air <b>θ = 30, 40, 50, 60, 70, 80 °C</b> dan klik <b>➕ Rekod Data ke Jadual</b>!`
+      : `🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Adjust the water bath temperature <b>θ = 30, 40, 50, 60, 70, 80 °C</b> and click <b>➕ Record Data to Table</b>!`;
+  }
 }
 function setTemp(val) {
   if (!allPlaced()) assembleAll();
@@ -228,7 +298,7 @@ function rekodData() {
   const tb = document.getElementById('tableBody');
   for (let r of tb.rows) {
     if (parseInt(r.cells[0].innerText) === suhuC) {
-      alert(`Data untuk ${suhuC} °C sudah direkod!`);
+      alert(lang === 'ms' ? `Data untuk ${suhuC} °C sudah direkod!` : `Data for ${suhuC} °C is already recorded!`);
       return;
     }
   }
@@ -238,7 +308,12 @@ function rekodData() {
 }
 function toggleLang() {
   lang = (lang === 'ms') ? 'en' : 'ms';
-  draw3D();
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateCoach(); draw3D();
 }
 
 const canvas = document.getElementById('simCanvas');
@@ -252,21 +327,19 @@ function draw3D() {
 
   if (!placed.bath && !placed.cap && !placed.thermo) {
     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 200);
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 200);
     return;
   }
 
   const L = (suhuC + 273.15) * factor;
 
   if (placed.bath) {
-    // Tripod & Bunsen Burner
     ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.moveTo(230, 295); ctx.lineTo(450, 295); ctx.stroke();
     ctx.fillStyle = '#f97316';
     ctx.beginPath(); ctx.ellipse(340, 315, 16, 20 + (suhuC - 30) * 0.25, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#64748b'; ctx.fillRect(326, 335, 28, 45);
 
-    // Beaker Water Bath
     ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
     ctx.fillRect(255, 115, 170, 178);
     ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3;
@@ -274,17 +347,15 @@ function draw3D() {
   }
 
   if (placed.cap) {
-    // Wooden Ruler + Capillary Tube tied with rubber bands
     ctx.fillStyle = '#fde047'; ctx.fillRect(285, 65, 24, 220);
     ctx.fillStyle = '#f8fafc'; ctx.fillRect(315, 65, 14, 220);
     const gasPx = L * 14;
     ctx.fillStyle = '#bae6fd';
     ctx.fillRect(317, 285 - gasPx, 10, gasPx);
-    // Concentrated Sulfuric Acid Plug
     ctx.fillStyle = '#475569';
     ctx.fillRect(317, 285 - gasPx - 16, 10, 16);
     ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'left';
-    ctx.fillText(`L = ${L.toFixed(1)} cm`, 338, 285 - gasPx);
+    ctx.fillText(`L = ${L.toFixed(1)} cm (${i18n[lang].acidLbl})`, 338, 285 - gasPx);
   }
 
   if (placed.thermo) {
@@ -293,6 +364,9 @@ function draw3D() {
     ctx.fillStyle = '#ef4444'; ctx.fillRect(393, 275 - mH, 6, mH);
     ctx.beginPath(); ctx.arc(396, 278, 8, 0, Math.PI * 2); ctx.fill();
   }
+
+  ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 390);
 }
 
 canvas.addEventListener('pointerdown', e => {
@@ -311,7 +385,7 @@ function handleDrag(e) {
 
 function muatTurunExcel() {
   let rows = document.querySelectorAll("#dataTable tr");
-  if (rows.length <= 1) { alert("Tiada data!"); return; }
+  if (rows.length <= 1) { alert(lang === 'ms' ? "Tiada data!" : "No data!"); return; }
   let csv = "\uFEFF";
   rows.forEach(r => {
     csv += Array.from(r.querySelectorAll("th, td")).map(c => c.innerText).join(",") + "\n";
@@ -322,6 +396,7 @@ function muatTurunExcel() {
   a.click();
 }
 
+updateCoach();
 draw3D();
 </script>
 </body>

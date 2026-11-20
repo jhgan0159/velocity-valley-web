@@ -127,7 +127,7 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
     <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
     <div class="top-right">
       <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 4 • Eksperimen 4.3</span>
-      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+      <button class="btn-lang" onclick="toggleLang()" id="btnLang">🌐 Bahasa Melayu / English</button>
     </div>
   </div>
 
@@ -173,14 +173,14 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
       <div class="readout-strip">
         <div class="metric-pill"><span class="lbl" id="mLbl0">Masa Pemanasan, t</span><span class="val" id="mVal0">0 s</span></div>
         <div class="metric-pill"><span class="lbl" id="mLbl1">Set Eksperimen (m₁ / m)</span><span class="val" id="mVal1">0.00 g</span></div>
-        <div class="metric-pill"><span class="lbl" id="mLbl2">Set Kawalan (m₂)</span><span class="val" id="mVal2">0.00 g</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Set Kawalan (m₂ / Δm)</span><span class="val" id="mVal2">0.00 g</span></div>
       </div>
     </div>
 
     <div class="card-panel">
       <div class="control-box">
         <label style="font-weight:700;display:block;margin-bottom:6px;"><span id="lblSpeed">⏩ Kelajuan Simulasi Masa:</span> <span id="speedVal" style="color:#fde047;">3x</span></label>
-        <input type="range" id="speedSlider" min="1" max="5" value="3" style="width:100%;">
+        <input type="range" id="speedSlider" min="1" max="5" value="3" style="width:100%;" oninput="document.getElementById('speedVal').innerText=this.value+'x'">
         <div class="btn-row">
           <button class="btn-act green" onclick="startSim()" id="btnStart">▶️ Mula Pemanas & Jam</button>
           <button class="btn-act red" onclick="stopSim()" id="btnStop">⏹️ Henti</button>
@@ -192,14 +192,7 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
       <h3 style="margin:10px 0 6px 0;font-size:0.98rem;color:#38bdf8;" id="tblTitle">📊 Jadual Keputusan Eksperimen 4.3</h3>
       <div class="table-wrap">
         <table class="data-tbl" id="dataTable">
-          <thead id="tableHead">
-            <tr>
-              <th>Masa, t (s)</th>
-              <th>Jisim Set Eksperimen, m₁ (g)</th>
-              <th>Jisim Set Kawalan, m₂ (g)</th>
-              <th>Jisim Ais Melebur oleh Pemanas, m₁ - m₂ (g)</th>
-            </tr>
-          </thead>
+          <thead id="tableHead"></thead>
           <tbody id="tableBody"></tbody>
         </table>
       </div>
@@ -214,6 +207,69 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
 <script>
 let lang = 'ms';
 let part = 'A';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 4 • Bab 4 • Eksperimen 4.3",
+    pageTitle: "Eksperimen 4.3: Menentukan Haba Pendam Tentu Pelakuran Ais (l_f) & Pengewapan Air (l_v)",
+    pageDesc: "Tujuan: Bahagian A menentukan haba pendam tentu pelakuran ais menggunakan Set Kawalan (m₂) dan Set Eksperimen (m₁): l_f = Pt / (m₁ - m₂). Bahagian B menentukan haba pendam tentu pengewapan air: l_v = Pt / Δm.",
+    tabBtnA: "🧊 Bahagian A: Pelakuran Ais (Set Kawalan m₂ & Set Eksperimen m₁)",
+    tabBtnB: "💨 Bahagian B: Pengewapan Air (Pendidihan Δm)",
+    pillTxt1: "Pilih & Pasang Radas 3D",
+    pillTxt2: "Mula Pemanas & Jam",
+    pillTxt3: "Catat Bacaan Neraca Elektronik",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_funnel: "Corong Turas + Ais Hancur / Bikar",
+    lbl_heater: "Pemanas Rendam + Bekalan Kuasa",
+    lbl_balance: "Neraca Elektronik Digital 3D",
+    mLbl0: "Masa Pemanasan, t",
+    mLbl1: "Set Eksperimen (m₁ / m)",
+    mLbl2: "Set Kawalan (m₂ / Δm)",
+    lblSpeed: "⏩ Kelajuan Simulasi Masa:",
+    btnStart: "▶️ Mula Pemanas & Jam",
+    btnStop: "⏹️ Henti",
+    btnRecord: "➕ Catat Bacaan ke Jadual",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Jadual Keputusan Eksperimen 4.3",
+    btnExport: "⬇️ Muat Turun Excel (CSV)",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    ctrlSetLbl: "Set Kawalan (m₂)",
+    expSetLbl: "Set Eksperimen (m₁)",
+    boilSetLbl: "Bikar Air Mendidih + Pemanas Rendam"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 4 • Chapter 4 • Experiment 4.3",
+    pageTitle: "Experiment 4.3: Specific Latent Heat of Fusion of Ice (l_f) & Vaporization of Water (l_v)",
+    pageDesc: "Objective: Part A determines the specific latent heat of fusion of ice using a Control Set (m₂) and Experimental Set (m₁): l_f = Pt / (m₁ - m₂). Part B determines the specific latent heat of vaporization of water: l_v = Pt / Δm.",
+    tabBtnA: "🧊 Part A: Fusion of Ice (Control Set m₂ & Experimental Set m₁)",
+    tabBtnB: "💨 Part B: Vaporization of Water (Boiling Δm)",
+    pillTxt1: "Select & Assemble 3D Apparatus",
+    pillTxt2: "Start Heater & Timer",
+    pillTxt3: "Record Electronic Balance Readings",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_funnel: "Filter Funnel + Crushed Ice / Beaker",
+    lbl_heater: "Immersion Heater + Power Supply",
+    lbl_balance: "3D Digital Electronic Balance",
+    mLbl0: "Heating Time, t",
+    mLbl1: "Experimental Set (m₁ / m)",
+    mLbl2: "Control Set (m₂ / Δm)",
+    lblSpeed: "⏩ Simulation Time Speed:",
+    btnStart: "▶️ Start Heater & Timer",
+    btnStop: "⏹️ Stop",
+    btnRecord: "➕ Record Reading to Table",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Experiment 4.3 Results Table",
+    btnExport: "⬇️ Download Excel (CSV)",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    ctrlSetLbl: "Control Set (m₂)",
+    expSetLbl: "Experimental Set (m₁)",
+    boilSetLbl: "Boiling Water Beaker + Immersion Heater"
+  }
+};
+
 const placed = { funnel: false, heater: false, balance: false };
 let isRunning = false, timeS = 0, mControl = 0, mExp = 0, mBoil = 450.0, timerInt = null;
 
@@ -221,7 +277,7 @@ function allPlaced() { return placed.funnel && placed.heater && placed.balance; 
 function toggleApparatus(k, c) {
   placed[k] = c;
   document.getElementById('tray_' + k).classList.toggle('placed', c);
-  draw3D();
+  updateCoach(); draw3D();
 }
 function assembleAll() {
   ['funnel', 'heater', 'balance'].forEach(k => {
@@ -229,7 +285,36 @@ function assembleAll() {
     document.querySelector('#tray_' + k + ' input').checked = true;
     document.getElementById('tray_' + k).classList.add('placed');
   });
-  draw3D();
+  updateCoach(); draw3D();
+}
+
+function renderHeaders() {
+  const th = document.getElementById('tableHead');
+  if (part === 'A') {
+    th.innerHTML = lang === 'ms'
+      ? `<tr><th>Masa, t (s)</th><th>m₁ (g)</th><th>m₂ (g)</th><th>m₁ - m₂ (g)</th></tr>`
+      : `<tr><th>Time, t (s)</th><th>m₁ (g)</th><th>m₂ (g)</th><th>m₁ - m₂ (g)</th></tr>`;
+  } else {
+    th.innerHTML = lang === 'ms'
+      ? `<tr><th>Masa, t (s)</th><th>Bacaan Neraca Elektronik, m (g)</th><th>Jisim Air Meruap, Δm (g)</th></tr>`
+      : `<tr><th>Time, t (s)</th><th>Electronic Balance Reading, m (g)</th><th>Mass of Water Vaporized, Δm (g)</th></tr>`;
+  }
+}
+
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3');
+  [p1, p2, p3].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun corong turas berisi ais hancur, pemanas rendam, bikar, dan neraca elektronik 3D!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus & Materials Tray</b> to assemble the filter funnel with crushed ice, immersion heater, beaker, and 3D electronic balance!";
+  } else {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Klik <b>▶️ Mula Pemanas & Jam</b>, perhatikan jisim air pada neraca elektronik, dan klik <b>➕ Catat Bacaan ke Jadual</b>!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Click <b>▶️ Start Heater & Timer</b>, observe the mass reading on the electronic balance, and click <b>➕ Record Reading to Table</b>!";
+  }
 }
 
 function showPart(p) {
@@ -267,13 +352,9 @@ function resetSim() {
   stopSim();
   timeS = 0; mControl = 0; mExp = 0; mBoil = 450.0;
   document.getElementById('tableBody').innerHTML = '';
-  const th = document.getElementById('tableHead');
-  if (part === 'A') {
-    th.innerHTML = `<tr><th>Masa, t (s)</th><th>m₁ (g)</th><th>m₂ (g)</th><th>m₁ - m₂ (g)</th></tr>`;
-  } else {
-    th.innerHTML = `<tr><th>Masa, t (s)</th><th>Bacaan Neraca Elektronik, m (g)</th><th>Jisim Air Meruap, Δm (g)</th></tr>`;
-  }
+  renderHeaders();
   updateReadouts();
+  updateCoach();
   draw3D();
 }
 
@@ -302,6 +383,13 @@ function recordData() {
 
 function toggleLang() {
   lang = (lang === 'ms') ? 'en' : 'ms';
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  renderHeaders();
+  updateCoach();
   draw3D();
 }
 
@@ -317,21 +405,18 @@ function draw3D() {
 
   if (!placed.funnel && !placed.heater && !placed.balance) {
     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 200);
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 200);
     return;
   }
 
   if (part === 'A') {
-    // Draw Control Set (Left x=200) and Experimental Set (Right x=480)
     [
-      { cx: 200, lbl: 'Set Kawalan (m₂)', val: mControl, hasHeater: false },
-      { cx: 480, lbl: 'Set Eksperimen (m₁)', val: mExp, hasHeater: true }
+      { cx: 200, lbl: i18n[lang].ctrlSetLbl, val: mControl, hasHeater: false },
+      { cx: 480, lbl: i18n[lang].expSetLbl, val: mExp, hasHeater: true }
     ].forEach(s => {
       if (placed.funnel) {
-        // Retort stand
         ctx.fillStyle = '#94a3b8'; ctx.fillRect(s.cx - 80, 40, 8, 315);
         ctx.fillRect(s.cx - 80, 115, 80, 6);
-        // 3D Funnel with Ice Cubes
         ctx.fillStyle = 'rgba(186, 230, 253, 0.35)';
         ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 2.5;
         ctx.beginPath();
@@ -339,14 +424,12 @@ function draw3D() {
         ctx.lineTo(s.cx + 8, 165); ctx.lineTo(s.cx - 8, 165);
         ctx.closePath(); ctx.fill(); ctx.stroke();
 
-        // 3D Ice Cubes inside funnel
         for (let i = -32; i <= 24; i += 18) {
           ctx.fillStyle = '#bae6fd';
           ctx.fillRect(s.cx + i, 96, 14, 14);
           ctx.fillRect(s.cx + i * 0.6, 116, 13, 13);
         }
 
-        // Catch Beaker
         const wH = Math.min(65, s.val * 1.1);
         ctx.fillStyle = 'rgba(56, 189, 248, 0.65)';
         ctx.fillRect(s.cx - 36, 315 - wH, 72, wH);
@@ -369,7 +452,6 @@ function draw3D() {
       }
     });
   } else {
-    // Part B: Vaporization of Water on Electronic Balance
     const cx = 340;
     if (placed.funnel) {
       const wH = ((mBoil - 150) / 300) * 115;
@@ -388,13 +470,15 @@ function draw3D() {
       ctx.fillStyle = '#022c22'; ctx.fillRect(cx - 55, 314, 110, 28);
       ctx.fillStyle = '#10b981'; ctx.font = 'bold 15px monospace'; ctx.textAlign = 'center';
       ctx.fillText(mBoil.toFixed(2) + ' g', cx, 333);
+      ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px sans-serif';
+      ctx.fillText(i18n[lang].boilSetLbl, cx, 375);
     }
   }
 }
 
 function downloadCSV() {
   let rows = document.querySelectorAll("#dataTable tr");
-  if (rows.length <= 1) { alert("Tiada data!"); return; }
+  if (rows.length <= 1) { alert(lang === 'ms' ? "Tiada data!" : "No data!"); return; }
   let csv = "";
   rows.forEach(r => {
     let cols = Array.from(r.querySelectorAll("th, td")).map(c => `"${c.innerText}"`);
@@ -406,6 +490,8 @@ function downloadCSV() {
   a.click();
 }
 
+renderHeaders();
+updateCoach();
 draw3D();
 </script>
 </body>

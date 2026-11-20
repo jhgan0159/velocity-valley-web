@@ -65,7 +65,7 @@ html, body {
   background: rgba(30, 58, 138, 0.35); border-left: 4px solid #38bdf8;
   border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.5; color: #e2e8f0;
 }
-.main-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+.main-grid { display: grid; grid-template-columns: 1.18fr 0.82fr; gap: 18px; align-items: start; }
 .card-panel { background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 16px; padding: 18px; }
 .apparatus-tray {
   background: rgba(30, 41, 59, 0.75); border: 1px dashed rgba(56, 189, 248, 0.5);
@@ -73,7 +73,7 @@ html, body {
 }
 .tray-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 .tray-header h3 { margin: 0; font-size: 0.96rem; color: #38bdf8; }
-.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.tray-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; }
 .tray-item {
   display: flex; align-items: center; gap: 8px; padding: 8px 10px;
   background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(148,163,184,0.25);
@@ -82,16 +82,17 @@ html, body {
 .tray-item.placed { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #ecfdf5; font-weight: 700; }
 .canvas-wrap {
   position: relative; width: 100%; border-radius: 14px; overflow: hidden;
-  border: 2px solid rgba(56, 189, 248, 0.3); background: #090d16;
+  border: 2px solid rgba(56, 189, 248, 0.35); background: #0b1120;
+  box-shadow: inset 0 0 40px rgba(15, 23, 42, 0.9);
 }
 canvas#simCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: ew-resize; }
-.readout-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.readout-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
 .metric-pill {
   background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.25);
-  border-radius: 10px; padding: 10px; text-align: center;
+  border-radius: 10px; padding: 10px 6px; text-align: center;
 }
-.metric-pill .lbl { font-size: 0.75rem; color: #94a3b8; display: block; }
-.metric-pill .val { font-size: 1.15rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
+.metric-pill .lbl { font-size: 0.72rem; color: #94a3b8; display: block; }
+.metric-pill .val { font-size: 1.08rem; font-weight: 800; color: #38bdf8; font-family: monospace; }
 .control-box {
   background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(148,163,184,0.2);
   border-radius: 12px; padding: 14px; margin-bottom: 12px;
@@ -103,13 +104,18 @@ button.btn-act {
   background: linear-gradient(135deg, #10b981, #059669);
 }
 button.btn-act.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+button.btn-act.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
 .table-wrap { width: 100%; overflow-x: auto; margin-top: 10px; }
 table.data-tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
 table.data-tbl th, table.data-tbl td { border: 1px solid rgba(148,163,184,0.25); padding: 8px; text-align: center; }
 table.data-tbl th { background: rgba(30,41,59,0.95); color: #38bdf8; }
 table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
+canvas#graphCanvas {
+  width: 100%; height: auto; background: #090d16; border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.25); margin-top: 12px; display: block;
+}
 @media (max-width: 920px) { .main-grid { grid-template-columns: 1fr; } }
-@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .stepper-row, .readout-strip { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -118,23 +124,24 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
     <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
     <div class="top-right">
       <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 6 • Eksperimen 6.3</span>
-      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+      <button class="btn-lang" onclick="toggleLang()" id="btnLang">🌐 Bahasa Melayu / English</button>
     </div>
   </div>
 
   <div class="hero-header">
     <h1 id="pageTitle">Eksperimen 6.3: Formula Kanta Cembung (1/f = 1/u + 1/v, Panjang Fokus f = 10.0 cm)</h1>
-    <p id="pageDesc">Tujuan: Mengkaji hubungan antara jarak objek, u (15.0 cm hingga 35.0 cm) dengan jarak imej nyata, v bagi kanta cembung (f = 10.0 cm). Pasang radas optik 3D, seret kotak objek bercahaya di sepanjang pembaris meter 3D, dan rekodkan Jadual 6.9!</p>
+    <p id="pageDesc">Tujuan: Mengkaji hubungan antara jarak objek, u (15.0 cm hingga 35.0 cm) dengan jarak imej nyata, v bagi kanta cembung (f = 10.0 cm). Pasang radas optik 3D, seret Kotak Objek Bercahaya atau Skrin Putih di atas landasan pembaris meter 3D sehingga imej menjadi tajam, dan rekodkan Jadual 6.9!</p>
   </div>
 
   <div class="step-coach-card">
     <div class="stepper-row">
       <div class="step-pill active" id="pill1"><span class="step-num">1</span><span id="pillTxt1">Pilih & Pasang Radas Optik 3D</span></div>
-      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Seret Objek (u = 15–35 cm)</span></div>
-      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Rekod Jadual 6.9 (u, v, 1/u, 1/v)</span></div>
+      <div class="step-pill" id="pill2"><span class="step-num">2</span><span id="pillTxt2">Seret Kotak Objek (u = 15–35 cm)</span></div>
+      <div class="step-pill" id="pill3"><span class="step-num">3</span><span id="pillTxt3">Fokus Skrin Putih (Imej Tajam v)</span></div>
+      <div class="step-pill" id="pill4"><span class="step-num">4</span><span id="pillTxt4">Rekod Jadual 6.9 & Plot 1/v vs 1/u</span></div>
     </div>
     <div class="coach-banner" id="coachBanner">
-      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk menyusun bangku optik 3D bersama objek bercahaya, kanta cembung (f = 10.0 cm), dan skrin putih!
+      🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang pembaris meter 3D, kotak objek bercahaya berlubang anak panah, kanta cembung bersama pemegang kanta, dan skrin putih berpemegang!
     </div>
   </div>
 
@@ -146,33 +153,35 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
           <button class="btn-act purple" style="flex:0;min-width:auto;padding:6px 12px;font-size:0.78rem;" onclick="assembleAll()" id="btnAutoAssemble">⚡ Pasang Semua</button>
         </div>
         <div class="tray-grid">
-          <label class="tray-item" id="tray_bench"><input type="checkbox" onchange="toggleApparatus('bench', this.checked)"> <span id="lbl_bench">Pembaris Meter + Kotak Objek</span></label>
-          <label class="tray-item" id="tray_lens"><input type="checkbox" onchange="toggleApparatus('lens', this.checked)"> <span id="lbl_lens">Kanta Cembung (f = 10.0 cm)</span></label>
-          <label class="tray-item" id="tray_screen"><input type="checkbox" onchange="toggleApparatus('screen', this.checked)"> <span id="lbl_screen">Skrin Putih Imej Nyata</span></label>
+          <label class="tray-item" id="tray_ruler"><input type="checkbox" onchange="toggleApparatus('ruler', this.checked)"> <span id="lbl_ruler">Landasan Optik + Pembaris Meter</span></label>
+          <label class="tray-item" id="tray_obj"><input type="checkbox" onchange="toggleApparatus('obj', this.checked)"> <span id="lbl_obj">Kotak Objek Bercahaya (Mentol + Anak Panah)</span></label>
+          <label class="tray-item" id="tray_lens"><input type="checkbox" onchange="toggleApparatus('lens', this.checked)"> <span id="lbl_lens">Kanta Cembung (f=10cm) + Pemegang Kanta</span></label>
+          <label class="tray-item" id="tray_screen"><input type="checkbox" onchange="toggleApparatus('screen', this.checked)"> <span id="lbl_screen">Skrin Putih + Pemegang Gelongsor</span></label>
         </div>
       </div>
 
       <div class="canvas-wrap">
-        <canvas id="simCanvas" width="680" height="380"></canvas>
+        <canvas id="simCanvas" width="720" height="450"></canvas>
       </div>
 
       <div class="readout-strip">
-        <div class="metric-pill"><span class="lbl">Jarak Objek, u</span><span class="val" id="nilaiU">15.0 cm</span></div>
-        <div class="metric-pill"><span class="lbl">Jarak Imej Tajam, v</span><span class="val" id="nilaiV">30.0 cm</span></div>
-        <div class="metric-pill"><span class="lbl">Panjang Fokus, f</span><span class="val">10.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl0">Panjang Fokus, f</span><span class="val" id="mVal0">10.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl1">Jarak Objek, u</span><span class="val" id="nilaiU">15.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl2">Jarak Imej Tajam, v</span><span class="val" id="nilaiV">30.0 cm</span></div>
+        <div class="metric-pill"><span class="lbl" id="mLbl3">Pembesaran Linear, m = v/u</span><span class="val" id="nilaiM">2.00×</span></div>
       </div>
     </div>
 
     <div class="card-panel">
       <div class="control-box">
-        <label style="font-weight:700;display:block;margin-bottom:8px;">🖐️ Seret Objek di Kanvas 3D atau Pilih Jarak Objek, u (cm):</label>
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlULbl">🖐️ Seret Kotak Objek di Kanvas 3D atau Pilih Jarak Objek, u (cm):</label>
         <input type="range" id="jarakObjek" min="15.0" max="35.0" value="15.0" step="5.0" style="width:100%;" oninput="setU(this.value)">
         <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#94a3b8;margin-top:4px;">
           <span>15.0 cm</span><span>20.0 cm</span><span>25.0 cm</span><span>30.0 cm</span><span>35.0 cm</span>
         </div>
         <div class="btn-row">
-          <button class="btn-act" onclick="rekodData()">➕ Rekod Data ke Jadual 6.9</button>
-          <button class="btn-act purple" onclick="muatTurunExcel()">⬇️ Muat Turun Jadual (CSV)</button>
+          <button class="btn-act" onclick="rekodData()" id="btnRecord">➕ Rekod Data ke Jadual 6.9</button>
+          <button class="btn-act red" onclick="resetSim()" id="btnReset">🔄 Reset</button>
         </div>
       </div>
 
@@ -181,118 +190,533 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
         <table class="data-tbl" id="dataTable">
           <thead>
             <tr>
-              <th>u / cm</th>
-              <th>v / cm</th>
+              <th id="thU">Jarak objek, u / cm</th>
+              <th id="thV">Jarak imej, v / cm</th>
               <th>1/u / cm⁻¹</th>
               <th>1/v / cm⁻¹</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody id="tableBody"></tbody>
         </table>
       </div>
+
+      <div class="btn-row">
+        <button class="btn-act purple" onclick="muatTurunExcel()" id="btnExport">⬇️ Muat Turun Jadual (CSV / Excel)</button>
+      </div>
+
+      <canvas id="graphCanvas" width="520" height="210"></canvas>
     </div>
   </div>
 </div>
 
 <script>
 let lang = 'ms';
-const placed = { bench: false, lens: false, screen: false };
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 4 • Bab 6 • Eksperimen 6.3",
+    pageTitle: "Eksperimen 6.3: Formula Kanta Cembung (1/f = 1/u + 1/v, Panjang Fokus f = 10.0 cm)",
+    pageDesc: "Tujuan: Mengkaji hubungan antara jarak objek, u (15.0 cm hingga 35.0 cm) dengan jarak imej nyata, v bagi kanta cembung (f = 10.0 cm). Pasang radas optik 3D, seret Kotak Objek Bercahaya atau Skrin Putih di atas landasan pembaris meter 3D sehingga imej menjadi tajam, dan rekodkan Jadual 6.9!",
+    pillTxt1: "Pilih & Pasang Radas Optik 3D",
+    pillTxt2: "Seret Kotak Objek (u = 15–35 cm)",
+    pillTxt3: "Fokus Skrin Putih (Imej Tajam v)",
+    pillTxt4: "Rekod Jadual 6.9 & Plot 1/v vs 1/u",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_ruler: "Landasan Optik + Pembaris Meter",
+    lbl_obj: "Kotak Objek Bercahaya (Mentol + Anak Panah)",
+    lbl_lens: "Kanta Cembung (f=10cm) + Pemegang Kanta",
+    lbl_screen: "Skrin Putih + Pemegang Gelongsor",
+    mLbl0: "Panjang Fokus, f",
+    mLbl1: "Jarak Objek, u",
+    mLbl2: "Jarak Imej Tajam, v",
+    mLbl3: "Pembesaran Linear, m = v/u",
+    ctrlULbl: "🖐️ Seret Kotak Objek di Kanvas 3D atau Pilih Jarak Objek, u (cm):",
+    btnRecord: "➕ Rekod Data ke Jadual 6.9",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Jadual 6.9: Keputusan Eksperimen Kanta Cembung",
+    thU: "Jarak objek, u / cm",
+    thV: "Jarak imej, v / cm",
+    btnExport: "⬇️ Muat Turun Jadual (CSV / Excel)",
+    canvasEmpty: "Meja Makmal Optik 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    dragHint: "🖐️ Seret Kotak Objek Bercahaya ke kiri/kanan di sepanjang Pembaris Meter 3D!",
+    objPreviewTitle: "Pandangan Hadapan Objek",
+    imgPreviewTitle: "Pandangan Skrin (Imej Nyata Terbalik)",
+    objBoxLbl: "Kotak Objek Bercahaya",
+    lensHolderLbl: "Kanta Cembung + Pemegang",
+    screenLbl: "Skrin Putih (Imej Tajam)",
+    graphTitle: "Graf 1/v (cm⁻¹) melawan 1/u (cm⁻¹)"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 4 • Chapter 6 • Experiment 6.3",
+    pageTitle: "Experiment 6.3: Convex Lens Formula (1/f = 1/u + 1/v, Focal Length f = 10.0 cm)",
+    pageDesc: "Objective: To study the relationship between object distance, u (15.0 cm to 35.0 cm) and real image distance, v for a convex lens (f = 10.0 cm). Assemble the 3D optical bench apparatus, drag the Illuminated Object Box along the 3D metre rule until a sharp image forms on the White Screen, and record Table 6.9!",
+    pillTxt1: "Select & Assemble 3D Optical Bench",
+    pillTxt2: "Drag Object Box (u = 15–35 cm)",
+    pillTxt3: "Focus White Screen (Sharp Image v)",
+    pillTxt4: "Record Table 6.9 & Plot 1/v vs 1/u",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_ruler: "Optical Bench + Metre Rule",
+    lbl_obj: "Illuminated Object Box (Bulb + Arrow Slit)",
+    lbl_lens: "Convex Lens (f=10cm) + Lens Holder",
+    lbl_screen: "White Screen + Sliding Stand",
+    mLbl0: "Focal Length, f",
+    mLbl1: "Object Distance, u",
+    mLbl2: "Sharp Image Distance, v",
+    mLbl3: "Linear Magnification, m = v/u",
+    ctrlULbl: "🖐️ Drag Object Box on 3D Canvas or Select Object Distance, u (cm):",
+    btnRecord: "➕ Record Data to Table 6.9",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Table 6.9: Convex Lens Experimental Results",
+    thU: "Object distance, u / cm",
+    thV: "Image distance, v / cm",
+    btnExport: "⬇️ Download Table (CSV / Excel)",
+    canvasEmpty: "3D Optical Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    dragHint: "🖐️ Drag the Illuminated Object Box left/right along the 3D Metre Rule!",
+    objPreviewTitle: "Front View of Illuminated Object",
+    imgPreviewTitle: "Screen View (Inverted Real Image)",
+    objBoxLbl: "Illuminated Object Box",
+    lensHolderLbl: "Convex Lens + Holder",
+    screenLbl: "White Screen (Sharp Image)",
+    graphTitle: "Graph of 1/v (cm⁻¹) against 1/u (cm⁻¹)"
+  }
+};
+
+const placed = { ruler: false, obj: false, lens: false, screen: false };
 const f = 10.0;
 let u_cm = 15.0;
+let records = [];
 let isDragging = false;
-const dataSet = new Set();
 
-function allPlaced() { return placed.bench && placed.lens && placed.screen; }
+function allPlaced() { return placed.ruler && placed.obj && placed.lens && placed.screen; }
+
 function toggleApparatus(k, c) {
   placed[k] = c;
   document.getElementById('tray_' + k).classList.toggle('placed', c);
-  draw3D();
+  updateCoach(); draw3D();
 }
+
 function assembleAll() {
-  ['bench', 'lens', 'screen'].forEach(k => {
+  ['ruler', 'obj', 'lens', 'screen'].forEach(k => {
     placed[k] = true;
     document.querySelector('#tray_' + k + ' input').checked = true;
     document.getElementById('tray_' + k).classList.add('placed');
   });
-  draw3D();
+  updateCoach(); draw3D();
 }
+
 function setU(val) {
   if (!allPlaced()) assembleAll();
   u_cm = parseFloat(val);
   document.getElementById('jarakObjek').value = u_cm;
+  updateReadouts(); updateCoach(); draw3D();
+}
+
+function updateReadouts() {
   const v_cm = (u_cm * f) / (u_cm - f);
+  const mag = v_cm / u_cm;
   document.getElementById('nilaiU').innerText = u_cm.toFixed(1) + ' cm';
   document.getElementById('nilaiV').innerText = v_cm.toFixed(1) + ' cm';
-  draw3D();
+  document.getElementById('nilaiM').innerText = mag.toFixed(2) + '×';
 }
+
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3'), p4 = document.getElementById('pill4');
+  [p1, p2, p3, p4].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang pembaris meter 3D, kotak objek bercahaya, kanta cembung bersama pemegang kanta, dan skrin putih!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus & Materials Tray</b> to mount the 3D metre rule, illuminated object box, convex lens on its holder, and white screen!";
+  } else if (records.length < 5) {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? `🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Seret <b>Kotak Objek Bercahaya</b> pada landasan optik 3D kepada jarak <b>u = 15.0, 20.0, 25.0, 30.0, 35.0 cm</b>. Perhatikan imej nyata terbalik pada skrin putih 3D dan klik <b>➕ Rekod Data ke Jadual 6.9</b> (${records.length}/5 direkod).`
+      : `🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Drag the <b>Illuminated Object Box</b> along the 3D optical bench to <b>u = 15.0, 20.0, 25.0, 30.0, 35.0 cm</b>. Observe the inverted real image on the 3D white screen and click <b>➕ Record Data to Table 6.9</b> (${records.length}/5 recorded).`;
+  } else {
+    [p1, p2, p3].forEach(p => p.classList.add('done')); p4.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Syabas! Semua 5 jarak objek telah direkodkan dan graf linear <b>1/v melawan 1/u</b> telah diplotkan (pintasan paksi = 1/f = 0.10 cm⁻¹, maka f = 10.0 cm)."
+      : "🧑‍🏫 <b>Prof. Vector:</b> Well done! All 5 object distances are recorded and the linear <b>1/v against 1/u</b> graph is plotted (intercept = 1/f = 0.10 cm⁻¹, giving f = 10.0 cm).";
+  }
+}
+
 function rekodData() {
   if (!allPlaced()) assembleAll();
-  if (dataSet.has(u_cm)) { alert(`Data u = ${u_cm.toFixed(1)} cm sudah direkod!`); return; }
+  if (records.some(r => Math.abs(r.u - u_cm) < 0.1)) {
+    alert(lang === 'ms' ? `Data untuk u = ${u_cm.toFixed(1)} cm sudah direkod!` : `Data for u = ${u_cm.toFixed(1)} cm is already recorded!`);
+    return;
+  }
   const v_cm = (u_cm * f) / (u_cm - f);
-  const tb = document.querySelector('#dataTable tbody');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td>${u_cm.toFixed(1)}</td><td style="color:#38bdf8;font-weight:700;">${v_cm.toFixed(1)}</td><td>${(1/u_cm).toFixed(4)}</td><td>${(1/v_cm).toFixed(4)}</td>`;
-  tb.appendChild(tr);
-  dataSet.add(u_cm);
+  records.push({ u: u_cm, v: v_cm, invU: 1 / u_cm, invV: 1 / v_cm });
+  records.sort((a, b) => a.u - b.u);
+  renderTable(); drawGraph(); updateCoach();
 }
+
+function renderTable() {
+  const tb = document.getElementById('tableBody');
+  tb.innerHTML = '';
+  records.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.u.toFixed(1)}</td><td style="color:#38bdf8;font-weight:700;">${r.v.toFixed(1)}</td><td>${r.invU.toFixed(4)}</td><td>${r.invV.toFixed(4)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function resetSim() {
+  records = []; u_cm = 15.0;
+  document.getElementById('jarakObjek').value = 15.0;
+  renderTable(); updateReadouts(); drawGraph(); updateCoach(); draw3D();
+}
+
 function toggleLang() {
   lang = (lang === 'ms') ? 'en' : 'ms';
-  draw3D();
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateReadouts(); updateCoach(); draw3D(); drawGraph();
 }
 
 const canvas = document.getElementById('simCanvas');
 const ctx = canvas.getContext('2d');
-const lensX = 340, axisY = 185, baseY = 290, scale = 6.5;
+const lensX = 355;
+const axisY = 235;
+const railTopY = 345;
+const scale = 7.2; // 1 cm = 7.2 px
+
+function drawArrowHead(x1, y1, x2, y2, color) {
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  const ang = Math.atan2(y2 - y1, x2 - x1);
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(mx + 6 * Math.cos(ang), my + 6 * Math.sin(ang));
+  ctx.lineTo(mx - 6 * Math.cos(ang - 0.5), my - 6 * Math.sin(ang - 0.5));
+  ctx.lineTo(mx - 6 * Math.cos(ang + 0.5), my - 6 * Math.sin(ang + 0.5));
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
 
 function draw3D() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const bg = ctx.createLinearGradient(0, 0, 0, 380);
-  bg.addColorStop(0, '#090d16'); bg.addColorStop(1, '#1e293b');
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, 380);
 
-  if (!placed.bench && !placed.lens && !placed.screen) {
+  // 1. Studio Wall & 3D Lab Table Surface
+  const wallGrad = ctx.createLinearGradient(0, 0, 0, 355);
+  wallGrad.addColorStop(0, '#0f172a');
+  wallGrad.addColorStop(1, '#1e293b');
+  ctx.fillStyle = wallGrad;
+  ctx.fillRect(0, 0, canvas.width, 355);
+
+  // Perspective Wooden Lab Bench
+  const tableGrad = ctx.createLinearGradient(0, 355, 0, 450);
+  tableGrad.addColorStop(0, '#475569');
+  tableGrad.addColorStop(0.18, '#334155');
+  tableGrad.addColorStop(1, '#0f172a');
+  ctx.fillStyle = tableGrad;
+  ctx.fillRect(0, 355, canvas.width, 95);
+
+  if (!placed.ruler && !placed.obj && !placed.lens && !placed.screen) {
     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 190);
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 220);
     return;
   }
 
   const v_cm = (u_cm * f) / (u_cm - f);
+  const mag = v_cm / u_cm;
   const objX = lensX - u_cm * scale;
   const imgX = lensX + v_cm * scale;
+  const objH = 44; // Object arrow height above principal axis
+  const imgH = Math.min(82, objH * mag); // Inverted real image height below principal axis
 
-  if (placed.bench) {
-    ctx.fillStyle = '#fde047'; ctx.fillRect(25, baseY, 630, 18);
-    // Illuminated Object Arrow
-    ctx.fillStyle = '#8b5cf6'; ctx.fillRect(objX - 12, axisY + 25, 24, baseY - axisY - 25);
-    ctx.strokeStyle = '#fde047'; ctx.lineWidth = 4;
-    ctx.beginPath(); ctx.moveTo(objX, axisY); ctx.lineTo(objX, axisY - 45); ctx.stroke();
-    ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(`u = ${u_cm.toFixed(1)} cm`, (objX + lensX) / 2, baseY + 38);
-  }
-
-  if (placed.lens) {
-    ctx.fillStyle = 'rgba(56, 189, 248, 0.45)'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.ellipse(lensX, axisY, 14, 65, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#f43f5e';
-    ctx.beginPath(); ctx.arc(lensX - f * scale, axisY, 4, 0, Math.PI * 2); ctx.arc(lensX + f * scale, axisY, 4, 0, Math.PI * 2); ctx.fill();
+  // Top Inset Preview Boxes: (Left) Illuminated Cross-Arrow Object View & (Right) Screen Real Image View
+  if (placed.obj) {
+    // Left Preview Card: Front view of Illuminated Object Aperture
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+    ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(18, 14, 185, 92, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 11px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].objPreviewTitle, 110, 31);
+    // Glowing circular aperture with upright arrow + crosswire
+    const glowG = ctx.createRadialGradient(110, 66, 3, 110, 66, 26);
+    glowG.addColorStop(0, '#fef08a'); glowG.addColorStop(0.7, '#f59e0b'); glowG.addColorStop(1, '#451a03');
+    ctx.fillStyle = glowG;
+    ctx.beginPath(); ctx.arc(110, 66, 25, 0, Math.PI * 2); ctx.fill();
+    // Upright arrow inside aperture
+    ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(110, 82); ctx.lineTo(110, 50);
+    ctx.moveTo(103, 58); ctx.lineTo(110, 50); ctx.lineTo(117, 58);
+    ctx.moveTo(98, 68); ctx.lineTo(122, 68);
+    ctx.stroke();
   }
 
   if (placed.screen) {
-    const imgH = 45 * (v_cm / u_cm);
-    // Light Rays
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.7)'; ctx.lineWidth = 2;
+    // Right Preview Card: Front view of White Screen showing Inverted Real Image
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+    ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(505, 14, 197, 92, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#6ee7b7'; ctx.font = 'bold 11px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].imgPreviewTitle, 603, 31);
+    // Mini White Screen surface
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath(); ctx.roundRect(568, 39, 70, 58, 6); ctx.fill();
+    // Inverted arrow scaled by magnification m
+    const arrowScale = Math.min(22, Math.max(8, 12 * mag));
+    ctx.strokeStyle = '#d97706'; ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(objX, axisY - 45); ctx.lineTo(lensX, axisY - 45); ctx.lineTo(imgX, axisY + imgH);
-    ctx.moveTo(objX, axisY - 45); ctx.lineTo(imgX, axisY + imgH);
+    ctx.moveTo(603, 68 - arrowScale); ctx.lineTo(603, 68 + arrowScale);
+    ctx.moveTo(596, 68 + arrowScale - 7); ctx.lineTo(603, 68 + arrowScale); ctx.lineTo(610, 68 + arrowScale - 7);
+    ctx.moveTo(603 - arrowScale * 0.55, 68 - arrowScale * 0.2); ctx.lineTo(603 + arrowScale * 0.55, 68 - arrowScale * 0.2);
+    ctx.stroke();
+  }
+
+  // 2. 3D Optical Rail & Wooden Metre Rule (Landasan Optik + Pembaris Meter)
+  if (placed.ruler) {
+    // Metallic 3D Optical Bench Rail under the ruler
+    const railGrad = ctx.createLinearGradient(25, railTopY + 18, 25, railTopY + 34);
+    railGrad.addColorStop(0, '#64748b'); railGrad.addColorStop(0.5, '#94a3b8'); railGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = railGrad;
+    ctx.beginPath(); ctx.roundRect(22, railTopY + 18, 676, 16, 4); ctx.fill();
+
+    // 3D Wooden Metre Rule on top of the rail
+    const rulerGrad = ctx.createLinearGradient(25, railTopY, 25, railTopY + 18);
+    rulerGrad.addColorStop(0, '#fde047'); rulerGrad.addColorStop(0.6, '#f59e0b'); rulerGrad.addColorStop(1, '#b45309');
+    ctx.fillStyle = rulerGrad;
+    ctx.fillRect(25, railTopY, 670, 18);
+    ctx.strokeStyle = '#78350f'; ctx.lineWidth = 1.5;
+    ctx.strokeRect(25, railTopY, 670, 18);
+
+    // Tick marks every 5 cm relative to lens center (0 cm at lensX)
+    ctx.fillStyle = '#0f172a'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
+    for (let cm = -40; cm <= 45; cm += 5) {
+      const tx = lensX + cm * scale;
+      if (tx < 30 || tx > 690) continue;
+      ctx.beginPath();
+      ctx.moveTo(tx, railTopY);
+      ctx.lineTo(tx, railTopY + (cm % 10 === 0 ? 9 : 5));
+      ctx.strokeStyle = '#451a03';
+      ctx.stroke();
+      if (cm % 10 === 0) {
+        ctx.fillText(Math.abs(cm), tx, railTopY + 16);
+      }
+    }
+
+    // Principal Axis (Paksi Utama) dashed line
+    ctx.save();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.55)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(30, axisY); ctx.lineTo(690, axisY); ctx.stroke();
+    ctx.restore();
+  }
+
+  // 3. 3D Illuminated Object Box (KotakLampu + Mentol Bercahaya + Anak Panah Objek + Tapak Pemegang)
+  if (placed.obj) {
+    const boxW = 54, boxH = 82;
+    const boxLeft = objX - boxW;
+    const boxTop = axisY - 56;
+
+    // 3D Sliding Stand Pillar & Base sitting firmly on the Optical Rail!
+    const standGrad = ctx.createLinearGradient(objX - 38, 0, objX + 6, 0);
+    standGrad.addColorStop(0, '#334155'); standGrad.addColorStop(0.5, '#94a3b8'); standGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = standGrad;
+    ctx.fillRect(objX - 32, boxTop + boxH, 16, railTopY - (boxTop + boxH));
+    // Sliding rider block on rail
+    ctx.fillStyle = '#475569';
+    ctx.beginPath(); ctx.roundRect(objX - 44, railTopY - 8, 46, 12, 3); ctx.fill();
+
+    // 3D Lamp Housing Box (with 3D side bevel)
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.moveTo(boxLeft, boxTop);
+    ctx.lineTo(boxLeft - 12, boxTop - 8);
+    ctx.lineTo(objX - 12, boxTop - 8);
+    ctx.lineTo(objX, boxTop);
+    ctx.closePath();
+    ctx.fill();
+
+    const housingGrad = ctx.createLinearGradient(boxLeft, boxTop, objX, boxTop + boxH);
+    housingGrad.addColorStop(0, '#334155'); housingGrad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = housingGrad;
+    ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(boxLeft, boxTop, boxW, boxH, 6); ctx.fill(); ctx.stroke();
+
+    // Glowing Light Bulb visible inside window of Lamp Box
+    const bulbGlow = ctx.createRadialGradient(boxLeft + 26, axisY - 20, 2, boxLeft + 26, axisY - 20, 22);
+    bulbGlow.addColorStop(0, '#ffffff');
+    bulbGlow.addColorStop(0.4, '#fde047');
+    bulbGlow.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    ctx.fillStyle = bulbGlow;
+    ctx.beginPath(); ctx.arc(boxLeft + 26, axisY - 20, 22, 0, Math.PI * 2); ctx.fill();
+
+    // Glowing Upright Object Arrow at the front face (x = objX) of the Object Box
+    ctx.strokeStyle = '#fde047'; ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(objX, axisY);
+    ctx.lineTo(objX, axisY - objH);
+    ctx.moveTo(objX - 7, axisY - objH + 10);
+    ctx.lineTo(objX, axisY - objH);
+    ctx.lineTo(objX + 7, axisY - objH + 10);
     ctx.stroke();
 
-    // White Screen
-    ctx.fillStyle = '#f8fafc'; ctx.fillRect(imgX - 4, axisY - 75, 8, baseY - axisY + 75);
-    ctx.strokeStyle = '#10b981'; ctx.lineWidth = 4;
-    ctx.beginPath(); ctx.moveTo(imgX, axisY); ctx.lineTo(imgX, axisY + imgH); ctx.stroke();
-    ctx.fillStyle = '#10b981'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(`v = ${v_cm.toFixed(1)} cm`, (lensX + imgX) / 2, baseY + 38);
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 11px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].objBoxLbl, objX - 24, boxTop - 14);
   }
+
+  // 4. 3D Convex Lens Mounted in a Slotted 3D Wooden/Metallic Holder on the Bench!
+  if (placed.lens) {
+    const lensHalfH = 74;
+
+    // 3D Slotted Lens Holder Pillar & Base sitting firmly on railTopY (NO floating lens!)
+    const holderGrad = ctx.createLinearGradient(lensX - 24, railTopY - 58, lensX + 24, railTopY);
+    holderGrad.addColorStop(0, '#b45309');
+    holderGrad.addColorStop(0.5, '#f59e0b');
+    holderGrad.addColorStop(1, '#78350f');
+    ctx.fillStyle = holderGrad;
+    ctx.strokeStyle = '#fde68a'; ctx.lineWidth = 1.5;
+    // Upright V-groove support arms holding the bottom rim of the lens
+    ctx.beginPath();
+    ctx.moveTo(lensX - 18, axisY + lensHalfH - 12);
+    ctx.lineTo(lensX + 18, axisY + lensHalfH - 12);
+    ctx.lineTo(lensX + 14, railTopY - 8);
+    ctx.lineTo(lensX - 14, railTopY - 8);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    // Metallic Rider Base on Optical Rail
+    ctx.fillStyle = '#475569';
+    ctx.beginPath(); ctx.roundRect(lensX - 28, railTopY - 8, 56, 12, 4); ctx.fill();
+
+    // 3D Biconvex Glass Lens with Specular Highlights & Metallic Rim
+    const lensGrad = ctx.createLinearGradient(lensX - 16, axisY - lensHalfH, lensX + 16, axisY + lensHalfH);
+    lensGrad.addColorStop(0, 'rgba(186, 230, 253, 0.78)');
+    lensGrad.addColorStop(0.35, 'rgba(56, 189, 248, 0.45)');
+    lensGrad.addColorStop(0.7, 'rgba(14, 165, 233, 0.65)');
+    lensGrad.addColorStop(1, 'rgba(224, 242, 254, 0.85)');
+    ctx.fillStyle = lensGrad;
+    ctx.strokeStyle = '#e0f2fe'; ctx.lineWidth = 2.8;
+    ctx.beginPath();
+    ctx.ellipse(lensX, axisY, 15, lensHalfH, 0, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+
+    // Specular reflection arc inside glass lens
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(lensX - 5, axisY - 10, 5, lensHalfH * 0.65, 0, -Math.PI * 0.4, Math.PI * 0.4);
+    ctx.stroke();
+
+    // Optical center vertical line & F / 2F markers
+    ctx.save();
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = 'rgba(224,242,254,0.6)'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(lensX, axisY - lensHalfH); ctx.lineTo(lensX, axisY + lensHalfH); ctx.stroke();
+    ctx.restore();
+
+    // Focal points F (10 cm) and 2F (20 cm)
+    [
+      { d: -f, lbl: 'F' }, { d: -2 * f, lbl: '2F' },
+      { d: f, lbl: 'F' }, { d: 2 * f, lbl: '2F' }
+    ].forEach(pt => {
+      const fx = lensX + pt.d * scale;
+      ctx.fillStyle = '#f43f5e';
+      ctx.beginPath(); ctx.arc(fx, axisY, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fda4af'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(pt.lbl, fx, axisY + 18);
+    });
+
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 11px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].lensHolderLbl, lensX, axisY - lensHalfH - 12);
+  }
+
+  // 5. 3D White Screen on Sliding Stand + Principal Ray Diagram + Inverted Real Image
+  if (placed.screen) {
+    // Ray Tracing from top of Object Arrow (objX, axisY - objH) to tip of Inverted Image (imgX, axisY + imgH)
+    if (placed.obj && placed.lens) {
+      const oy = axisY - objH;
+      const iy = axisY + imgH;
+
+      ctx.strokeStyle = 'rgba(250, 204, 21, 0.88)';
+      ctx.lineWidth = 2.2;
+
+      // Ray 1: Parallel to principal axis -> refracts through focal point F to image tip
+      ctx.beginPath();
+      ctx.moveTo(objX, oy);
+      ctx.lineTo(lensX, oy);
+      ctx.lineTo(imgX, iy);
+      ctx.stroke();
+      drawArrowHead(objX, oy, lensX, oy, '#fde047');
+      drawArrowHead(lensX, oy, imgX, iy, '#fde047');
+
+      // Ray 2: Through optical center (lensX, axisY) undeviated to image tip
+      ctx.beginPath();
+      ctx.moveTo(objX, oy);
+      ctx.lineTo(imgX, iy);
+      ctx.stroke();
+      drawArrowHead(objX, oy, lensX, axisY, '#fde047');
+      drawArrowHead(lensX, axisY, imgX, iy, '#fde047');
+    }
+
+    // 3D Sliding Base & Pillar holding the White Screen on the Optical Rail
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(imgX - 6, axisY + 84, 12, railTopY - (axisY + 84));
+    ctx.fillStyle = '#475569';
+    ctx.beginPath(); ctx.roundRect(imgX - 24, railTopY - 8, 48, 12, 4); ctx.fill();
+
+    // 3D Angled White Projection Screen Board
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(imgX - 6, axisY - 82);
+    ctx.lineTo(imgX + 12, axisY - 92);
+    ctx.lineTo(imgX + 12, axisY + 80);
+    ctx.lineTo(imgX - 6, axisY + 90);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    // Inverted Real Arrow Image projected onto the White Screen
+    ctx.strokeStyle = '#d97706'; ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(imgX, axisY);
+    ctx.lineTo(imgX, axisY + imgH);
+    ctx.moveTo(imgX - 6, axisY + imgH - 9);
+    ctx.lineTo(imgX, axisY + imgH);
+    ctx.lineTo(imgX + 6, axisY + imgH - 9);
+    ctx.stroke();
+
+    ctx.fillStyle = '#10b981'; ctx.font = 'bold 11px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(i18n[lang].screenLbl, imgX, axisY - 98);
+  }
+
+  // Distance Dimension Brackets for u and v below the Optical Rail
+  if (placed.obj && placed.lens) {
+    const dimY = railTopY + 52;
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(objX, dimY); ctx.lineTo(lensX, dimY);
+    ctx.moveTo(objX, dimY - 6); ctx.lineTo(objX, dimY + 6);
+    ctx.moveTo(lensX, dimY - 6); ctx.lineTo(lensX, dimY + 6);
+    ctx.stroke();
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'center';
+    ctx.fillText(`u = ${u_cm.toFixed(1)} cm`, (objX + lensX) / 2, dimY - 8);
+  }
+
+  if (placed.screen && placed.lens) {
+    const dimY = railTopY + 52;
+    ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(lensX, dimY); ctx.lineTo(imgX, dimY);
+    ctx.moveTo(imgX, dimY - 6); ctx.lineTo(imgX, dimY + 6);
+    ctx.stroke();
+    ctx.fillStyle = '#10b981'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'center';
+    ctx.fillText(`v = ${v_cm.toFixed(1)} cm`, (lensX + imgX) / 2, dimY - 8);
+  }
+
+  ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(i18n[lang].dragHint, canvas.width / 2, 436);
 }
 
 canvas.addEventListener('pointerdown', e => {
@@ -300,7 +724,7 @@ canvas.addEventListener('pointerdown', e => {
   isDragging = true; canvas.setPointerCapture(e.pointerId); handleDrag(e);
 });
 canvas.addEventListener('pointermove', e => { if (isDragging) handleDrag(e); });
-canvas.addEventListener('pointerup', () => { isDragging = false; });
+canvas.addEventListener('pointerup', () => { isDragging = false; updateCoach(); draw3D(); });
 
 function handleDrag(e) {
   const rect = canvas.getBoundingClientRect();
@@ -310,11 +734,42 @@ function handleDrag(e) {
   setU(snapped);
 }
 
+function drawGraph() {
+  const gCanvas = document.getElementById('graphCanvas');
+  const gCtx = gCanvas.getContext('2d');
+  gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+  gCtx.fillStyle = '#38bdf8'; gCtx.font = 'bold 12px Segoe UI, sans-serif'; gCtx.textAlign = 'center';
+  gCtx.fillText(i18n[lang].graphTitle, gCanvas.width / 2, 20);
+  const ox = 55, oy = 180, gw = 430, gh = 135;
+  gCtx.strokeStyle = '#64748b'; gCtx.lineWidth = 1.5;
+  gCtx.beginPath(); gCtx.moveTo(ox, oy - gh); gCtx.lineTo(ox, oy); gCtx.lineTo(ox + gw, oy); gCtx.stroke();
+
+  if (records.length > 0) {
+    const sorted = [...records].sort((a, b) => a.invU - b.invU);
+    gCtx.strokeStyle = '#10b981'; gCtx.lineWidth = 2.5;
+    gCtx.beginPath();
+    sorted.forEach((r, idx) => {
+      const px = ox + (r.invU / 0.10) * gw;
+      const py = oy - (r.invV / 0.10) * gh;
+      if (idx === 0) gCtx.moveTo(px, py); else gCtx.lineTo(px, py);
+    });
+    gCtx.stroke();
+    sorted.forEach(r => {
+      const px = ox + (r.invU / 0.10) * gw;
+      const py = oy - (r.invV / 0.10) * gh;
+      gCtx.fillStyle = '#38bdf8'; gCtx.beginPath(); gCtx.arc(px, py, 4.5, 0, Math.PI * 2); gCtx.fill();
+    });
+  }
+}
+
 function muatTurunExcel() {
-  if (dataSet.size === 0) { alert("Tiada data!"); return; }
+  if (records.length === 0) {
+    alert(lang === 'ms' ? "Jadual masih kosong!" : "Table is empty!");
+    return;
+  }
   let csv = "Jarak objek u (cm),Jarak imej v (cm),1/u (cm^-1),1/v (cm^-1)\n";
-  document.querySelectorAll("#dataTable tbody tr").forEach(r => {
-    csv += Array.from(r.cells).map(c => c.innerText).join(",") + "\n";
+  records.forEach(r => {
+    csv += `${r.u.toFixed(1)},${r.v.toFixed(1)},${r.invU.toFixed(4)},${r.invV.toFixed(4)}\n`;
   });
   let a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
@@ -322,7 +777,7 @@ function muatTurunExcel() {
   a.click();
 }
 
-draw3D();
+updateReadouts(); draw3D(); drawGraph();
 </script>
 </body>
 </html>

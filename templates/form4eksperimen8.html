@@ -119,7 +119,7 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
     <a href="/" class="btn-back" onclick="if(window.location.protocol==='file:'){this.href='index.html';}" id="btnBack">← Kembali ke Menu Utama</a>
     <div class="top-right">
       <span class="badge-kssm" id="badgeKssm">🔬 KSSM Tingkatan 4 • Bab 4 • Eksperimen 4.6</span>
-      <button class="btn-lang" onclick="toggleLang()">🌐 Bahasa Melayu / English</button>
+      <button class="btn-lang" onclick="toggleLang()" id="btnLang">🌐 Bahasa Melayu / English</button>
     </div>
   </div>
 
@@ -165,12 +165,12 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
 
     <div class="card-panel">
       <div class="control-box">
-        <label style="font-weight:700;display:block;margin-bottom:8px;">🔥 Laraskan Suhu Sasaran (30 °C – 80 °C) atau Klik Panaskan:</label>
+        <label style="font-weight:700;display:block;margin-bottom:8px;" id="ctrlTLbl">🔥 Laraskan Suhu Sasaran (30 °C – 80 °C) atau Klik Panaskan:</label>
         <input type="range" id="tempSlider" min="30" max="80" step="10" value="30" style="width:100%;" oninput="setTargetTemp(this.value)">
         <div class="btn-row">
           <button class="btn-act" id="btnHeat" onclick="toggleHeat()">🔥 Panaskan Automatik</button>
-          <button class="btn-act green" onclick="recordData()">➕ Catat Data ke Jadual 4.13</button>
-          <button class="btn-act purple" onclick="resetExperiment()">🔄 Semula</button>
+          <button class="btn-act green" onclick="recordData()" id="btnRecord">➕ Catat Data ke Jadual 4.13</button>
+          <button class="btn-act purple" onclick="resetExperiment()" id="btnReset">🔄 Semula</button>
         </div>
       </div>
 
@@ -179,8 +179,8 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
         <table class="data-tbl" id="resultTable">
           <thead>
             <tr>
-              <th>Suhu, θ / °C</th>
-              <th>Tekanan udara, P / kPa</th>
+              <th id="thT">Suhu, θ / °C</th>
+              <th id="thP">Tekanan udara, P / kPa</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -188,7 +188,7 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
       </div>
 
       <div class="btn-row">
-        <button class="btn-act purple" onclick="downloadExcel()">⬇️ Muat Turun Data (CSV)</button>
+        <button class="btn-act purple" onclick="downloadExcel()" id="btnExport">⬇️ Muat Turun Data (CSV)</button>
       </div>
     </div>
   </div>
@@ -196,6 +196,61 @@ table.data-tbl td { background: rgba(15,23,42,0.7); color: #e2e8f0; }
 
 <script>
 let lang = 'ms';
+const i18n = {
+  ms: {
+    btnBack: "← Kembali ke Menu Utama",
+    badgeKssm: "🔬 KSSM Tingkatan 4 • Bab 4 • Eksperimen 4.6",
+    pageTitle: "Eksperimen 4.6: Hukum Gay-Lussac (Hubungan antara Suhu, θ dengan Tekanan Gas, P)",
+    pageDesc: "Tujuan: Mengkaji hubungan antara suhu gas, θ (30 °C hingga 80 °C) dengan tekanan gas, P pada isi padu malar (P₁/T₁ = P₂/T₂) menggunakan kelalang dasar bulat di dalam kukus air dan tolok Bourdon 3D. Panaskan air dan rekodkan Jadual 4.13!",
+    pillTxt1: "Pilih & Pasang Radas 3D",
+    pillTxt2: "Panaskan Kelalang (30–80 °C)",
+    pillTxt3: "Catat Jadual 4.13 (θ & P)",
+    trayTitle: "🧰 Kotak Radas & Bahan (Tandakan ☑️ untuk Pasang di Meja 3D)",
+    btnAutoAssemble: "⚡ Pasang Semua",
+    lbl_flask: "Kelalang Dasar Bulat + Kukus Air",
+    lbl_burner: "Penunu Bunsen + Termometer",
+    lbl_gauge: "Tiub Getah + Tolok Bourdon",
+    mLbl0: "Suhu Semasa, θ",
+    mLbl1: "Tekanan Udara, P",
+    ctrlTLbl: "🔥 Laraskan Suhu Sasaran (30 °C – 80 °C) atau Klik Panaskan:",
+    btnHeat: "🔥 Panaskan Automatik",
+    btnRecord: "➕ Catat Data ke Jadual 4.13",
+    btnReset: "🔄 Semula",
+    tblTitle: "📊 Jadual 4.13: Keputusan Eksperimen Hukum Gay-Lussac",
+    thT: "Suhu, θ / °C",
+    thP: "Tekanan udara, P / kPa",
+    btnExport: "⬇️ Muat Turun Data (CSV)",
+    canvasEmpty: "Meja Makmal 3D Kosong — Sila tandakan radas di dalam Kotak Radas di atas!",
+    gaugeLbl: "Tolok Bourdon 3D"
+  },
+  en: {
+    btnBack: "← Back to Main Menu",
+    badgeKssm: "🔬 KSSM Form 4 • Chapter 4 • Experiment 4.6",
+    pageTitle: "Experiment 4.6: Gay-Lussac's Law (Relationship between Gas Temperature, θ and Pressure, P)",
+    pageDesc: "Objective: To study the relationship between gas temperature, θ (30 °C to 80 °C) and gas pressure, P at constant volume (P₁/T₁ = P₂/T₂) using a round-bottom flask in a water bath and a 3D Bourdon gauge. Heat the water and record Table 4.13!",
+    pillTxt1: "Select & Assemble 3D Apparatus",
+    pillTxt2: "Heat Flask (30–80 °C)",
+    pillTxt3: "Record Table 4.13 (θ & P)",
+    trayTitle: "🧰 Apparatus & Materials Tray (Tick ☑️ to Place on 3D Bench)",
+    btnAutoAssemble: "⚡ Assemble All",
+    lbl_flask: "Round-Bottom Flask + Water Bath",
+    lbl_burner: "Bunsen Burner + Thermometer",
+    lbl_gauge: "Rubber Tube + Bourdon Gauge",
+    mLbl0: "Current Temp, θ",
+    mLbl1: "Air Pressure, P",
+    ctrlTLbl: "🔥 Adjust Target Temperature (30 °C – 80 °C) or Click Auto-Heat:",
+    btnHeat: "🔥 Auto-Heat Water Bath",
+    btnRecord: "➕ Record Data to Table 4.13",
+    btnReset: "🔄 Reset",
+    tblTitle: "📊 Table 4.13: Gay-Lussac's Law Experimental Results",
+    thT: "Temperature, θ / °C",
+    thP: "Air pressure, P / kPa",
+    btnExport: "⬇️ Download Data (CSV)",
+    canvasEmpty: "3D Lab Bench Empty — Please tick apparatus in the Apparatus Tray above!",
+    gaugeLbl: "3D Bourdon Gauge"
+  }
+};
+
 const placed = { flask: false, burner: false, gauge: false };
 let temperature = 30.0;
 const k = 0.33003;
@@ -205,7 +260,7 @@ function allPlaced() { return placed.flask && placed.burner && placed.gauge; }
 function toggleApparatus(key, c) {
   placed[key] = c;
   document.getElementById('tray_' + key).classList.toggle('placed', c);
-  draw3D();
+  updateCoach(); draw3D();
 }
 function assembleAll() {
   ['flask', 'burner', 'gauge'].forEach(key => {
@@ -213,7 +268,22 @@ function assembleAll() {
     document.querySelector('#tray_' + key + ' input').checked = true;
     document.getElementById('tray_' + key).classList.add('placed');
   });
-  draw3D();
+  updateCoach(); draw3D();
+}
+function updateCoach() {
+  const p1 = document.getElementById('pill1'), p2 = document.getElementById('pill2'), p3 = document.getElementById('pill3');
+  [p1, p2, p3].forEach(p => p.className = 'step-pill');
+  if (!allPlaced()) {
+    p1.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 1 — Tandakan (☑️) semua radas di dalam <b>Kotak Radas & Bahan</b> untuk memasang kelalang dasar bulat di dalam kukus air, termometer, dan tolok Bourdon 3D!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Step 1 — Tick (☑️) all items in the <b>Apparatus & Materials Tray</b> to assemble the round-bottom flask in the water bath, thermometer, and 3D Bourdon gauge!";
+  } else {
+    p1.classList.add('done'); p2.classList.add('active'); p3.classList.add('active');
+    document.getElementById('coachBanner').innerHTML = lang === 'ms'
+      ? "🧑‍🏫 <b>Prof. Vector:</b> Langkah 2 & 3 — Laraskan suhu kukus air <b>θ = 30, 40, 50, 60, 70, 80 °C</b> dan klik <b>➕ Catat Data ke Jadual 4.13</b>!"
+      : "🧑‍🏫 <b>Prof. Vector:</b> Steps 2 & 3 — Adjust water bath temperature <b>θ = 30, 40, 50, 60, 70, 80 °C</b> and click <b>➕ Record Data to Table 4.13</b>!";
+  }
 }
 function getPressure(tC) {
   return ((tC + 273.15) * k).toFixed(2);
@@ -259,7 +329,12 @@ function resetExperiment() {
 }
 function toggleLang() {
   lang = (lang === 'ms') ? 'en' : 'ms';
-  draw3D();
+  const t = i18n[lang];
+  Object.keys(t).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = t[id];
+  });
+  updateCoach(); draw3D();
 }
 
 const canvas = document.getElementById('simCanvas');
@@ -273,25 +348,22 @@ function draw3D() {
 
   if (!placed.flask && !placed.burner && !placed.gauge) {
     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px Segoe UI, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(lang === 'ms' ? 'Meja Makmal 3D Kosong — Tandakan radas di atas!' : '3D Lab Bench Empty — Tick apparatus above!', canvas.width / 2, 200);
+    ctx.fillText(i18n[lang].canvasEmpty, canvas.width / 2, 200);
     return;
   }
 
   const P = parseFloat(getPressure(temperature));
 
   if (placed.flask) {
-    // Water bath beaker
     ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
     ctx.fillRect(160, 145, 160, 150);
     ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3;
     ctx.strokeRect(157, 115, 166, 182);
 
-    // 3D Round-Bottom Flask inside water bath
     ctx.fillStyle = 'rgba(248, 250, 252, 0.25)';
     ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(240, 225, 48, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.fillRect(226, 95, 28, 84); ctx.strokeRect(226, 95, 28, 84);
-    // Rubber stopper
     ctx.fillStyle = '#d97706'; ctx.fillRect(224, 82, 32, 16);
   }
 
@@ -302,14 +374,12 @@ function draw3D() {
     ctx.beginPath(); ctx.ellipse(240, 320, 16, 22, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#64748b'; ctx.fillRect(226, 342, 28, 42);
 
-    // Thermometer
     ctx.fillStyle = '#f8fafc'; ctx.fillRect(180, 65, 10, 215);
     const mH = (temperature / 100) * 185;
     ctx.fillStyle = '#ef4444'; ctx.fillRect(182, 280 - mH, 6, mH);
   }
 
   if (placed.gauge) {
-    // Rubber tube from flask to Bourdon gauge
     ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 6;
     ctx.beginPath(); ctx.moveTo(240, 82); ctx.bezierCurveTo(240, 25, 500, 25, 500, 145); ctx.stroke();
 
@@ -324,12 +394,14 @@ function draw3D() {
     ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(gx + 46 * Math.cos(ang), gy + 46 * Math.sin(ang)); ctx.stroke();
     ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'center';
     ctx.fillText(P.toFixed(2) + ' kPa', gx, gy + 36);
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 12px sans-serif';
+    ctx.fillText(i18n[lang].gaugeLbl, gx, gy + gr + 22);
   }
 }
 
 function downloadExcel() {
   let rows = Array.from(document.getElementById("resultTable").rows);
-  if (rows.length <= 1) { alert("Tiada data!"); return; }
+  if (rows.length <= 1) { alert(lang === 'ms' ? "Tiada data!" : "No data!"); return; }
   let csv = "\uFEFF" + rows.map(r => Array.from(r.cells).map(c => `"${c.innerText}"`).join(",")).join("\n");
   let a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
@@ -337,6 +409,7 @@ function downloadExcel() {
   a.click();
 }
 
+updateCoach();
 draw3D();
 </script>
 </body>
